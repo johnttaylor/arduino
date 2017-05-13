@@ -1,0 +1,18 @@
+[info]
+name = arduino
+branch = main
+version = 0.0.0
+pubtime = 
+pubtimelocal = 
+desc = My Arduino projects built on top of the Colony.* Packages
+owner = John Taylor
+email = John.T.Taylor@gmail.com
+url = www.integerfox.com/arduino
+
+[immediate_deps]
+
+[weak_deps]
+nqbp\\1.1.0
+
+[transitive_deps]
+
