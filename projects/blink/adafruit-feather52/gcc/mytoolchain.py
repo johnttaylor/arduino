@@ -32,6 +32,15 @@ env_error = None
 ARDUINO_TOOLS = os.environ.get( 'ARDUINO_TOOLS' )
 if ( ARDUINO_TOOLS == None ):
     ARDUINO_TOOLS = env_error = "ARDUINO_TOOLS"
+ARDUINO_COMPILER_VER = os.environ.get( 'ARDUINO_COMPILER_VER' )
+if ( ARDUINO_COMPILER_VER == None ):
+    ARDUINO_COMPILER_VER = env_error = "ARDUINO_COMPILER_VER"
+ARDUINO_BSP_VER = os.environ.get( 'ARDUINO_BSP_VER' )
+if ( ARDUINO_BSP_VER == None ):
+    ARDUINO_BSP_VER = env_error = "ARDUINO_BSP_VER"
+ARDUINO_NRF_UTIL_VER = os.environ.get( 'ARDUINO_NRF_UTIL_VER' )
+if ( ARDUINO_NRF_UTIL_VER == None ):
+    ARDUINO_NRF_UTIL_VER = env_error = "ARDUINO_NRF_UTIL_VER"
 
 
 #===================================================
@@ -49,7 +58,7 @@ FINAL_OUTPUT_NAME = 'blink'
 
 # Set project specific 'base' (i.e always used) options
 base_release = BuildValues()        # Do NOT comment out this line
-base_release.cflags = ' -Wall -DF_CPU=16000000L -DARDUINO=10802'
+base_release.cflags = ' -Wall -DF_CPU=64000000 -DARDUINO=10802'
 
 
 # Set project specific 'optimzed' options
@@ -99,10 +108,10 @@ prjdir = os.path.dirname(os.path.abspath(__file__))
 
 
 # Select Module that contains the desired toolcahin
-from nqbplib.toolchains.windows.avr_gcc_arduino.atmega328p_uno import ToolChain
+from nqbplib.toolchains.windows.arm_m4_arduino.nrf52_feather52 import ToolChain
 
 
 # Function that instantiates an instance of the toolchain
 def create():
-    tc = ToolChain( FINAL_OUTPUT_NAME, prjdir, build_variants, ARDUINO_TOOLS, "arduino", env_error )
+    tc = ToolChain( FINAL_OUTPUT_NAME, prjdir, build_variants, ARDUINO_TOOLS, ARDUINO_COMPILER_VER, ARDUINO_BSP_VER, ARDUINO_NRF_UTIL_VER, "arduino", env_error )
     return tc 

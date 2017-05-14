@@ -1,6 +1,6 @@
 # Ardunio
 
-The Arduino package is collection of my Arduino projects that do ''not'' use/depend on the Arduino IDE for building and downloading HEX files.
+The Arduino package is collection of my Arduino projects that do NOT use/depend on the Arduino IDE for building and downloading HEX files.
 
 Documentation is located in the top/ directory and/or availabe at: www.integerfox.com/arduino.
 
