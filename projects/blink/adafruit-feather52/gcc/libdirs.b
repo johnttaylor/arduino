@@ -8,8 +8,7 @@ $ARDUINO_TOOLS$/hardware/nrf52/0.6.0/cores/nRF5/freertos/portable/GCC/nrf52
 $ARDUINO_TOOLS$/hardware/nrf52/0.6.0/cores/nRF5/freertos/source
 $ARDUINO_TOOLS$/hardware/nrf52/0.6.0/cores/nRF5/freertos/source/portable/MemMang
 $ARDUINO_TOOLS$/hardware/nrf52/0.6.0/cores/nRF5/utility
-$ARDUINO_TOOLS$/hardware/nrf52/0.6.0/cores/nRF5
 $ARDUINO_TOOLS$/hardware/nrf52/0.6.0/cores/nRF5/SDK/components/toolchain
-$ARDUINO_TOOLS$/hardware/nrf52/0.6.0/libraries/Bluefruit52Lib/src
-$ARDUINO_TOOLS$/hardware/nrf52/0.6.0/libraries/Bluefruit52Lib/src/clients
-$ARDUINO_TOOLS$/hardware/nrf52/0.6.0/libraries/Bluefruit52Lib/src/services
+#$ARDUINO_TOOLS$/hardware/nrf52/0.6.0/libraries/Bluefruit52Lib/src
+#$ARDUINO_TOOLS$/hardware/nrf52/0.6.0/libraries/Bluefruit52Lib/src/clients
+#$ARDUINO_TOOLS$/hardware/nrf52/0.6.0/libraries/Bluefruit52Lib/src/services

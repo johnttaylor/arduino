@@ -58,7 +58,8 @@ FINAL_OUTPUT_NAME = 'blink'
 
 # Set project specific 'base' (i.e always used) options
 base_release = BuildValues()        # Do NOT comment out this line
-base_release.cflags = ' -Wall -DF_CPU=64000000 -DARDUINO=10802'
+base_release.cflags   = ' -Wall -DF_CPU=64000000 -DARDUINO=10802'
+base_release.asmflags = ' -Wall -DF_CPU=64000000 -DARDUINO=10802'
 
 
 # Set project specific 'optimzed' options
