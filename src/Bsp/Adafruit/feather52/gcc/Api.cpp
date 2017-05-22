@@ -12,6 +12,7 @@
 #include "Bsp/Api.h"
 #include "Cpl/Io/Serial/Adafruit/Nrf5/InputOutput.h"
 #include "Uart.h"
+#include <ios>
 
 static Cpl::Io::Serial::Adafruit::Nrf5::InputOutput fd_( Serial );    // Note: 'Serial' is the Arduino primary uart object!
 extern Cpl::Io::Output& Bsp_Serial(void);
@@ -38,4 +39,24 @@ Cpl::Io::Output& Bsp_Serial( void )
     return fd_;
 }
 
+
+////////////////////////////////////////////////////
+/*
+** Method stubs to satisfy the linker -->NOTE: C++ Streams are NOT supported by this BSP
+*/
+//void std::ios_base::Init::_S_ios_destroy()
+//{
+//}
+//
+//void std::ios_base::Init::_S_ios_create( bool  )
+//{
+//}
+
+std::ios_base::Init::Init()
+{
+}
+
+std::ios_base::Init::~Init()
+{
+}
 
