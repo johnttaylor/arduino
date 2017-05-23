@@ -108,16 +108,16 @@ void Bsp_beginArduinoSerialObject( unsigned long baudrate, uint16_t frameConfig 
 #define Bsp_Api_nop_MAP()                       __asm("nop")                
 
 /// Generic API
-#define Bsp_Api_disableIrqs_MAP()               taskDISABLE_INTERRUPTS()
+#define Bsp_Api_disableIrqs_MAP()               taskENTER_CRITICAL()
 
 /// Generic API
-#define Bsp_Api_enableIrqs_MAP()                taskENABLE_INTERRUPTS()
+#define Bsp_Api_enableIrqs_MAP()                taskEXIT_CRITICAL()
 
 /// Generic API
-#define Bsp_Api_pushAndDisableIrqs_MAP()        taskDISABLE_INTERRUPTS()    // FIXME: This really needs to PUSH the IRQ state!!!
+#define Bsp_Api_pushAndDisableIrqs_MAP()        taskENTER_CRITICAL()    // FIXME: This really needs to PUSH the IRQ state!!!
 
 /// Generic API
-#define Bsp_Api_popIrqs_MAP()                   taskENABLE_INTERRUPTS()     // FIXME: This really needs to POP the IRQ state!!!!
+#define Bsp_Api_popIrqs_MAP()                   taskEXIT_CRITICAL()     // FIXME: This really needs to POP the IRQ state!!!!
 
 
 
