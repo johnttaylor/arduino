@@ -93,7 +93,7 @@ void setup( void )
     bno.setExtCrystalUse( true );
 
     CPL_SYSTEM_TRACE_MSG( SECT_, ("Calibration status values: 0=uncalibrated, 3=fully calibrated"));
-    Serial.println("Time (msec), Gyro x, y, z, Accel x, y, z, Gravity x, y, z, Calibration Sys, Gyro, Accel, Mag"));
+    Serial.println("Time (msec), Gyro x, y, z, Accel x, y, z, Gravity x, y, z, Calibration Sys, Gyro, Accel, Mag");
 }
 
 /**************************************************************************/
