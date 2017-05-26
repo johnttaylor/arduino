@@ -1,8 +1,23 @@
-# Sensor libraries
-$ARDUINO_LIBRARIES$/Adafruit_BNO055
-$ARDUINO_LIBRARIES$/Adafruit_Unified_Sensor
 
-# Ardunio Core library for the Nordic nrf52 Feather52
+# Arduino specific support for CPL
+src/Bsp/Adafruit/feather52/gcc
+
+# Colony::Core libraries (note: the Feather52/Arduino boards uses FreeRTOS)
+//colony.core/src/Cpl/Io
+//colony.core/src/Cpl/System/FreeRTOS
+//colony.core/src/Cpl/System/FreeRTOS/_fatalerror
+//colony.core/src/Cpl/System
+//colony.core/src/Cpl/System/_trace
+//colony.core/src/Cpl/System/_trace/_arduino
+//colony.core/src/Cpl/Container
+//colony.core/src/Cpl/Text
+//colony.core/src/Cpl/Io/Serial/Adafruit/Nrf5
+
+# Sensor libraries
+$ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_BNO055
+$ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_Unified_Sensor
+
+# Arduino Core library for the Nordic nrf52 Feather52
 $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/variants/feather52
 $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/cores/nRF5
 $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/cores/nRF5/avr

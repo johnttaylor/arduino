@@ -1,3 +1,9 @@
+#include "Bsp/Api.h"
+#include "Cpl/System/Api.h"
+#include "Cpl/System/Trace.h"
+#include "Cpl/System/ElaspedTime.h"
+#include "Cpl/System/FreeRTOS/Thread.h"
+#include "Arduino.h"
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
@@ -16,13 +22,16 @@
    =======
    2015/MAR/03  - First release (KTOWN)
 */
+/*---------------------------------------------------------------------------*/
 
-/* Set the delay between fresh samples */
-#define BNO055_SAMPLERATE_DELAY_MS (50)
 
-Adafruit_BNO055 bno = Adafruit_BNO055();
+// Cpl::System::Trace section identifier
+#define SECT_ "sketch"
 
-#if BUILD_OPT_CALIBRATED
+// Sampling interval in msecs
+#define BNO055_SAMPLERATE_DELAY_MS      50
+
+static Adafruit_BNO055 bno = Adafruit_BNO055();
 static adafruit_bno055_offsets_t my_sensors_calibration_constants ={
     65517,  // accel_offset_x 
     30,     // accel_offset_y 
@@ -35,8 +44,9 @@ static adafruit_bno055_offsets_t my_sensors_calibration_constants ={
     354,    // mag_offset_z   
     1000,   // accel_radius   
     589,    // mag_radius     
-    };
-#endif
+};
+
+static unsigned long lastSampleTime_ = 0;
 
 /**************************************************************************/
 /*
@@ -44,38 +54,47 @@ static adafruit_bno055_offsets_t my_sensors_calibration_constants ={
 */
 /**************************************************************************/
 void setup( void )
-    {
-    Serial.begin( 115200 );
-    Serial.println( "Orientation Sensor Raw Data Test - IMU/Fusion mode" ); Serial.println( "" );
+{
+    // Initialize the board (for use with CPL)
+    Bsp_Api_initialize();
+    Bsp_beginArduinoSerialObject( 115200, SERIAL_8N1 );
 
-    /* Initialise the sensor */
-    if (!bno.begin( Adafruit_BNO055::OPERATION_MODE_IMUPLUS ))
-        {
+    // Initialize CPL
+    Cpl::System::Api::initialize();
+
+    // Use the Trace engine for UART output
+    CPL_SYSTEM_TRACE_ENABLE();
+    CPL_SYSTEM_TRACE_ENABLE_SECTION( SECT_ );
+    //CPL_SYSTEM_TRACE_SET_INFO_LEVEL( Cpl::System::Trace::eNONE );
+    CPL_SYSTEM_TRACE_SET_INFO_LEVEL( Cpl::System::Trace::eINFO );
+    //CPL_SYSTEM_TRACE_SET_INFO_LEVEL( Cpl::System::Trace::eBRIEF );
+
+    CPL_SYSTEM_TRACE_MSG( SECT_, ("Orientation Sensor Raw Data Test - IMU/Fusion mode"));
+
+
+    /* Initialize the IMU sensor */
+    if ( !bno.begin( Adafruit_BNO055::OPERATION_MODE_IMUPLUS ) )
+    {
         /* There was a problem detecting the BNO055 ... check your connections */
-        Serial.print( "Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!" );
-        while (1);
-        }
+        CPL_SYSTEM_TRACE_MSG( SECT_, ("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!")); 
+        while ( 1 );
+    }
 
 
     delay( 1000 );
 
-#if BUILD_OPT_CALIBRATED
-    Serial.println( "Setting calibration offsets...." );
+    CPL_SYSTEM_TRACE_MSG( SECT_, ("Setting calibration offsets...."));
     bno.setSensorOffsets( my_sensors_calibration_constants );
-#endif
 
     /* Display the current temperature */
     int8_t temp = bno.getTemp();
-    Serial.print( "Current Temperature: " );
-    Serial.print( temp );
-    Serial.println( " C" );
-    Serial.println( "" );
+    CPL_SYSTEM_TRACE_MSG( SECT_, ("Current Temperature: %d 'C\r\n", temp));
 
     bno.setExtCrystalUse( true );
 
-    Serial.println( "Calibration status values: 0=uncalibrated, 3=fully calibrated" );
-    Serial.println( "Time (msec), Gyro x, y, z, Accel x, y, z, Gravity x, y, z, Calibration Sys, Gyro, Accel, Mag" );
-    }
+    CPL_SYSTEM_TRACE_MSG( SECT_, ("Calibration status values: 0=uncalibrated, 3=fully calibrated"));
+    Serial.println("Time (msec), Gyro x, y, z, Accel x, y, z, Gravity x, y, z, Calibration Sys, Gyro, Accel, Mag"));
+}
 
 /**************************************************************************/
 /*
@@ -84,9 +103,11 @@ void setup( void )
 */
 /**************************************************************************/
 void loop( void )
-    {
+{
+    // Make the current/main thread a CPL Thread
+    Cpl::System::FreeRTOS::Thread::makeNativeMainThreadACplThread();
 
-    uint32_t timestamp = millis();
+    unsigned long timestamp = Cpl::System::ElaspedTime::milliseconds();
 
     // Possible vector values can be:
     // - VECTOR_ACCELEROMETER - m/s^2
@@ -119,30 +140,11 @@ void loop( void )
     bno.getCalibration( &system, &gyro, &accel, &mag );
     Serial.printf( "  %d, %d, %d, %d\r\n", system, gyro, accel, mag );
 
-#ifndef BUILD_OPT_DATA_ONLY
-    static bool calibrated = false;
-    if (bno.isFullyCalibrated()) {
-        if (!calibrated) {
-            calibrated = true;
-            adafruit_bno055_offsets_t cal_offset;
-            bno.getSensorOffsets( cal_offset );
-            Serial.printf( "accel_offset_x = %d\r\n", cal_offset.accel_offset_x );
-            Serial.printf( "accel_offset_y = %d\r\n", cal_offset.accel_offset_y );
-            Serial.printf( "accel_offset_x = %d\r\n", cal_offset.accel_offset_z );
-            Serial.printf( "gyro_offset_x  = %d\r\n", cal_offset.gyro_offset_x );
-            Serial.printf( "gyro_offset_y  = %d\r\n", cal_offset.gyro_offset_y );
-            Serial.printf( "gyro_offset_z  = %d\r\n", cal_offset.gyro_offset_z );
-            Serial.printf( "mag_offset_x   = %d\r\n", cal_offset.mag_offset_x );
-            Serial.printf( "mag_offset_y   = %d\r\n", cal_offset.mag_offset_y );
-            Serial.printf( "mag_offset_z   = %d\r\n", cal_offset.mag_offset_z );
-            Serial.printf( "accel_radius   = %d\r\n", cal_offset.accel_radius );
-            Serial.printf( "mag_radius     = %d\r\n", cal_offset.mag_radius );
-            }
-        }
-    else {
-        calibrated = false;
-        }
-#endif
 
-    delay( BNO055_SAMPLERATE_DELAY_MS );
+    // Enforce monotonic sampling 
+    unsigned long duration = Cpl::System::ElaspedTime::deltaMilliseconds( timestamp );
+    if ( duration < BNO055_SAMPLERATE_DELAY_MS )
+    {
+        Cpl::System::Api::sleep( BNO055_SAMPLERATE_DELAY_MS - duration );
     }
+}

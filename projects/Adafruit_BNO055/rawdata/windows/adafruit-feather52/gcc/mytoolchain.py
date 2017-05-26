@@ -51,7 +51,7 @@ if ( ARDUINO_SKETCH_FOLDER == None ):
 #---------------------------------------------------
 
 # Set the name for the final output item (with NO file extension)
-FINAL_OUTPUT_NAME = 'simple'
+FINAL_OUTPUT_NAME = 'a'
 
 
 

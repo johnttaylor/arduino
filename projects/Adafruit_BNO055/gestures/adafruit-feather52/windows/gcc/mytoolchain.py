@@ -51,7 +51,7 @@ if ( ARDUINO_SKETCH_FOLDER == None ):
 #---------------------------------------------------
 
 # Set the name for the final output item (with NO file extension)
-FINAL_OUTPUT_NAME = 'simple'
+FINAL_OUTPUT_NAME = 'blink'
 
 
 
@@ -61,8 +61,7 @@ FINAL_OUTPUT_NAME = 'simple'
 
 # Set project specific 'base' (i.e always used) options
 base_release = BuildValues()        # Do NOT comment out this line
-build_options         = ' -DBUILD_OPT_CALIBRATED'
-#build_options         = ''
+build_options         = ''
 base_release.cflags   = ' -Wall -DF_CPU=64000000 -DARDUINO=10802 ' + build_options
 base_release.asmflags = ' -Wall -DF_CPU=64000000 -DARDUINO=10802'
 base_release.inc      = ' -I' + ARDUINO_SKETCH_FOLDER + r'\libraries\Adafruit_BNO055' + \
@@ -91,7 +90,7 @@ release_opts = { 'user_base':base_release,
                }
                
                
-# Add new dictionary of for new build configuraiton options
+# Add new dictionary of for new build configuration options
 #xyz_opts = { 'user_base':base_xyz, 
 #             'user_optimized':optimzed_xyz, 
 #             'user_debug':debug_xyz
@@ -99,7 +98,7 @@ release_opts = { 'user_base':base_release,
   
         
 # Add new variant option dictionary to # dictionary of 
-# build varaints
+# build variants
 build_variants = { 'arduino':release_opts,
 #                  'xyz':xyz_opts,
                  }    
@@ -121,5 +120,5 @@ from nqbplib.toolchains.windows.arm_m4_arduino.nrf52_feather52 import ToolChain
 
 # Function that instantiates an instance of the toolchain
 def create():
-    tc = ToolChain( FINAL_OUTPUT_NAME, prjdir, build_variants, ARDUINO_TOOLS, ARDUINO_COMPILER_VER, ARDUINO_BSP_VER, ARDUINO_NRF_UTIL_VER, "arduino", env_error )
+    tc = ToolChain( FINAL_OUTPUT_NAME, prjdir, build_variants, ARDUINO_TOOLS, ARDUINO_COMPILER_VER, ARDUINO_BSP_VER, ARDUINO_NRF_UTIL_VER, "arduino", env_error, override_freertos_config=True )
     return tc 
