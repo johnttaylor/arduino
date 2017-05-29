@@ -1,6 +1,8 @@
 
 # Arduino specific support for CPL
 src/Bsp/Adafruit/feather52/gcc
+src/Driver/Imu/Bno055
+src/Imu/Cube
 
 # Colony::Core libraries (note: the Feather52/Arduino boards uses FreeRTOS)
 //colony.core/src/Cpl/Io
