@@ -11,25 +11,135 @@
 /** @file */
 
 #include "Gestures.h"
+#include "Cpl/System/ElaspedTime.h"
+#include "Cpl/System/Trace.h"
 #include <stdlib.h>
 #include <math.h>
 
+#define SECT_   "imu::cube::gestures"
+//#define SECT_   "sketch"
 
 #define GRAVITY_CONSTANT        980.0
 #define CONVERT_RADS_TO_DEGREE  ((float)(180.0/3.14159265358979323846))
 
 using namespace Imu::Cube;
 
+///////////////////////////////////////////////////////////////////
+namespace {
+
+/// Transpose function (to normalize the IMU vector with respect to the tilt algorithm) for the North surface is the 'top'
+class Transpose4NorthTop : public Driver::Imu::TransposeAxises<int16_t>
+{
+public:
+    void transpose( Driver::Imu::Vector<int16_t>& original )
+    {
+        int16_t orgX = original.x;
+        int16_t orgZ = original.z;
+
+        original.x   = orgZ;
+        original.z   = -orgX;
+    }
+};
+
+/// Transpose function (to normalize the IMU vector with respect to the tilt algorithm) for the South surface is the 'top'
+class Transpose4SouthTop : public Driver::Imu::TransposeAxises<int16_t>
+{
+public:
+    void transpose( Driver::Imu::Vector<int16_t>& original )
+    {
+        int16_t orgX = original.x;
+        int16_t orgZ = original.z;
+
+        original.x   = -orgZ;
+        original.z   = orgX;
+    }
+};
+
+/// Transpose function (to normalize the IMU vector with respect to the tilt algorithm) for the East surface is the 'top'
+class Transpose4EastTop : public Driver::Imu::TransposeAxises<int16_t>
+{
+public:
+    void transpose( Driver::Imu::Vector<int16_t>& original )
+    {
+        int16_t orgY = original.y;
+        int16_t orgZ = original.z;
+
+        original.y   = -orgZ;
+        original.z   = orgY;
+    }
+};
+
+/// Transpose function (to normalize the IMU vector with respect to the tilt algorithm) for the West surface is the 'top'
+class Transpose4WestTop : public Driver::Imu::TransposeAxises<int16_t>
+{
+public:
+    void transpose( Driver::Imu::Vector<int16_t>& original )
+    {
+        int16_t orgY = original.y;
+        int16_t orgZ = original.z;
+
+        original.y   = orgZ;
+        original.z   = -orgY;
+    }
+};
+
+/// Transpose function (to normalize the IMU vector with respect to the tilt algorithm) for the Bottom surface is the 'top'
+class Transpose4BottomTopFlippedXAxis : public Driver::Imu::TransposeAxises<int16_t>
+{
+public:
+    void transpose( Driver::Imu::Vector<int16_t>& original )
+    {
+        int16_t orgX = original.x;
+        int16_t orgZ = original.z;
+
+        original.x   = -orgX;
+        original.z   = -orgZ;
+    }
+};
+
+/// Transpose function (to normalize the IMU vector with respect to the tilt algorithm) for the Bottom surface is the 'top'
+class Transpose4BottomTopFlippedYAxis : public Driver::Imu::TransposeAxises<int16_t>
+{
+public:
+    void transpose( Driver::Imu::Vector<int16_t>& original )
+    {
+        int16_t orgY = original.y;
+        int16_t orgZ = original.z;
+
+        original.y   = -orgY;
+        original.z   = -orgZ;
+    }
+};
+
+/// Transpose function (to normalize the IMU vector with respect to the tilt algorithm) for the Top surface is the 'top'
+class Transpose4TopTop : public Driver::Imu::TransposeAxises<int16_t>
+{
+public:
+    void transpose( Driver::Imu::Vector<int16_t>& original ) {}
+};
+
+}; // end namespace
+
+
+static Transpose4NorthTop               transposeNorth_;
+static Transpose4SouthTop               transposeSouth_;
+static Transpose4EastTop                transposeEast_;
+static Transpose4WestTop                transposeWest_;
+static Transpose4BottomTopFlippedYAxis  transposeBottomFlippedY_;
+static Transpose4BottomTopFlippedXAxis  transposeBottomFlippedX_;
+static Transpose4TopTop                 transposeTop_;
+
 
 ///////////////////////////////////////////////////////////////////
-
-Gestures::Gestures( int16_t tiltThreshold, int16_t verticalThreshold )
-    : m_filter( 10, 1, 2, true )
+Gestures::Gestures( int16_t tiltThreshold, int16_t verticalThreshold, unsigned long surfaceSwitchDurationInMsec )
+    : m_surfaceOrientationPtr( &transposeTop_ )
+    , m_filter( 10, 1, 2, true )
     , m_tiltThreshold( tiltThreshold )
     , m_verticalThreshold( verticalThreshold )
     , m_aspectState( eUNKNOWN )
     , m_tiltAngle( 0 )
     , m_currentTop( eTOP )
+    , m_surfaceSwitchDuration( surfaceSwitchDurationInMsec )
     , m_haveBeenCalledAtLeastOnce( false )
 {
 }
@@ -41,40 +151,41 @@ bool Gestures::process( Driver::Imu::Vector<int16_t>& gravityVector, Event_T& re
     Driver::Imu::Vector<int16_t>  filteredVector = gravityVector;
     AspectState_T                 newAspect      = eUNKNOWN;
     float                         newTiltAngle   = 0.0;
-    Surface_T                     newTop         = m_currentTop; // TODO: Need to implement 'new top' feature!
     bool                          changed        = false;
 
     // First time I am called
     if ( !m_haveBeenCalledAtLeastOnce )
     {
         m_haveBeenCalledAtLeastOnce = true;
-        m_currentTop                = eTOP;
         changed                     = true;
     }
 
     // Run the algorithm
     else
     {
+        // Normalize the raw IMU data for my 'top' orientation
+        m_surfaceOrientationPtr->transpose( gravityVector );
+
         // Debounce and only use stable readings
         filteredVector = m_filter.filterValue( gravityVector );
 
         // Calculate change
-        int16_t absX    = abs( filteredVector.x );
-        int16_t absY    = abs( filteredVector.y );
-        int16_t absZ    = abs( filteredVector.z );
+        int16_t absX = abs( filteredVector.x );
+        int16_t absY = abs( filteredVector.y );
+        int16_t absZ = abs( filteredVector.z );
 
         // Was there sufficient change to take action on?
         if ( absX > m_tiltThreshold || absY > m_tiltThreshold || filteredVector.z < -m_verticalThreshold )
         {
             // Change was a 'tilt'
-            if ( filteredVector.z >= -m_verticalThreshold && filteredVector.z < ((int) GRAVITY_CONSTANT - m_verticalThreshold) )
+            if ( filteredVector.z >= -m_tiltThreshold && filteredVector.z < ((int) GRAVITY_CONSTANT - m_verticalThreshold) )
             {
                 // X axis had the strongest change
                 if ( absX >= absY )
                 {
                     newAspect    = filteredVector.x < 0 ? eTILT_NORTH : eTILT_SOUTH;
                     newTiltAngle = asin( abs( filteredVector.x ) / GRAVITY_CONSTANT ) * CONVERT_RADS_TO_DEGREE;
-                    updateState( newAspect, newTiltAngle );
+                    changed      = updateState( newAspect, newTiltAngle );
                 }
 
                 // Y axis had the strongest change
@@ -82,7 +193,7 @@ bool Gestures::process( Driver::Imu::Vector<int16_t>& gravityVector, Event_T& re
                 {
                     newAspect    = filteredVector.y < 0 ? eTILT_WEST : eTILT_EAST;
                     newTiltAngle = asin( abs( filteredVector.y ) / GRAVITY_CONSTANT ) * CONVERT_RADS_TO_DEGREE;
-                    updateState( newAspect, newTiltAngle );
+                    changed      = updateState( newAspect, newTiltAngle );
                 }
             }
 
@@ -90,7 +201,7 @@ bool Gestures::process( Driver::Imu::Vector<int16_t>& gravityVector, Event_T& re
             else
             {
                 newAspect = filteredVector.z < 0 ? eFLIP_BOTTOM : eHOMED;
-                updateState( newAspect, 0.0F );
+                changed   = updateState( newAspect, 0.0F );
             }
         }
 
@@ -98,7 +209,49 @@ bool Gestures::process( Driver::Imu::Vector<int16_t>& gravityVector, Event_T& re
         else if ( filteredVector.z >= ((int) GRAVITY_CONSTANT - m_verticalThreshold) )
         {
             newAspect = filteredVector.z < 0 ? eFLIP_BOTTOM : eHOMED;
-            updateState( newAspect, 0.0F );
+            changed   = updateState( newAspect, 0.0F );
+        }
+
+
+        // Check for change in the 'top surface'
+        if ( m_aspectState != eHOMED )
+        {
+            Driver::Imu::TransposeAxises<int16_t>* currentOrientationPtr = m_surfaceOrientationPtr;
+            Surface_T                              currentSurface        = m_currentTop;
+            bool                                   currentChanged        = changed;
+
+            changed = checkForTopSurface( absX, filteredVector.x, eSOUTH, eNORTH, transposeSouth_, transposeNorth_, m_topXSurfaceFlag, m_topXStartTime, m_topYSurfaceFlag, m_topZSurfaceFlag ) ? true : changed;
+            changed = checkForTopSurface( absY, filteredVector.y, eEAST, eWEST, transposeEast_, transposeWest_, m_topYSurfaceFlag, m_topYStartTime, m_topXSurfaceFlag, m_topZSurfaceFlag ) ? true : changed;
+            if ( checkForTopSurface( absZ, filteredVector.z, eTOP, eBOTTOM, transposeTop_, transposeBottomFlippedY_, m_topZSurfaceFlag, m_topZStartTime, m_topYSurfaceFlag, m_topXSurfaceFlag ) )
+            {
+                changed = true;
+
+                // Handle the special case of flipping to the bottom because it matters which axis I flipped on
+                if ( m_currentTop == eBOTTOM )
+                {
+                    // Flipped over the X-Axis
+                    if ( filteredVector.x < 0 && filteredVector.y >= 0 )
+                    {
+                        m_surfaceOrientationPtr = &transposeBottomFlippedX_;
+                    }
+                    
+                    // Flipped over the Y-Axis
+                    
+                    else if ( filteredVector.x >= 0 && filteredVector.y < 0 ) 
+                    {
+                      m_surfaceOrientationPtr = &transposeBottomFlippedY_;
+                    }
+
+                    // Can't distinguish (e.g. the 'bottom' is not level) -->stay with current surface and try again
+                    else
+                    {
+                        m_currentTop            = currentSurface;
+                        m_surfaceOrientationPtr = currentOrientationPtr;
+                        changed                 = currentChanged;
+                    }
+                }
+
+            }
         }
     }
 
@@ -110,7 +263,82 @@ bool Gestures::process( Driver::Imu::Vector<int16_t>& gravityVector, Event_T& re
     return changed;
 }
 
+
 ///////////////////////////////////////////////////////////////////
+bool Gestures::checkForTopSurface( int16_t                                 absAxisValue,
+                                   int16_t                                 axisValue,
+                                   Surface_T                               positiveSurface,
+                                   Surface_T                               negativeSurface,
+                                   Driver::Imu::TransposeAxises<int16_t>&  positiveTransponse,
+                                   Driver::Imu::TransposeAxises<int16_t>&  negativeTransponse,
+                                   SurfaceTracking_T&                      surfaceFlag,
+                                   unsigned long&                          startTime,
+                                   SurfaceTracking_T&                      otherSurfaceFlag1,
+                                   SurfaceTracking_T&                      otherSurfaceFlag2 )
+{
+    bool result = false;
+    if ( absAxisValue >= ((int) GRAVITY_CONSTANT - m_verticalThreshold) )
+    {
+        // Reset the other surface flags
+        otherSurfaceFlag1 = eSTOPPED;
+        otherSurfaceFlag2 = eSTOPPED;
+
+        // Start my time on the transition to vertical
+        if ( surfaceFlag == eSTOPPED )
+        {
+            startTime   = Cpl::System::ElaspedTime::milliseconds();
+            surfaceFlag = axisValue < 0 ? eTRACKING_NEGATIVE : eTRACKING_POSITIVE;
+            CPL_SYSTEM_TRACE_MSG( SECT_, ("Starting TopSurface timer. abs=%d, ax=%d, flag=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, surfaceFlag, positiveSurface, negativeSurface) );
+        }
+
+
+        // Has the timer expired?
+        if ( surfaceFlag != eSTOPPED && Cpl::System::ElaspedTime::expiredMilliseconds( startTime, m_surfaceSwitchDuration ) )
+        {
+            CPL_SYSTEM_TRACE_MSG( SECT_, ("TopSurface timer Expired. abs=%d, ax=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, positiveSurface, negativeSurface) );
+
+            // Default to the current surface
+            Surface_T newSurface = m_currentTop;
+
+            // Negative AXIS
+            if ( axisValue < 0 )
+            {
+                // Filter out the use case of a 180' degree flip on the same axis
+                if ( surfaceFlag == eTRACKING_NEGATIVE )
+                {
+                    m_surfaceOrientationPtr = &negativeTransponse;
+                    newSurface              = negativeSurface;
+                }
+            }
+
+            // Positive AXIS
+            else
+            {
+                // Filter out the use case of a 180' degree flip on the same axis
+                if ( surfaceFlag == eTRACKING_POSITIVE )
+                {
+                    m_surfaceOrientationPtr = &positiveTransponse;
+                    newSurface              = positiveSurface;
+                }
+            }
+
+            if ( newSurface != m_currentTop )
+            {
+                result = true;
+            }
+            m_currentTop = newSurface;
+            surfaceFlag  = eSTOPPED;
+        }
+    }
+    else
+    {
+        surfaceFlag = eSTOPPED;
+        CPL_SYSTEM_TRACE_MSG( SECT_, ("Stopping TopSurface timer. abs=%d, ax=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, positiveSurface, negativeSurface) );
+    }
+
+    return result;
+}
+
 bool Gestures::updateState( AspectState_T newState, float newTiltAngle )
 {
     bool result = false;
@@ -120,5 +348,7 @@ bool Gestures::updateState( AspectState_T newState, float newTiltAngle )
     }
     m_aspectState    = newState;
     m_tiltAngle      = newTiltAngle;
+
+    return result;
 }
 

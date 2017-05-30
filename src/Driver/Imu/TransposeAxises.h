@@ -24,7 +24,7 @@ class TransposeAxises
 {
 public:
     /// Transposes the axises of specified vector.  Default is no transposition.
-    virtual Driver::Imu::Vector<T> transpose( Driver::Imu::Vector<T>& original ) {}
+    virtual void transpose( Driver::Imu::Vector<T>& original ) {}
 
 public:
     /// Virtual destructor

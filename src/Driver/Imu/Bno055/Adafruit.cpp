@@ -290,6 +290,8 @@ Adafruit::quat_t Adafruit::convert( Adafruit::raw_quat_t raw_quat )
     quat.x = scale * raw_quat.x;
     quat.y = scale * raw_quat.y;
     quat.z = scale * raw_quat.z;
+
+    return quat;
 }
 
 bool Adafruit::getSensorOffsets( uint8_t* calibData )

@@ -49,7 +49,6 @@ static Driver::Imu::Bno055::Adafruit::calibration_offsets_t my_sensors_calibrati
     589,    // mag_radius     
 };
 
-static unsigned long lastSampleTime_ = 0;
 
 extern uint32_t setLoopStacksize( void );
 uint32_t setLoopStacksize( void )
@@ -103,13 +102,14 @@ void setup( void )
     bno.setExtCrystalUse( true );
 
     CPL_SYSTEM_TRACE_MSG( SECT_, ("Calibration status values: 0=uncalibrated, 3=fully calibrated") );
-    Serial.println( "Time (msec), Gyro x, y, z,  Accel x, y, z,  Filtered Gravity x, y, z,  Action Aspect, Aspect,  Tilt Angle,  Calibration Sys, Gyro, Accel, Mag,  Sampling Time (msec)" );
+    //Serial.println( "Time (msec), Gyro x, y, z,  Accel x, y, z,  Filtered Gravity x, y, z,  Action Aspect, Aspect,  Tilt Angle,  Surface, Changed,  Calibration Sys, Gyro, Accel, Mag,  Sampling Time (msec)" );
+    Serial.println( "Time (msec), Gyro x, y, z,  Accel x, y, z,  Filtered Gravity x, y, z,  Aspect scaled, Surface scaled,  Aspect, Surface, Tilt Angle, Changed,  Sampling Time (msec)" );
 }
 
 
 
 
-static Imu::Cube::Gestures myGestures( 200, 10 );
+static Imu::Cube::Gestures myGestures( 200, 10, 2000 );
 static Imu::Cube::Gestures::Event_T gesturesResult;
 
 /**************************************************************************/
@@ -159,14 +159,15 @@ void loop( void )
     x =  gesturesResult.m_filteredGravity.x;
     y =  gesturesResult.m_filteredGravity.y;
     z =  gesturesResult.m_filteredGravity.z;
-    Serial.printf( "  %6d, %6d, %6d,  %d, %d,  %6d,", x, y, z, (int) (gesturesResult.m_currentState * 50 + 1000), (int) (gesturesResult.m_currentState), (int) (gesturesResult.m_tiltAngle * 100 + 0.5) );
+    Serial.printf( "  %6d, %6d, %6d,  %d, %d,  %d,%d,%6d,%d", x, y, z, (int) (gesturesResult.m_currentState * 50 + 1000), (int) (gesturesResult.m_currentTop * -50 - 1000), (int) (gesturesResult.m_currentState), (int)(gesturesResult.m_currentTop), (int) (gesturesResult.m_tiltAngle * 100 + 0.5), (int)changed );
 
 
     /* Display calibration status for each sensor. */
     static unsigned long duration = 0;
-    uint8_t system, gyro, accel, mag = 0;
-    bno.getCalibration( &system, &gyro, &accel, &mag );
-    Serial.printf( "  %d, %d, %d, %d,   %ld\r\n", (int) system, (int) gyro, (int) accel, (int) mag, duration );
+    //uint8_t system, gyro, accel, mag = 0;
+    //bno.getCalibration( &system, &gyro, &accel, &mag );
+    //Serial.printf( "  %d, %d, %d, %d,   %ld\r\n", (int) system, (int) gyro, (int) accel, (int) mag, duration );
+    Serial.printf( "  %ld\r\n", duration );
 
 
     // Enforce monotonic sampling 

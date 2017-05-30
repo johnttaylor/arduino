@@ -31,6 +31,8 @@ public:
         x = src.x;
         y = src.y;
         z = src.z;
+
+        return *this;
     }
 
 public:
@@ -60,6 +62,8 @@ public:
         x = src.x;
         y = src.y;
         z = src.z;
+
+        return *this;
     }
 
 public:
