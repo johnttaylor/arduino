@@ -8,9 +8,10 @@
 #include <Adafruit_Sensor.h>
 #include <utility/imumaths.h>
 #include "Driver/Imu/Bno055/Adafruit.h"
-#include "Imu/Cube/Gestures.h"
+#include "Imu/Motion/Cube/Tilt.h"
 #include <stdlib.h>
 
+#include "Driver/Imu/VectorFilter.h"
 
 /* This driver reads raw data from the BNO055
 
@@ -102,15 +103,14 @@ void setup( void )
     bno.setExtCrystalUse( true );
 
     CPL_SYSTEM_TRACE_MSG( SECT_, ("Calibration status values: 0=uncalibrated, 3=fully calibrated") );
-    //Serial.println( "Time (msec), Gyro x, y, z,  Accel x, y, z,  Filtered Gravity x, y, z,  Action Aspect, Aspect,  Tilt Angle,  Surface, Changed,  Calibration Sys, Gyro, Accel, Mag,  Sampling Time (msec)" );
-    Serial.println( "Time (msec), Gyro x, y, z,  Accel x, y, z,  Filtered Gravity x, y, z,  Aspect scaled, Surface scaled,  Aspect, Surface, Tilt Angle, Changed,  Sampling Time (msec)" );
+    Serial.println( "Time (msec), Gyro x, y, z,  Filtered Gravity x, y, z,  Aspect scaled, Surface scaled,  Aspect, Surface, Tilt Angle, Changed,  Sampling Time (msec)" );
 }
 
 
 
 
-static Imu::Cube::Gestures myGestures( 200, 10, 2000 );
-static Imu::Cube::Gestures::Event_T gesturesResult;
+static Imu::Motion::Cube::Tilt myGestures( 200, 10, 2000 );
+static Imu::Motion::Cube::Tilt::Event_T gesturesResult;
 
 /**************************************************************************/
 /*
@@ -133,33 +133,19 @@ void loop( void )
     // - VECTOR_LINEARACCEL   - m/s^2
     // - VECTOR_GRAVITY       - m/s^2
     Driver::Imu::Bno055::Adafruit::raw_vector_t vgyro  = bno.getRawVector( Driver::Imu::Bno055::Adafruit::VECTOR_GYROSCOPE );
-    Driver::Imu::Bno055::Adafruit::raw_vector_t vaccel = bno.getRawVector( Driver::Imu::Bno055::Adafruit::VECTOR_LINEARACCEL );
     Driver::Imu::Bno055::Adafruit::raw_vector_t vgrav  = bno.getRawVector( Driver::Imu::Bno055::Adafruit::VECTOR_GRAVITY );
-
+    
     /* Display the floating point data */
-    int32_t x = (vgyro.x * 100.0 + 0.5);
-    int32_t y = (vgyro.y * 100.0 + 0.5);
-    int32_t z = (vgyro.z * 100.0 + 0.5);
+    int32_t x = vgyro.x;
+    int32_t y = vgyro.y;
+    int32_t z = vgyro.z;
     Serial.printf( "%15ld, %6d, %6d, %6d,", timestamp, x, y, z );
-    //x =  accelFilterX.filterValue( vaccel.x );
-    //y =  accelFilterY.filterValue( vaccel.y );
-    //z =  accelFilterZ.filterValue( vaccel.z );
-    //Serial.printf( "  %6d, %6d, %6d,", x, y, z );
-
-    x = (vaccel.x * 100.0 + 0.5);
-    y = (vaccel.y * 100.0 + 0.5);
-    z = (vaccel.z * 100.0 + 0.5);
-    Serial.printf( "  %6d, %6d, %6d,", x, y, z );
-    //x = vgrav.x;
-    //y = vgrav.y;
-    //z = vgrav.z;
-    //Serial.printf( "  %6d, %6d, %6d,", x, y, z );
-
+    
     bool changed = myGestures.process( vgrav, gesturesResult );
     x =  gesturesResult.m_filteredGravity.x;
     y =  gesturesResult.m_filteredGravity.y;
     z =  gesturesResult.m_filteredGravity.z;
-    Serial.printf( "  %6d, %6d, %6d,  %d, %d,  %d,%d,%6d,%d", x, y, z, (int) (gesturesResult.m_currentState * 50 + 1000), (int) (gesturesResult.m_currentTop * -50 - 1000), (int) (gesturesResult.m_currentState), (int)(gesturesResult.m_currentTop), (int) (gesturesResult.m_tiltAngle * 100 + 0.5), (int)changed );
+    Serial.printf( "  %6d, %6d, %6d,  %d, %d,  %d,%d,%6d,%d,", x, y, z, (int) (gesturesResult.m_currentState * 50 + 1000), (int) (gesturesResult.m_currentTop * -50 - 1000), (int) (gesturesResult.m_currentState), (int)(gesturesResult.m_currentTop), (int) (gesturesResult.m_tiltAngle * 100 + 0.5), (int)changed );
 
 
     /* Display calibration status for each sensor. */

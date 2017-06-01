@@ -19,12 +19,13 @@
 
 
 namespace Imu {
+namespace Motion {
 namespace Cube {
 
 
-/** This detects certain gestures/motion from an IMU that is assumed to be
-    inside some cube/rectangle object.  In addition, the assumption is made that
-    the object is manipulated while resting a on horizontal surface.
+/** This concrete class detects tilt motions from an IMU that is assumed to be
+    inside some kind of cube/rectangle object.  In addition, the assumption is 
+    made that the object is manipulated while resting a on horizontal surface.
 
     Notes: 
         1. Gravity is measured as force the Cube/IMU is exerting AGAINST
@@ -34,22 +35,24 @@ namespace Cube {
         3. A change in reference surface requires that the 'cube' be stationary
            in the new orientation for at least 2 seconds.
         4. When the reference surface is 'eBOTTOM' the tilt Aspect States
-           for NORTH/EAST/SOUTH/WEST aren't 100% reliable.
+           for NORTH/EAST/SOUTH/WEST aren't 100% reliable with respect to which
+           direction the tilt is, i.e. the X/Y axises don't always get normalized
+           correctly when the cube is flipped upside.
  */
-class Gestures
+class Tilt
 {
 public:
     /// Possible aspect states.  
     enum AspectState_T
     {
-        eUNKNOWN = 0,       //!< Current state is unknown (e.g. in process of determining the initial state)
-        eTILT_NORTH,        //!< Unit is tilted to the north, i.e. negative gravity on the X-axis
+        eTILT_NORTH=0,      //!< Unit is tilted to the north, i.e. negative gravity on the X-axis
         eTILT_EAST,         //!< Unit is tilted to the east, i.e. positive gravity on the Y-axis
         eTILT_SOUTH,        //!< Unit is tilted to the south, i.e. positive gravity on the X-axis
         eTILT_WEST,         //!< Unit is tilted to the west, i.e. negative gravity on the Y-axis
         eFLIP_BOTTOM,       //!< Unit has flipped upside down, i.e. -9.80m/s^2 on the Z-axis
-        eHOMED              //!< Restored nominal aspect, i.e. +9.80m/s^2 on the Z-axis
-    };
+        eHOMED,             //!< Restored nominal aspect, i.e. +9.80m/s^2 on the Z-axis
+        eUNKNOWN            //!< Current state is unknown (e.g. in process of determining the initial state)
+        };
 
     /// Defines the sides of the 'cube' than contains the IMU
     enum Surface_T
@@ -128,7 +131,7 @@ protected:
 
 public:
     /// Constructor
-    Gestures( int16_t tiltThreshold, int16_t verticalThreshold, unsigned long surfaceSwitchDurationInMsec );
+    Tilt( int16_t tiltThreshold, int16_t verticalThreshold, unsigned long surfaceSwitchDurationInMsec );
 
 
 public:
@@ -162,5 +165,6 @@ protected:
 };
 
 };      // end Namespaces
+};
 };
 #endif  // end Header latch
