@@ -1,5 +1,5 @@
-#ifndef Imu_Cube_Gestures_h_
-#define Imu_Cube_Gestures_h_
+#ifndef Imu_Motion_Cube_Tilt_h_
+#define Imu_Motion_Cube_Tilt_h_
 /*-----------------------------------------------------------------------------
 * This file is part of the Arduino Project.  The Arduino Project is an
 * open source project with a BSD type of licensing agreement.  See the license
@@ -24,13 +24,13 @@ namespace Cube {
 
 
 /** This concrete class detects tilt motions from an IMU that is assumed to be
-    inside some kind of cube/rectangle object.  In addition, the assumption is 
+    inside some kind of cube/rectangle object.  In addition, the assumption is
     made that the object is manipulated while resting a on horizontal surface.
 
-    Notes: 
+    Notes:
         1. Gravity is measured as force the Cube/IMU is exerting AGAINST
            gravitational force of the earth.
-        2. Changes in Aspect State require the 'cube' be stationary in the new 
+        2. Changes in Aspect State require the 'cube' be stationary in the new
            state for 3/4 of seconds-ish
         3. A change in reference surface requires that the 'cube' be stationary
            in the new orientation for at least 2 seconds.
@@ -52,7 +52,7 @@ public:
         eFLIP_BOTTOM,       //!< Unit has flipped upside down, i.e. -9.80m/s^2 on the Z-axis
         eHOMED,             //!< Restored nominal aspect, i.e. +9.80m/s^2 on the Z-axis
         eUNKNOWN            //!< Current state is unknown (e.g. in process of determining the initial state)
-        };
+    };
 
     /// Defines the sides of the 'cube' than contains the IMU
     enum Surface_T
@@ -151,16 +151,16 @@ protected:
     bool updateState( AspectState_T newState, float newTiltAngle );
 
     /// Helper method
-    bool checkForTopSurface( int16_t                                 absAxisValue, 
-                             int16_t                                 axisValue, 
-                             Surface_T                               positiveSurface, 
-                             Surface_T                               negativeSurface, 
-                             Driver::Imu::TransposeAxises<int16_t>&  positiveTransponse, 
-                             Driver::Imu::TransposeAxises<int16_t>&  negativeTransponse, 
-                             SurfaceTracking_T&                      surfaceFlag, 
-                             unsigned long&                          startTime, 
-                             SurfaceTracking_T&                      otherSurfaceFlag1, 
-                             SurfaceTracking_T&                      otherSurfaceFlag2  );
+    bool checkForTopSurface( int16_t                                 absAxisValue,
+                             int16_t                                 axisValue,
+                             Surface_T                               positiveSurface,
+                             Surface_T                               negativeSurface,
+                             Driver::Imu::TransposeAxises<int16_t>&  positiveTransponse,
+                             Driver::Imu::TransposeAxises<int16_t>&  negativeTransponse,
+                             SurfaceTracking_T&                      surfaceFlag,
+                             unsigned long&                          startTime,
+                             SurfaceTracking_T&                      otherSurfaceFlag1,
+                             SurfaceTracking_T&                      otherSurfaceFlag2 );
 
 };
 

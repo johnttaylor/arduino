@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define SECT_   "imu::motion::cube::gestures"
+#define SECT_   "imu::motion::cube::tilt"
 //#define SECT_   "sketch"
 
 #define GRAVITY_CONSTANT        980.0

@@ -17,6 +17,11 @@ namespace Driver {
 namespace Imu {
 
 /** This template class contains the vector results from an IMU.
+    For methods that use array type of notation the following mapping
+    applies:
+        [0] = X-Axis
+        [1] = Y-Axis
+        [2] = Z-Axis
  */
 template<class T>
 class Vector
@@ -36,6 +41,61 @@ public:
     }
 
 public:
+    /// Access by index (read operation, e.g. a = myvector[0])
+    T operator [](int n) const
+    {
+        if ( n == 0 )
+        {
+            return x;
+        }
+        else if ( n == 1 )
+        {
+            return y;
+        }
+        else
+        {
+            return z;
+        }
+    }
+
+    /// Access by index (write operation, e.g. myvector[0] = 12)
+    T& operator [](int n)
+    {
+        if ( n == 0 )
+        {
+            return x;
+        }
+        else if ( n == 1 )
+        {
+            return y;
+        }
+        else
+        {
+            return z;
+        }
+    }
+    
+    /// Access by index  (read)
+    T operator ()(int n) const
+    {
+        return this[n];
+    }
+
+    /// Access by index  (write)
+    T& operator ()(int n) 
+    {
+        return this[n];
+    }
+
+    /// Copies the content of the Vector into the provided array
+    void toArray( T dst[3] ) const
+    {
+        dst[0] = x;
+        dst[1] = y;
+        dst[2] = z;
+    }
+
+public:
     /// X-Axis
     T   x;
 
@@ -44,9 +104,16 @@ public:
 
     /// Z-Axis
     T   z;
+
 };
 
 /** This template class contains the quaternion results from an IMU.
+    For methods that use array type of notation the following mapping
+    applies:
+        [0] = W
+        [1] = X-Axis
+        [2] = Y-Axis
+        [3] = Z-Axis
  */
 template<class T>
 class Quat
@@ -64,6 +131,70 @@ public:
         z = src.z;
 
         return *this;
+    }
+
+public:
+    /// Access by index (read operation, e.g. a = myquat[0])
+    T operator [](int n) const
+    {
+        if ( n == 0 )
+        {
+            return w;
+        }
+        else if ( n == 1 )
+        {
+            return x;
+        }
+        else if ( n == 2 )
+        {
+            return y;
+        }
+        else 
+        {
+            return z;
+        }
+    }
+
+    /// Access by index (write operation, e.g. myquat[0] = 12)
+    T& operator [](int n) 
+    {
+        if ( n == 0 )
+        {
+            return w;
+        }
+        else if ( n == 1 )
+        {
+            return x;
+        }
+        else if ( n == 2 )
+        {
+            return y;
+        }
+        else 
+        {
+            return z;
+        }
+    }
+
+    /// Access by index (read)
+    T operator ()(int n) const
+    {
+        return this[n];
+    }
+
+    /// Access by index (write)
+    T& operator ()(int n) 
+    {
+        return this[n];
+    }
+
+    /// Copies the content of the Quat into the provided array
+    void toArray( T dst[4] ) const
+    {
+        dst[0] = w;
+        dst[1] = x;
+        dst[2] = y;
+        dst[3] = z;
     }
 
 public:

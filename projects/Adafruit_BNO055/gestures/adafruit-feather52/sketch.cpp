@@ -9,9 +9,9 @@
 #include <utility/imumaths.h>
 #include "Driver/Imu/Bno055/Adafruit.h"
 #include "Imu/Motion/Cube/Tilt.h"
+#include "Imu/Motion/Cube/Spinner.h"
 #include <stdlib.h>
 
-#include "Driver/Imu/VectorFilter.h"
 
 /* This driver reads raw data from the BNO055
 
@@ -103,7 +103,7 @@ void setup( void )
     bno.setExtCrystalUse( true );
 
     CPL_SYSTEM_TRACE_MSG( SECT_, ("Calibration status values: 0=uncalibrated, 3=fully calibrated") );
-    Serial.println( "Time (msec), Gyro x, y, z,  Filtered Gravity x, y, z,  Aspect scaled, Surface scaled,  Aspect, Surface, Tilt Angle, Changed,  Sampling Time (msec)" );
+    Serial.println( "Time (msec), Gyro x, y, z,  Spinner,  Filtered Gravity x, y, z,  Aspect scaled, Surface scaled,  Aspect, Surface, Tilt Angle, Changed,  Sampling Time (msec)" );
 }
 
 
@@ -111,6 +111,7 @@ void setup( void )
 
 static Imu::Motion::Cube::Tilt myGestures( 200, 10, 2000 );
 static Imu::Motion::Cube::Tilt::Event_T gesturesResult;
+static Imu::Motion::Cube::Spinner mySpinner( 2500, 5000, 10000 );
 
 /**************************************************************************/
 /*
@@ -136,11 +137,12 @@ void loop( void )
     Driver::Imu::Bno055::Adafruit::raw_vector_t vgrav  = bno.getRawVector( Driver::Imu::Bno055::Adafruit::VECTOR_GRAVITY );
     
     /* Display the floating point data */
+    int32_t spin = mySpinner.process( vgyro );
     int32_t x = vgyro.x;
     int32_t y = vgyro.y;
     int32_t z = vgyro.z;
-    Serial.printf( "%15ld, %6d, %6d, %6d,", timestamp, x, y, z );
-    
+    Serial.printf( "%15ld, %6d, %6d, %6d,  %6d,", timestamp, x, y, z, spin );
+
     bool changed = myGestures.process( vgrav, gesturesResult );
     x =  gesturesResult.m_filteredGravity.x;
     y =  gesturesResult.m_filteredGravity.y;
