@@ -11,6 +11,7 @@
 #include "Imu/Motion/Cube/Tilt.h"
 #include "Imu/Motion/Cube/Spinner.h"
 #include <stdlib.h>
+#include "debug.h"
 
 
 /* This driver reads raw data from the BNO055
@@ -27,6 +28,7 @@
    2015/MAR/03  - First release (KTOWN)
 */
 /*---------------------------------------------------------------------------*/
+
 
 
 // Cpl::System::Trace section identifier
@@ -51,11 +53,11 @@ static Driver::Imu::Bno055::Adafruit::calibration_offsets_t my_sensors_calibrati
 };
 
 
-extern uint32_t setLoopStacksize( void );
-uint32_t setLoopStacksize( void )
-{
-    return 512 * 6;
-}
+//extern uint32_t setLoopStacksize( void );
+//uint32_t setLoopStacksize( void )
+//{
+//    return 512 * 6;
+//}
 
 
 /**************************************************************************/
@@ -101,6 +103,8 @@ void setup( void )
     CPL_SYSTEM_TRACE_MSG( SECT_, ("Current Temperature: %d 'C\r\n", temp) );
 
     bno.setExtCrystalUse( true );
+
+      dbgMemInfo();
 
     CPL_SYSTEM_TRACE_MSG( SECT_, ("Calibration status values: 0=uncalibrated, 3=fully calibrated") );
     Serial.println( "Time (msec), Gyro x, y, z,  Spinner,  Filtered Gravity x, y, z,  Aspect scaled, Surface scaled,  Aspect, Surface, Tilt Angle, Changed,  Sampling Time (msec)" );

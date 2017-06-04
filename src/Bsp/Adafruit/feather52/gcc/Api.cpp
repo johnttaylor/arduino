@@ -15,7 +15,7 @@
 #include <ios>
 
 static Cpl::Io::Serial::Adafruit::Nrf5::InputOutput fd_( Serial );    // Note: 'Serial' is the Arduino primary uart object!
-extern Cpl::Io::Output& Bsp_Serial(void);
+extern Cpl::Io::InputOutput& Bsp_Serial(void);
 
 
 
@@ -34,7 +34,7 @@ void Bsp_beginArduinoSerialObject( unsigned long baudrate, uint16_t frameConfig 
         ;
 }
 
-Cpl::Io::Output& Bsp_Serial( void )
+Cpl::Io::InputOutput& Bsp_Serial( void )
 {
     return fd_;
 }
@@ -60,3 +60,12 @@ std::ios_base::Init::~Init()
 {
 }
 
+void *operator new(size_t size, std::nothrow_t const&) {
+  return rtos_malloc(size);
+}
+
+void *operator new[](size_t size, std::nothrow_t const&) {
+  return rtos_malloc(size);
+}
+
+const std::nothrow_t std::nothrow;

@@ -49,7 +49,7 @@ void Bsp_beginArduinoSerialObject( unsigned long baudrate, uint16_t frameConfig 
     header files work).  This means that the application must cut-n-paste the following
     extern statement to get access to this method.
 
-    extern Cpl::Io::Output& Bsp_Serial(void);
+    extern Cpl::Io::InputOutput& Bsp_Serial(void);
 */
 
 /* Serial Object's Frame Configuration Options.  Note: These
