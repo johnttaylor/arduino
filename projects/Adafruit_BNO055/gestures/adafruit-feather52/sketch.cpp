@@ -111,7 +111,8 @@ void setup( void )
 
 static Imu::Motion::Cube::Tilt myGestures( 200, 10, 2000 );
 static Imu::Motion::Cube::Tilt::Event_T gesturesResult;
-static Imu::Motion::Cube::Spinner mySpinner( 2500, 5000, 10000 );
+static Imu::Motion::Cube::Spinner mySpinner( 0.17F, 2500, 5000, 10000 );
+
 
 /**************************************************************************/
 /*

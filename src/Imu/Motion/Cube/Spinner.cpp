@@ -22,7 +22,8 @@ using namespace Imu::Motion::Cube;
 
 
 ///////////////////////////////////////////////////////////////////
-Spinner::Spinner( int32_t slowWeight,
+Spinner::Spinner( float   filterConstant,
+                  int32_t slowWeight,
                   int32_t normalWeight,
                   int32_t fastWeight,
                   int16_t minimumChangeThreshold,
@@ -35,6 +36,7 @@ Spinner::Spinner( int32_t slowWeight,
     , m_normalMaxThreshold( normalMaxThreshold )
     , m_normalWeight( normalWeight )
     , m_fastWeight( fastWeight )
+    , m_gyroFilter( filterConstant )
 {
 }
 
@@ -42,11 +44,14 @@ Spinner::Spinner( int32_t slowWeight,
 ///////////////////////////////////////////////////////////////////
 int32_t Spinner::process( Driver::Imu::Vector<int16_t>& gyroVector, unsigned rotationalAxis )
 {
-    int32_t result  = 0;
-    int16_t axis    = gyroVector[rotationalAxis];
+
+    // Filter the gyro data
+    float   filteredAxis = m_gyroFilter.filter( gyroVector[rotationalAxis] );
+    int16_t axis         = (int16_t) (filteredAxis + 0.5F);
     int16_t absAxis = abs( axis );
 
     // Is there sufficient rotation to consider the spinner spinning
+    int32_t result  = 0;
     if ( absAxis > m_minimumChangeThreshold )
     {
         // Determine the strength of the rotation

@@ -19,9 +19,9 @@
 namespace Driver {
 namespace Imu {
 
-/** This concrete class provides a basic debounce filter algorithm.  In addition it
-    supports the concept of stability, i.e. the debounced value has not changed for
-    at least N samples.
+/** This concrete class provides a basic debounce filter algorithm across all
+    axises of the Vector.  In addition it supports the concept of stability, 
+    i.e. the debounced value has not changed for at least N samples.
  */
 template <class T>
 class VectorDebounceWithStability : public VectorFilter<T>

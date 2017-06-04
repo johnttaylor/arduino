@@ -13,6 +13,7 @@
 /** @file */
 
 #include "Driver/Imu/Vector.h"
+#include "Driver/Imu/LowPassFilter.h"
 #include <stdint.h>
 
 
@@ -49,13 +50,20 @@ protected:
     /// Weight/amount of change associated with the 'fast strength'        
     int32_t m_fastWeight;
 
+    /// Filter for the raw gyro data
+    Driver::Imu::LowPassFilter<int16_t,float>   m_gyroFilter;
+
 
 public:
-    /** Constructor. The 'thresholds' are in terms of raw gyroscope readings
-        from the IMU. The 'weights' are the +/- amounts the Spinner instance
-        returns for each corresponding 'strength' when the IMU is rotating.
+    /** Constructor. The 'filterConstant' is the alpha/smoothing-factor to
+        be used for Spinner's internal low-pass filter applied to the gyroscope
+        data. The constant must be between 0 and 1. The 'thresholds' are in 
+        terms of raw gyroscope readings from the IMU. The 'weights' are the +/-
+        amounts the Spinner instance returns for each corresponding 'strength' 
+        when the IMU is rotating.
      */
-    Spinner( int32_t slowWeight             = 1,
+    Spinner( float   filterConstant         = 0.2,
+             int32_t slowWeight             = 1,
              int32_t normalWeight           = 5,
              int32_t fastWeight             = 50,
              int16_t minimumChangeThreshold = 30,

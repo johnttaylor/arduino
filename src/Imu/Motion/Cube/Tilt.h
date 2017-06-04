@@ -23,9 +23,10 @@ namespace Motion {
 namespace Cube {
 
 
-/** This concrete class detects tilt motions from an IMU that is assumed to be
-    inside some kind of cube/rectangle object.  In addition, the assumption is
-    made that the object is manipulated while resting a on horizontal surface.
+/** This concrete class detects tilt-n-hold movements from an IMU that 
+    is assumed to be inside some kind of cube/rectangle object.  In addition, 
+    the assumption is made that the object is manipulated while resting a on 
+    horizontal surface.
 
     Notes:
         1. Gravity is measured as force the Cube/IMU is exerting AGAINST
