@@ -38,7 +38,7 @@
 #define BNO055_SAMPLERATE_DELAY_MS      50
 
 static Driver::Imu::Bno055::Adafruit bno = Driver::Imu::Bno055::Adafruit();
-static Driver::Imu::Bno055::Adafruit::calibration_offsets_t my_sensors_calibration_constants ={
+static Driver::Imu::Bno055::Adafruit::calibration_offsets_t imu_calibration_constants ={
     65517,  // accel_offset_x 
     30,     // accel_offset_y 
     17,     // accel_offset_x 
@@ -96,7 +96,7 @@ void setup( void )
     delay( 1000 );
 
     CPL_SYSTEM_TRACE_MSG( SECT_, ("Setting calibration offsets....") );
-    bno.setSensorOffsets( my_sensors_calibration_constants );
+    bno.setSensorOffsets( imu_calibration_constants );
 
     /* Display the current temperature */
     int8_t temp = bno.getTemp();
