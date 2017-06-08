@@ -12,6 +12,30 @@
 *----------------------------------------------------------------------------*/
 /** @file */
 
+#include "colony_config.h"
+
+
+/** This constant defines the minimum possible intensity value for the
+    system.
+ */
+#ifndef OPTION_GOLEM_INTENSITY_RAMP_MIN_INTENSITY
+#define OPTION_GOLEM_INTENSITY_RAMP_MIN_INTENSITY       0
+#endif
+
+/** This constant defines the maximum possible intensity value for the
+    system.
+ */
+#ifndef OPTION_GOLEM_INTENSITY_RAMP_MAX_INTENSITY
+#define OPTION_GOLEM_INTENSITY_RAMP_MAX_INTENSITY       255
+#endif
+
+/** This constant defines the 'mid-point' intensity value for the
+    system.
+ */
+#ifndef OPTION_GOLEM_INTENSITY_RAMP_MID_INTENSITY
+#define OPTION_GOLEM_INTENSITY_RAMP_MID_INTENSITY       127
+#endif
+
 
 /// Namespaces
 namespace Golem {

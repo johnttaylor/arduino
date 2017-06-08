@@ -12,6 +12,18 @@
 *----------------------------------------------------------------------------*/
 /** @file */
 
+#include colony_config.h"
+#include <stdint.h>
+
+/// Defines the minimum allowed Bit time for the Application
+#ifndef OPTION_GOLEM_FRAME_MIN_BIT_TIME 
+#define OPTION_GOLEM_FRAME_MIN_BIT_TIME     400
+#endif
+
+/// Defines the maximum allowed Bit time for the Application
+#ifndef OPTION_GOLEM_FRAME_MAX_BIT_TIME 
+#define OPTION_GOLEM_FRAME_MAX_BIT_TIME     2000
+#endif
 
 /// Namespaces
 namespace Golem {
@@ -32,14 +44,6 @@ public:
         eSTOP_BIT
     } Bit_T;
 
-    /// Stop bit options
-    typedef enum
-    {
-        eZERO,
-        eONE,
-        eTWO
-    } StopBits_T;
-
     /// Parity bit options
     typedef enum
     {
@@ -51,10 +55,22 @@ public:
 
 public:
     /// Minimum data bit size for a Frame
-    const uint8_t MINIMUM_DATA_BITS = 4;
+    static const uint8_t MINIMUM_DATA_BITS = 4;
 
     /// Maximum data bit size for a Frame
-    const uint8_t MAXIMUM_DATA_BITS = 16;
+    static const uint8_t MAXIMUM_DATA_BITS = 16;
+
+    /// Minimum stop bit size for a Frame
+    static const uint8_t MINIMUM_STOP_BITS = 0;
+
+    /// Maximum stop bit size for a Frame
+    static const uint8_t MAXIMUM_STOP_BITS = 2;
+
+    /// Minimum bit time for a Frame
+    static const uint8_t MINIMUM_BIT_TIME  = OPTION_GOLEM_FRAME_MIN_BIT_TIME;
+
+    /// Maximum bit time for a Frame
+    static const uint8_t MAXIMUM_BIT_TIME  = OPTION_GOLEM_FRAME_MAX_BIT_TIME;
 
 
 public:
@@ -62,10 +78,15 @@ public:
     virtual uint8_t getNumberOfDataBits( void ) const = 0;
 
     /// Returns the number of stop bits in the frame
-    virtual StopBits_T getStopBits( void ) const = 0;
+    virtual uint8_t getStopBits( void ) const = 0;
 
     /// Returns the parity bit type for the frame
     virtual ParityBit_T getParity( void ) const = 0;
+
+    /** Returns the 'baud rate' - well actual it returns the duration, 
+        in milliseconds, of a single bit.
+     */
+    virtual uint32_t getBitTime( void ) const = 0;
 };
 
 

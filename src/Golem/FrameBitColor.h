@@ -48,9 +48,7 @@ public:
  
 public:
     /** Returns the color for the specified bit.  The method assumes that
-        a eSTART_BIT bit is the start of a new bit.  In addition, start and 
-        stop bit must specified their value (so that 'invert' policy can be 
-        applied).
+        a eSTART_BIT bit is the start of a new 'word'.  
      */
     virtual Color_t getColor( Frame::Bit_T bitType, bool bitValue ) = 0;
 
