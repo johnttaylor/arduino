@@ -16,7 +16,7 @@
 #include "Cpl/Container/RingBuffer.h"
 #include "Cpl/System/Api.h"
 #include "Cpl/System/Trace.h"
-#include "Cpl/System/ElaspedTime.h"
+#include "Cpl/System/ElapsedTime.h"
 #include "Driver/Imu/Bno055/Adafruit.h"
 #include "Imu/Motion/Cube/Spinner.h"
 #include <stdlib.h>
@@ -90,7 +90,7 @@ public:
     {
         for ( ;;)
         {
-            unsigned long timestamp = Cpl::System::ElaspedTime::milliseconds();
+            unsigned long timestamp = Cpl::System::ElapsedTime::milliseconds();
             Bsp_Api_toggle_debug1();
 
             // Sample the IMU
@@ -109,7 +109,7 @@ public:
 
             // Enforce monotonic sampling 
             static unsigned long duration = 0;
-            duration = Cpl::System::ElaspedTime::deltaMilliseconds( timestamp );
+            duration = Cpl::System::ElapsedTime::deltaMilliseconds( timestamp );
             if ( duration < OPTION_GESTURES_SAMPLING_DELAY_MSEC )
             {
                 Cpl::System::Api::sleep( OPTION_GESTURES_SAMPLING_DELAY_MSEC - duration );

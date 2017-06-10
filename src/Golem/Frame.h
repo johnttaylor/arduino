@@ -12,7 +12,7 @@
 *----------------------------------------------------------------------------*/
 /** @file */
 
-#include colony_config.h"
+#include "colony_config.h"
 #include <stdint.h>
 
 /// Defines the minimum allowed Bit time for the Application
@@ -67,10 +67,10 @@ public:
     static const uint8_t MAXIMUM_STOP_BITS = 2;
 
     /// Minimum bit time for a Frame
-    static const uint8_t MINIMUM_BIT_TIME  = OPTION_GOLEM_FRAME_MIN_BIT_TIME;
+    static const uint32_t MINIMUM_BIT_TIME = OPTION_GOLEM_FRAME_MIN_BIT_TIME;
 
     /// Maximum bit time for a Frame
-    static const uint8_t MAXIMUM_BIT_TIME  = OPTION_GOLEM_FRAME_MAX_BIT_TIME;
+    static const uint32_t MAXIMUM_BIT_TIME = OPTION_GOLEM_FRAME_MAX_BIT_TIME;
 
 
 public:
@@ -87,6 +87,10 @@ public:
         in milliseconds, of a single bit.
      */
     virtual uint32_t getBitTime( void ) const = 0;
+
+public:
+    /// Virtual destructor
+    virtual ~Frame(){}
 };
 
 

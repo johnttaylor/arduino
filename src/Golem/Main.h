@@ -114,10 +114,22 @@ public:
         zero as the policy argument.  This method is thread safe, i.e. can
         be called by other thread (than the thread that calls the process()
         method).
+        
+        Memory/Scope of Policies
+        ------------------------
+        The polices are REQUIRED to be created on the HEAP using new().  When 
+        Golem updates an existing policy - it will call delete() on the old
+        polices.  The Application creates Policies and Golem destroys Policies.
 
-        FIXME: This is broken -->who creates new policies and mostly IMPORTANTLY who and when do the 'old' policies get DELETED?!?!?!
+        The method returns true if the new policies have been accepted. Accepted
+        does NOT mean the new policy have been applied.  Golem waits for the
+        "opportune moment" to apply the new policies.  If setPolicies() is
+        called twice BEFORE the policies from the 1st call have been applied,
+        the method return false.  When false is returned - the application is 
+        responsible for cleaning-up/destroying the 'new' policies instances 
+        that it tried to change (since Golem did not accept them).
      */
-    void setPolicies( Frame*            framePolicyP,
+    bool setPolicies( Frame*            framePolicyP,
                       DataStream*       streamPolicyP,
                       FrameBitColor*    colorPolicyP,
                       IntensityRamp*    rampPolicyP,

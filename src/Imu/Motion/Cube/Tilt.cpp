@@ -11,7 +11,7 @@
 /** @file */
 
 #include "Tilt.h"
-#include "Cpl/System/ElaspedTime.h"
+#include "Cpl/System/ElapsedTime.h"
 #include "Cpl/System/Trace.h"
 #include <stdlib.h>
 #include <math.h>
@@ -288,14 +288,14 @@ bool Tilt::checkForTopSurface( int16_t                                 absAxisVa
         // Start my time on the transition to vertical
         if ( surfaceFlag == eSTOPPED )
         {
-            startTime   = Cpl::System::ElaspedTime::milliseconds();
+            startTime   = Cpl::System::ElapsedTime::milliseconds();
             surfaceFlag = axisValue < 0 ? eTRACKING_NEGATIVE : eTRACKING_POSITIVE;
             CPL_SYSTEM_TRACE_MSG( SECT_, ("Starting TopSurface timer. abs=%d, ax=%d, flag=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, surfaceFlag, positiveSurface, negativeSurface) );
         }
 
 
         // Has the timer expired?
-        if ( surfaceFlag != eSTOPPED && Cpl::System::ElaspedTime::expiredMilliseconds( startTime, m_surfaceSwitchDuration ) )
+        if ( surfaceFlag != eSTOPPED && Cpl::System::ElapsedTime::expiredMilliseconds( startTime, m_surfaceSwitchDuration ) )
         {
             CPL_SYSTEM_TRACE_MSG( SECT_, ("TopSurface timer Expired. abs=%d, ax=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, positiveSurface, negativeSurface) );
 

@@ -1,3 +1,5 @@
+# My application
+src/Golem
 
 # Arduino specific support for CPL
 src/Bsp/Adafruit/feather52/gcc

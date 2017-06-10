@@ -1,7 +1,7 @@
 #include "Bsp/Api.h"
 #include "Cpl/System/Api.h"
 #include "Cpl/System/Trace.h"
-#include "Cpl/System/ElaspedTime.h"
+#include "Cpl/System/ElapsedTime.h"
 #include "Cpl/System/FreeRTOS/Thread.h"
 #include "Arduino.h"
 #include <Wire.h>
@@ -129,7 +129,7 @@ void loop( void )
     // Make the current/main thread a CPL Thread
     Cpl::System::FreeRTOS::Thread::makeNativeMainThreadACplThread();
 
-    unsigned long timestamp = Cpl::System::ElaspedTime::milliseconds();
+    unsigned long timestamp = Cpl::System::ElapsedTime::milliseconds();
 
     // Possible vector values can be:
     // - VECTOR_ACCELEROMETER - m/s^2
@@ -164,7 +164,7 @@ void loop( void )
 
 
     // Enforce monotonic sampling 
-    duration = Cpl::System::ElaspedTime::deltaMilliseconds( timestamp );
+    duration = Cpl::System::ElapsedTime::deltaMilliseconds( timestamp );
     if ( duration < BNO055_SAMPLERATE_DELAY_MS )
     {
         Cpl::System::Api::sleep( BNO055_SAMPLERATE_DELAY_MS - duration );
