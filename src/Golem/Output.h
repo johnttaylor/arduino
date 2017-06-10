@@ -40,7 +40,7 @@ public:
     /** Outputs the specified bit color.  The method assumes that a eSTART_BIT 
         bit indicates the start of a new 'word'.
      */
-    virtual void write(FrameBitColor::Color_t bitColor, uint8_t colorIntensity, Frame::Bit_T bitType ) = 0;
+    virtual void write(FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType ) = 0;
 
     /// Force all of LED(s) to the off state (i.e. out of data)
     virtual void stop(void) = 0;

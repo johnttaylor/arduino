@@ -23,7 +23,7 @@ namespace Golem {
     debugging of Golem application without having a external 'LED stripped'
     wired to the board.
  */
-class OutputDebug
+class OutputDebug: public Output
 {
 public:
     /// Constructor
@@ -32,7 +32,7 @@ public:
     
 public:
     /// See Golem::Output
-    void write(FrameBitColor::Color_t bitColor, uint8_t colorIntensity, Frame::Bit_T bitType );
+    void write(FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType );
 
     /// See Golem::Output
     void stop(void);

@@ -1,5 +1,7 @@
 # My application
 src/Golem
+src/Golem/_minimalPolicies
+src/Golem/_neoPixel
 
 # Arduino specific support for CPL
 src/Bsp/Adafruit/feather52/gcc
@@ -35,6 +37,7 @@ src/Cpl/TShell/Dac/Cmd/Arduino
 # Sensor libraries
 $ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_BNO055
 $ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_Unified_Sensor
+$ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_NeoPixel
 
 # Arduino Core library for the Nordic nrf52 Feather52
 $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/variants/feather52

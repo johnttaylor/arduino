@@ -65,6 +65,7 @@ build_options         = ''
 base_release.cflags   = ' -Wall -Werror -DF_CPU=64000000 -DARDUINO=10802 ' + build_options
 base_release.asmflags = ' -Wall -DF_CPU=64000000 -DARDUINO=10802'
 base_release.inc      = ' -I' + ARDUINO_SKETCH_FOLDER + r'\libraries\Adafruit_BNO055' + \
+                        ' -I' + ARDUINO_SKETCH_FOLDER + r'\libraries\Adafruit_NeoPixel' + \
                         ' -I' + ARDUINO_SKETCH_FOLDER + r'\libraries\Adafruit_Unified_Sensor'
 
 

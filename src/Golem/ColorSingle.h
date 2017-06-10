@@ -1,5 +1,5 @@
-#ifndef Golem_StreamAddress_h_
-#define Golem_StreamAddress_h_
+#ifndef Golem_ColorSingle_h_
+#define Golem_ColorSingle_h_
 /*-----------------------------------------------------------------------------
 * This file is part of the Arduino Project.  The Arduino Project is an
 * open source project with a BSD type of licensing agreement.  See the license
@@ -12,38 +12,33 @@
 *----------------------------------------------------------------------------*/
 /** @file */
 
-#include "Golem/DataStream.h"
-#include <stdint.h>
-
+#include "Golem/FrameBitColor.h"
 
 /// Namespaces
 namespace Golem {
 
 
-/** This concrete class implements the Golem::DataStream by creating an
-    finite data stream from a region of memory specified by a
-    start and stop addresses.
+/** This concrete class implements the Golem::FrameBitColor using a single 
+    color.  A '1' bit is the color and '0' bit is off.
  */
-class StreamAddress : public DataStream
+class ColorSingle : public FrameBitColor
 {
 protected:
-    ///
-    uint8_t* m_endP;
-    ///
-    uint8_t  m_curP;
-    ///
-    uint8_t  m_bitPos;
+    /// Color for an '1' bit
+    Color_T m_onColor;
+
+    /// Color for an '0' bit
+    Color_T m_offColor;
 
 public:
-    /// Constructor
-    StreamAddress( void* startAddress, void* endAddress );
+    /** Constructor. The 'offColor' argument is intended to allow the
+        application to 'invert' the On/Off logic.
+     */
+    ColorSingle( Color_T onColor, Color_T offColor=eOFF );
 
 public:
-    /// See Golem::DataStream
-    bool bitsAreAvailable( void ) const;
-
-    /// See Golem::DataStream
-    bool getNextBit( void );
+    /// See Golem::FrameBitColor
+    Color_T getColor( Frame::Bit_T bitType, bool bitValue );
 };
 
 

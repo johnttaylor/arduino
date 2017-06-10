@@ -17,11 +17,11 @@ using namespace Golem;
 
 
 //////////////////////////////////////
-FrameSimple::FrameSimple( uin32_t bitTimeInMsec, uint8_t numDataBits, uint8_t stopBits, ParityBit_T parity )
-    : m_bitTime( bitTimeInMsec > MAXIMUM_BIT_TIME: MAXIMUM_BIT_TIME: numDataBits < MINIMUM_BIT_TIME? MINIMUM_BIT_TIME: bitTimeInMsec )
+FrameSimple::FrameSimple( uint32_t bitTimeInMsec, uint8_t numDataBits, uint8_t stopBits, ParityBit_T parity )
+    : m_bitTime( bitTimeInMsec > MAXIMUM_BIT_TIME? MAXIMUM_BIT_TIME: bitTimeInMsec < MINIMUM_BIT_TIME? MINIMUM_BIT_TIME: bitTimeInMsec )
     , m_stopBits( stopBits > MAXIMUM_STOP_BITS? MAXIMUM_STOP_BITS: stopBits )
-    , m_parityBit( parity )
-    , m_numDataBits( numDataBits > MAXIMUM_DATA_BITS: MAXIMUM_DATA_BITS: numDataBits < MINIMUM_DATA_BITS? MINIMUM_DATA_BITS: numDataBits )
+    , m_parity( parity )
+    , m_numDataBits( numDataBits > MAXIMUM_DATA_BITS? MAXIMUM_DATA_BITS: numDataBits < MINIMUM_DATA_BITS? MINIMUM_DATA_BITS: numDataBits )
 {
 }
 
@@ -40,10 +40,10 @@ uint8_t FrameSimple::getStopBits( void ) const
 
 Frame::ParityBit_T FrameSimple::getParity( void ) const
 {
-    return m_parityBit;
+    return m_parity;
 }
 
-uint32_t Frame::getBitTime( void ) const
+uint32_t FrameSimple::getBitTime( void ) const
 {
     return m_bitTime;
 }

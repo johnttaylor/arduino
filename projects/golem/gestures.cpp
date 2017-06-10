@@ -91,7 +91,7 @@ public:
         for ( ;;)
         {
             unsigned long timestamp = Cpl::System::ElapsedTime::milliseconds();
-            Bsp_Api_toggle_debug1();
+            //Bsp_Api_toggle_debug2();
 
             // Sample the IMU
             Driver::Imu::Bno055::Adafruit::raw_vector_t vgyro  = m_imu.getRawVector( Driver::Imu::Bno055::Adafruit::VECTOR_GYROSCOPE );
@@ -141,7 +141,7 @@ static SubSystem mySubSystem;
 
 void setupGestures( void )
 {
-    // Initailize the IMU
+    // Initialize the IMU
     mySubSystem.start();
 
     // Create the thread to run the gesture sub-system in

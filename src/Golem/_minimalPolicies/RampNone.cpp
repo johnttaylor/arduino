@@ -9,23 +9,17 @@
 * Redistributions of the source code must retain the above copyright notice.
 *----------------------------------------------------------------------------*/
 
-#include "ColorSingle.h"
+#include "Golem/RampNone.h"
 
 /// Namespaces
 using namespace Golem;
 
 
-//////////////////////////////////
-ColorSingle::ColorSingle( Color_T onColor, Color_T offColor )
-    : m_onColor( onColor )
-    , m_offColor( offColor )
+/////////////////////////////////
+RampNone::RampNone(){}
+
+/////////////////////////////////
+uint8_t RampNone::getIntensity( uint32_t elapsedBitTimeMsec, uint32_t bitSizeInMsec )
 {
+    return OPTION_GOLEM_INTENSITY_RAMP_MAX_INTENSITY;
 }
-
-
-//////////////////////////////////
-FrameBitColor::Color_t getColor( Frame::Bit_T bitType, bool bitValue, bool invert )
-{
-    return bitValue? m_onColor: m_offColor;
-}
-

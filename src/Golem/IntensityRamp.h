@@ -13,6 +13,7 @@
 /** @file */
 
 #include "colony_config.h"
+#include <stdint.h>
 
 
 /** This constant defines the minimum possible intensity value for the

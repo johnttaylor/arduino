@@ -9,15 +9,17 @@
 * Redistributions of the source code must retain the above copyright notice.
 *----------------------------------------------------------------------------*/
 
-#include "StreamAddress.h"
+#include "Golem/StreamAddress.h"
+#include "Cpl/System/Trace.h"
 
 using namespace Golem;
 
+#define SECT_   "streamAddress"
 
 /////////////////////////////////////////
-StreamAddress::StreamAddress( void* startAddress, void* endAddress )
-    : m_endP( (uint8_t*) endAddress )
-    , m_curP( (uint8_t*) startAddress )
+StreamAddress::StreamAddress( const void* startAddress, const void* endAddress )
+    : m_endP( (const uint8_t*) endAddress )
+    , m_curP( (const uint8_t*) startAddress )
     , m_bitPos( 0 )
 {
 }
@@ -41,6 +43,7 @@ bool StreamAddress::getNextBit( void )
         {
             m_bitPos = 0;
             m_curP++;
+            CPL_SYSTEM_TRACE_MSG( SECT_, ("new byte=%X", *m_curP) );
         }
     }
     

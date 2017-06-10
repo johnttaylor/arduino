@@ -9,7 +9,8 @@
 * Redistributions of the source code must retain the above copyright notice.
 *----------------------------------------------------------------------------*/
 
-#include "OutputDebug.h"
+#include "Golem/OutputDebug.h"
+#include "Golem/IntensityRamp.h"
 #include "Bsp/Api.h"
 
 
@@ -22,19 +23,19 @@ OutputDebug::OutputDebug() {}
 
 
 /////////////////////////////////////
-void OutputDebug::write( FrameBitColor::Color_t bitColor, uint8_t colorIntensity, Frame::Bit_T bitType )
+void OutputDebug::write( FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType )
 {
     if ( bitColor != FrameBitColor::eOFF && colorIntensity > OPTION_GOLEM_INTENSITY_RAMP_MID_INTENSITY )
     {
-        Bsp::Api::Bsp_Api_turnOn_debug1();
+        Bsp_Api_turnOn_debug1();
     }
     else
     {
-        Bsp::Api::Bsp_Api_turnOff_debug1();
+        Bsp_Api_turnOff_debug1();
     }
 }
 
 void OutputDebug::stop( void )
 {
-    Bsp::Api::Bsp_Api_turnOff_debug1();
+    Bsp_Api_turnOff_debug1();
 }

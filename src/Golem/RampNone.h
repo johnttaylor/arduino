@@ -21,7 +21,7 @@ namespace Golem {
 /** This concrete class implements the Golem::IntensityRamp interface with no 
     ramp, i.e. the bit is at 100% intensity for entire duration of the bit time.
  */
-class RampNone
+class RampNone : public IntensityRamp
 {
 public:
     /// Constructor

@@ -28,15 +28,15 @@ protected:
     ///
     uint32_t    m_bitTime;
     ///
-    ParityBit_T m_parity;
-    ///
     uint8_t     m_stopBits;
+    ///
+    ParityBit_T m_parity;
     ///
     uint8_t     m_numDataBits;
 
 public:
     /// Constructor
-    FrameSimple( uin32_t bitTimeInMsec, uint8_t numDataBits=8, uint8_t stopBits=1, ParityBit_T parity=eNONE );
+    FrameSimple( uint32_t bitTimeInMsec, uint8_t numDataBits=8, uint8_t stopBits=1, ParityBit_T parity=eNONE );
 
 public:
     /// See Golem::Frame
