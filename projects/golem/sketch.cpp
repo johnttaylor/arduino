@@ -19,31 +19,13 @@
 #include "Golem/FrameSimple.h"
 #include "Golem/ColorSingle.h"
 #include "Golem/RampNone.h"
+#include "Golem/TShell/Cmd/Output.h"
 #include "gestures.h"
 #include "Arduino.h"
 #include <stdlib.h>
 
 ////////////////////////////////////////////////////////////
 
-/// The output pin for controlling the NeoPixel LED strip
-#ifndef OPTION_NEOPIXEL_CFG_PIN
-#define OPTION_NEOPIXEL_CFG_PIN         30
-#endif
-
-/// Number of LEDs in the LED strip
-#ifndef OPTION_NEOPIXEL_CFG_NUM_PIXELS
-#define OPTION_NEOPIXEL_CFG_NUM_PIXELS  16
-#endif
-
-/// Type of NexoPixel strip
-#ifndef OPTION_NEOPIXEL_CFG_NEO_TYPE
-#define OPTION_NEOPIXEL_CFG_NEO_TYPE    NEO_GRBW
-#endif
-
-/// Boolean flag to indicate 3 color (RGB) or 4 color (RGBW) LEDs
-#ifndef OPTION_NEOPIXEL_CFG_IS_RGBW
-#define OPTION_NEOPIXEL_CFG_IS_RGBW     true
-#endif
 
 /// Thread priority for the debug shell
 #ifndef OPTION_DAC_SHELL_THREAD_PRIORITY
@@ -75,10 +57,11 @@ extern uint32_t __etext[];
 // Shell Processor and Shell commands
 static Cpl::Container::Map<Cpl::TShell::Dac::Command>   cmdlist_;
 static Cpl::TShell::Dac::Maker                          cmdProcessor_( cmdlist_ );
-static Cpl::TShell::Dac::Cmd::Help                      helpCmd_( cmdlist_ );
-static Cpl::TShell::Dac::Cmd::Trace                     traceCmd_( cmdlist_ );
-static Cpl::TShell::Dac::Cmd::Arduino::Dbg              debugCmd_( cmdlist_ );
-static Cpl::TShell::Dac::Cmd::FreeRTOS::Threads         threads_( cmdlist_ );
+static Cpl::TShell::Dac::Cmd::Help                      helpCmd_( cmdlist_, "invoke_special_static_constructor"  );
+static Cpl::TShell::Dac::Cmd::Trace                     traceCmd_( cmdlist_, "invoke_special_static_constructor"  );
+static Cpl::TShell::Dac::Cmd::Arduino::Dbg              debugCmd_( cmdlist_, "invoke_special_static_constructor"  );
+static Cpl::TShell::Dac::Cmd::FreeRTOS::Threads         threads_( cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Output                       outputPolicy( golem, "OutputNeoPixel(all)", cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Stdio                               shell_( cmdProcessor_, "DAC-Shell", OPTION_DAC_SHELL_THREAD_PRIORITY );
 
 
@@ -105,7 +88,7 @@ void setup( void )
     Golem::FrameSimple*     frameP  = new Golem::FrameSimple( 500, 8, 0, Golem::Frame::eODD );
     Golem::ColorSingle*     colorP  = new Golem::ColorSingle( Golem::FrameBitColor::eGREEN );
     Golem::RampNone*        rampP   = new Golem::RampNone();
-    Golem::OutputNeoPixel*  outputP = new Golem::OutputNeoPixel( OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
+    Golem::OutputNeoPixel*  outputP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
     golem.setPolicies( frameP, streamP, colorP, rampP, outputP );
 }
 

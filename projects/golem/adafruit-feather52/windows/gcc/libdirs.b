@@ -2,6 +2,7 @@
 src/Golem
 src/Golem/_minimalPolicies
 src/Golem/_neoPixel
+src/Golem/TShell/Cmd
 
 # Arduino specific support for CPL
 src/Bsp/Adafruit/feather52/gcc

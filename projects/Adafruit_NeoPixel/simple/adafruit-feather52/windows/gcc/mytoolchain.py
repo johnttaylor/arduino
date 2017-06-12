@@ -67,7 +67,7 @@ base_release.asmflags = ' -Wall -DF_CPU=64000000 -DARDUINO=10802'
 base_release.inc      = '-I' + ARDUINO_SKETCH_FOLDER + r'\libraries\Adafruit_NeoPixel'
 
 
-# Set project specific 'optimzed' options
+# Set project specific 'optimized' options
 optimzed_release = BuildValues()    # Do NOT comment out this line
 
 # Set project specific 'debug' options

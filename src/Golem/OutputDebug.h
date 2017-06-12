@@ -29,10 +29,12 @@ public:
     /// Constructor
     OutputDebug();
     
+    /// Destructor
+    ~OutputDebug();
     
 public:
     /// See Golem::Output
-    void write(FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType );
+    void write( bool newBit, FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType );
 
     /// See Golem::Output
     void stop(void);

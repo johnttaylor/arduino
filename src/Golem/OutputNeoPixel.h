@@ -30,9 +30,29 @@ namespace Golem {
  */
 class OutputNeoPixel : public Output
 {
+public:
+    /// LED Output options for which LEDs are turned on/off
+    typedef enum 
+    {
+        eALL,               //!< Use all LEDs
+        ePAIRS,             //!< Use half of LEDs -- in groups of two (on and off)
+        eQUARTER,           //!< Use only every fourth LED.
+        ePAIRS_SPIN_C,      //!< Use half (in pairs) of the LEDs and spin clockwise on each bit
+        ePAIRS_SPIN_CC,     //!< Use half (in pairs) of the LEDs and spin counter clockwise on each bit
+        eQUARTER_SPIN_C,    //!< Use Quartets (4 LEDs at a time) of the LEDs and spin clockwise on each bit
+        eQUARTER_SPIN_CC    //!< Use Quartets (4 LEDs at a time) of the LEDs and spin counter clockwise on each bit
+    } Options_T;
+
+    
 protected:
     /// NeoPixel driver
     Adafruit_NeoPixel   m_ledDriver;
+
+    /// Output option
+    Options_T           m_option;
+
+    /// Current starting LED position
+    uint16_t            m_currentLed;
 
     /// Configuration.  Set to false if LED strip is RGB; else set to true for RGBW
     bool                m_rgbw;
@@ -42,12 +62,14 @@ protected:
 
 public:
     /// Constructor
-    OutputNeoPixel( uint16_t numberOfLEDs, uint8_t pinNumber, bool isRGBW=false, neoPixelType ledType=NEO_GRB + NEO_KHZ800 );
+    OutputNeoPixel( Options_T option, uint16_t numberOfLEDs, uint8_t pinNumber, bool isRGBW=false, neoPixelType ledType=NEO_GRB + NEO_KHZ800 );
 
+    /// Destructor
+    ~OutputNeoPixel();
 
 public:
     /// See Golem::Output
-    void write( FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType );
+    void write( bool newBit, FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType );
 
     /// See Golem::Output
     void stop( void );
@@ -58,6 +80,13 @@ protected:
     
     /// Helper method
     virtual uint32_t convertToWRGB( FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType );
+
+    /// Helper method
+    void setPairSpinLED( uint16_t baseLed, uint16_t phase, uint32_t color );
+    
+    /// Helper method
+    void setQuarterSpinLED( uint16_t baseLed, uint16_t phase, uint32_t color );
+
 };
 
 

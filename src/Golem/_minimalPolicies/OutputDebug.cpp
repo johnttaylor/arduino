@@ -21,17 +21,24 @@ using namespace Golem;
 /////////////////////////////////////
 OutputDebug::OutputDebug() {}
 
+OutputDebug::~OutputDebug()
+{
+    Bsp_Api_turnOff_debug1();
+}
 
 /////////////////////////////////////
-void OutputDebug::write( FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType )
+void OutputDebug::write( bool newBit, FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType )
 {
-    if ( bitColor != FrameBitColor::eOFF && colorIntensity > OPTION_GOLEM_INTENSITY_RAMP_MID_INTENSITY )
+    if ( newBit )
     {
-        Bsp_Api_turnOn_debug1();
-    }
-    else
-    {
-        Bsp_Api_turnOff_debug1();
+        if ( bitColor != FrameBitColor::eOFF && colorIntensity > OPTION_GOLEM_INTENSITY_RAMP_MID_INTENSITY )
+        {
+            Bsp_Api_turnOn_debug1();
+        }
+        else
+        {
+            Bsp_Api_turnOff_debug1();
+        }
     }
 }
 

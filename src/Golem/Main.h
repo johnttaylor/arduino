@@ -20,6 +20,27 @@
 #include "Cpl/System/Mutex.h"
 
 
+/// The output pin for controlling the NeoPixel LED strip
+#ifndef OPTION_NEOPIXEL_CFG_PIN
+#define OPTION_NEOPIXEL_CFG_PIN         30
+#endif
+
+/// Number of LEDs in the LED strip
+#ifndef OPTION_NEOPIXEL_CFG_NUM_PIXELS
+#define OPTION_NEOPIXEL_CFG_NUM_PIXELS  16
+#endif
+
+/// Type of NexoPixel strip
+#ifndef OPTION_NEOPIXEL_CFG_NEO_TYPE
+#define OPTION_NEOPIXEL_CFG_NEO_TYPE    NEO_GRBW
+#endif
+
+/// Boolean flag to indicate 3 color (RGB) or 4 color (RGBW) LEDs
+#ifndef OPTION_NEOPIXEL_CFG_IS_RGBW
+#define OPTION_NEOPIXEL_CFG_IS_RGBW     true
+#endif
+
+
 /// Namespaces
 namespace Golem {
 

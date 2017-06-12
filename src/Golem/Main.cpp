@@ -134,7 +134,7 @@ void Main::process( void )
             // Process the current bit
             FrameBitColor::Color_T bitColor  = m_colorP->getColor( m_currentBit, m_currentValue );
             uint8_t                intensity = m_rampP->getIntensity( Cpl::System::ElapsedTime::deltaMilliseconds( m_timeMarker ), m_frameP->getBitTime() );
-            m_outputP->write( bitColor, intensity, m_currentBit );
+            m_outputP->write( newBit, bitColor, intensity, m_currentBit );
             if ( newBit )
             {
                 CPL_SYSTEM_TRACE_MSG( SECT_, ("  currentBit=%d, nextBit=%d, bitValue=%d, intensity=%d, bitColor=%d (m_dataBit=%d, m_stopBit=%d)", m_currentBit, nextBit, m_currentValue, intensity, bitColor, m_dataBit, m_stopBit) );
