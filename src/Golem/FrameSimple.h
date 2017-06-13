@@ -49,7 +49,7 @@ public:
     FrameConfig_T getConfig( void ) const;
     
     /// See Golem::Frame
-    void getDescription( Cpl::Text::String& brief );
+    const char* getDescription( Cpl::Text::String& brief );
 };
 
 

@@ -32,7 +32,7 @@ public:
     uint8_t getIntensity( uint32_t elapsedBitTimeMsec, uint32_t bitSizeInMsec );
 
     /// See Golem::IntensityRamp
-    void getDescription( Cpl::Text::String& brief );
+    const char* getDescription( Cpl::Text::String& brief );
 
 };
 

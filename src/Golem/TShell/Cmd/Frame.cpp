@@ -1,17 +1,21 @@
-/*----------------------------------------------------------------------------- 
-* This file is part of the Arduino Project.  The Arduino Project is an   
-* open source project with a BSD type of licensing agreement.  See the license  
-* agreement (license.txt) in the top/ directory or on the Internet at           
+/*-----------------------------------------------------------------------------
+* This file is part of the Arduino Project.  The Arduino Project is an
+* open source project with a BSD type of licensing agreement.  See the license
+* agreement (license.txt) in the top/ directory or on the Internet at
 * http://integerfox.com/arduino/license.txt
-*                                                                               
+*
 * Copyright (c) 2017 John T. Taylor
-*                                                                               
-* Redistributions of the source code must retain the above copyright notice.    
-*----------------------------------------------------------------------------*/ 
+*
+* Redistributions of the source code must retain the above copyright notice.
+*----------------------------------------------------------------------------*/
 
 
 #include "Frame.h"
+#include "Cpl/Text/atob.h"
+#include "Golem/FrameSimple.h"
+#include "Cpl/System/Trace.h"
 
+#define SECT_   "cmd::frame"
 
 /// Namespaces
 using namespace Golem::TShell::Cmd;
@@ -20,128 +24,130 @@ using namespace Golem::TShell::Cmd;
 
 ///////////////////////////
 Frame::Frame( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "f" )
+    : Cpl::TShell::Dac::Cmd::Command( commandList, "frame" )
     , m_golem( application )
 {
 }
 
 Frame::Frame( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "f", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
+    : Cpl::TShell::Dac::Cmd::Command( commandList, "frame", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
     , m_golem( application )
 {
 }
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Frame::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Frame& outfd ) throw()
+Cpl::TShell::Dac::Command::Result_T Frame::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw()
 {
-    Cpl::Text::String&  newName    = context.getTokenBuffer();
-    Cpl::Text::String&  outtext    = context.getOutputBuffer();
-    bool                io         = true;
-    unsigned            numParms   = tokens.numParameters();
-    Golem::Frame*       newPolicyP = 0;
+    Cpl::Text::String&          newName    = context.getTokenBuffer();
+    Cpl::Text::String&          outtext    = context.getOutputBuffer();
+    bool                        io         = true;
+    unsigned                    numParms   = tokens.numParameters();
+    Golem::Frame::FrameConfig_T config     = m_golem.getFrameConfig();
+    bool                        changed    = false;
 
     // Print current Policy
     if ( numParms == 1 )
     {
-        io &= context.writeFrame( m_golem.getFramePolicyDescription( policyName ) );
+        io &= context.writeFrame( m_golem.getFramePolicyDescription( newName ) );
         return io ? Command::eSUCCESS : Command::eERROR_IO;
     }
 
     // Policy: FrameSimple
     if ( numParms >= 2 && numParms <= 5 )
     {
+    CPL_SYSTEM_TRACE_MSG( SECT_, ("frame(). [%s] [%s] [%s] [%s]", tokens.getParameter( 1 ), tokens.getParameter( 2 ), tokens.getParameter( 3 ), tokens.getParameter( 4 ) ));
+ 
         // Housekeeping
         numParms--;
-        unsigned parmIdx = 2;
+        unsigned parmIdx = 1;
 
         // Loop through argument(s)
-        while( numParms-- )
+        while ( numParms-- )
         {
-            const char* param = tokens.getParameter( parmIdx );
+            const char* param = tokens.getParameter( parmIdx++ );
+            CPL_SYSTEM_TRACE_MSG( SECT_, ("frame(). parmIdx=%d, numParms=%d, parm=[%s]", parmIdx, numParms, tokens.getParameter( parmIdx) ));
+
             // Bit Time
-            if ( strncmp( param, "b=", 3 ) == 0 )
+            if ( strncmp( param, "b=", 2 ) == 0 )
             {
                 uint32_t msec;
-                if ( Cpl::Text::a2ul(msec,param+3) )
+                if ( !Cpl::Text::a2ul( msec, param + 2 ) )
                 {
-                    
+                    CPL_SYSTEM_TRACE_MSG( SECT_, ("frame(). Failed to parse bittime. param+3=[%s]", param + 2 ));
+                    return eERROR_INVALID_ARGS;
+                }
+                config.m_bitTime = msec;
+                changed          = true;
+            }
 
-                newName +    = "OutputNeoPixel(eALL)";
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
+            // Number of data bits
+            if ( strncmp( param, "d=", 2 ) == 0 )
+            {
+                unsigned numBits;
+                if ( !Cpl::Text::a2ui( numBits, param + 2 ) )
+                {
+                    CPL_SYSTEM_TRACE_MSG( SECT_, ("frame(). Failed to parse numBits. param+3=[%s]", param + 2 ));
+                    return eERROR_INVALID_ARGS;
+                }
+                config.m_numDataBits = numBits;
+                changed              = true;
+            }
 
-        // PAIRS
-        else if ( strcmp( tokens.getParameter( 2 ), "2" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
+            // Number of stop bits
+            if ( strncmp( param, "s=", 2 ) == 0 )
+            {
+                unsigned stopBits;
+                if ( !Cpl::Text::a2ui( stopBits, param + 2 ) )
+                {
+                    CPL_SYSTEM_TRACE_MSG( SECT_, ("frame(). Failed to parse stopBits. param+3=[%s]", param + 2 ));
+                    return eERROR_INVALID_ARGS;
+                }
+                config.m_stopBits = stopBits;
+                changed           = true;
+            }
 
-        // PAIRS
-        else if ( strcmp( tokens.getParameter( 2 ), "2" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
+            // Parity bits
+            if ( strncmp( param, "p=", 2 ) == 0 )
+            {
+                switch ( param[2] )
+                {
+                case 'n':
+                    config.m_parity = Golem::Frame::eNONE;
+                    changed         = true;
+                    break;
+                case 'e':
+                    config.m_parity = Golem::Frame::eEVEN;
+                    changed         = true;
+                    break;
+                case 'o':
+                    config.m_parity = Golem::Frame::eODD;
+                    changed         = true;
+                    break;
+                default:
+                    CPL_SYSTEM_TRACE_MSG( SECT_, ("frame(). Failed to parse parity. param+3=[%s]", param + 2 ));
+                    return eERROR_INVALID_ARGS;
+                }
+            }
         }
-
-        // PAIRS
-        else if ( strcmp( tokens.getParameter( 2 ), "2" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // PAIRS
-        else if ( strcmp( tokens.getParameter( 2 ), "2" ) == 0 )
-        {
-            newName    = "OutputNeoPixel(ePAIRS)";
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // eQUARTER
-        else if ( strcmp( tokens.getParameter( 2 ), "4" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eQUARTER, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // ePAIRS_SPIN_C
-        else if ( strcmp( tokens.getParameter( 2 ), "2c" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS_SPIN_C, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // ePAIRS_SPIN_CC
-        else if ( strcmp( tokens.getParameter( 2 ), "2cc" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS_SPIN_CC, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // eQUARTER_SPIN_C
-        else if ( strcmp( tokens.getParameter( 2 ), "4c" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eQUARTER_SPIN_C, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // eQUARTER_SPIN_CC
-        else if ( strcmp( tokens.getParameter( 2 ), "4cc" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eQUARTER_SPIN_CC, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // Unrecognized/unsupported option
-        else
-        {
-            return eERROR_INVALID_ARGS;
-        }
+    }
+    
+    // Unrecognized/unsupported option
+    else
+    {
+        return eERROR_INVALID_ARGS;
     }
 
     // Update the application with the new policy
-    if ( newPolicyP != 0 )
+    if ( changed )
     {
-        if ( !m_golem.setPolicies( 0, 0, 0, 0, newPolicyP ) )
+        Golem::Frame* newPolicyP = new Golem::FrameSimple( config.m_bitTime, config.m_numDataBits, config.m_stopBits, config.m_parity );
+        if ( !m_golem.setPolicies( newPolicyP, 0, 0, 0, 0 ) )
         {
             return Command::eERROR_FAILED;
         }
 
-        outtext.format( "new frame policy:= %s", m_golem.getFramePolicyDescription( policyName ) );
+        outtext.format( "new frame policy:= %s", newPolicyP->getDescription( newName ) );
         io &= context.writeFrame( outtext );
         return io ? Command::eSUCCESS : Command::eERROR_IO;
     }

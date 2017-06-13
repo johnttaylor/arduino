@@ -17,7 +17,6 @@ using namespace Golem;
 #define SPIN_IDX_LIMIT          3
 #define QTR_SPIN_IDX_LIMIT      7
 
-static const char* toString_( OutputNeoPixel::Options_T option );
 
 
 ////////////////////////////////////////
@@ -40,9 +39,10 @@ OutputNeoPixel::~OutputNeoPixel()
 }
 
 ////////////////////////////////////////
-void OutputDebug::getDescription( Cpl::Text::String& brief )
+const char* OutputNeoPixel::getDescription( Cpl::Text::String& brief )
 {
-    brief.format( "OutpuNeoPixel(%s)", toString_( m_option ) );
+    brief.format( "OutpuNeoPixel(%s)", toString( m_option ) );
+    return brief;
 }
 
 
@@ -271,7 +271,7 @@ uint32_t OutputNeoPixel::convertToWRGB( FrameBitColor::Color_T bitColor, uint8_t
 }
 
 ///////////////////////////////////////////////////////////
-const char* toString_( OutputNeoPixel::Options_T option )
+const char* OutputNeoPixel::toString( OutputNeoPixel::Options_T option )
 {
     switch ( option )
     {

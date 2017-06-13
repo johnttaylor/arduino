@@ -54,13 +54,16 @@ public:
     } ParityBit_T;
 
     /// All frame options (in a single struct)
-    typedef struct
+    struct FrameConfig_T
     {
-        Bit_T       m_startBit;
+        uint32_t    m_bitTime;
         uint8_t     m_numDataBits;
         uint8_t     m_stopBits;
         ParityBit_T m_parity;
-    } FrameConfig_T;
+
+        /// Constructor
+        FrameConfig_T():m_bitTime(MINIMUM_BIT_TIME),m_numDataBits(MINIMUM_DATA_BITS),m_stopBits(MINIMUM_STOP_BITS),m_parity(eNONE){}
+    };
 
 public:
     /// Minimum data bit size for a Frame
@@ -106,7 +109,7 @@ public:
      call is responsible for provide the memory/string that returns
      the description.
      */
-    virtual void getDescription( Cpl::Text::String& brief ) = 0;
+    virtual const char* getDescription( Cpl::Text::String& brief ) = 0;
 
 
 public:

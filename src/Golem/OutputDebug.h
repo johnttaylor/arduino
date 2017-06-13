@@ -40,7 +40,7 @@ public:
     void stop(void);
 
     /// See Golem::Output
-    void getDescription( Cpl::Text::String& brief );
+    const char* getDescription( Cpl::Text::String& brief );
 };
 
 

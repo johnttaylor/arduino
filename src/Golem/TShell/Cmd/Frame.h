@@ -20,8 +20,8 @@
                                        "         1         2         3         4         5         6         7         8"
                                        "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
 */
-#define GOLEMSHELLCMD_USAGE_FRAME_       "f\n" \
-                                         "f [b=<ms>][d=<4-16>][s=<0-2>][p=<n,e,o>]\n"
+#define GOLEMSHELLCMD_USAGE_FRAME_       "frame\n" \
+                                         "frame [b=<ms>][d=<4-16>][s=<0-2>][p=<n,e,o>]\n"
 
 /// Detailed Help text
 #ifndef GOLEMSHELLCMD_DETAIL_FRAME_
@@ -40,7 +40,7 @@ namespace Cmd {
 
 /** This class implements a DAC Shell command
  */
-class Frame
+class Frame: public Cpl::TShell::Dac::Cmd::Command
 {
 protected:
     /// Reference to my application

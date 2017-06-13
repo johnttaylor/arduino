@@ -51,8 +51,9 @@ bool StreamAddress::getNextBit( void )
     return currentBit ? true : false;
 }
 
-void StreamAddress::getDescription( Cpl::Text::String& brief )
+const char* StreamAddress::getDescription( Cpl::Text::String& brief )
 {
     brief.format("StreamAddress(%p,%p)", m_startP, m_endP );
+    return brief;
 }
 

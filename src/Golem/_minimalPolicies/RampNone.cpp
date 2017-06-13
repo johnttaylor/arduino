@@ -24,7 +24,8 @@ uint8_t RampNone::getIntensity( uint32_t elapsedBitTimeMsec, uint32_t bitSizeInM
     return OPTION_GOLEM_INTENSITY_RAMP_MAX_INTENSITY;
 }
 
-void RampNone::getDescription( Cpl::Text::String& brief )
+const char* RampNone::getDescription( Cpl::Text::String& brief )
 {
     brief = "RampNone()";
+    return brief;
 }

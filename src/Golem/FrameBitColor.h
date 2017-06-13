@@ -54,10 +54,10 @@ public:
 
 public:
     /** This method returns a brief description of the current policy. The
-     call is responsible for provide the memory/string that returns
-     the description.
+        call is responsible for provide the memory/string that returns
+        the description.
      */
-    virtual void getDescription( Cpl::Text::String& brief ) = 0;
+    virtual const char* getDescription( Cpl::Text::String& brief ) = 0;
 
 public:
     // Converts an enum value to text

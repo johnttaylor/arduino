@@ -53,7 +53,7 @@ namespace Golem {
     each word in the stream has a traditional UART Framing (Start, data, parity,
     stop bits).  For each bit in each Frame the 'LED Uart' outputs a specific
     LED pattern/color on a strip of colored LEDs.
-    
+
     Golem is designed to be part of multi-threaded application where other
     applications can change/request new Policies (that determine how the LEDs
     are controlled).
@@ -136,10 +136,10 @@ public:
         zero as the policy argument.  This method is thread safe, i.e. can
         be called by other thread (than the thread that calls the process()
         method).
-        
+
         Memory/Scope of Policies
         ------------------------
-        The polices are REQUIRED to be created on the HEAP using new().  When 
+        The polices are REQUIRED to be created on the HEAP using new().  When
         Golem updates an existing policy - it will call delete() on the old
         polices.  The Application creates Policies and Golem destroys Policies.
 
@@ -147,8 +147,8 @@ public:
         does NOT mean the new policy have been applied.  Golem waits for the
         "opportune moment" to apply the new policies.  If setPolicies() is
         called twice BEFORE the policies from the 1st call have been applied,
-        the method return false.  When false is returned - the application is 
-        responsible for cleaning-up/destroying the 'new' policies instances 
+        the method return false.  When false is returned - the application is
+        responsible for cleaning-up/destroying the 'new' policies instances
         that it tried to change (since Golem did not accept them).
      */
     bool setPolicies( Frame*            framePolicyP,
@@ -170,7 +170,7 @@ public:
         This call is thread safe.
       */
     const char* getDataStreamPolicyDescription( Cpl::Text::String& brief );
-    
+
     /** This method returns a brief description of the policy.  The caller is
         responsible for providing the memory/string used to return the description.
         This call is thread safe.
@@ -188,6 +188,13 @@ public:
         This call is thread safe.
       */
     const char* getOutputPolicyDescription( Cpl::Text::String& brief );
+
+
+public:
+    /** This method returns the frame configuration for the current Frame
+        policy. This call is thread safe.
+     */
+    Frame::FrameConfig_T getFrameConfig( void );
 };
 
 

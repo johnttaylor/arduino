@@ -75,7 +75,7 @@ public:
     void stop( void );
 
     /// See Golem::Output
-    void getDescription( Cpl::Text::String& brief );
+    const char* getDescription( Cpl::Text::String& brief );
 
 protected:
     /// Helper method
@@ -90,6 +90,8 @@ protected:
     /// Helper method
     void setQuarterSpinLED( uint16_t baseLed, uint16_t phase, uint32_t color );
 
+    /// Helper method
+    static const char* toString( OutputNeoPixel::Options_T option );
 };
 
 

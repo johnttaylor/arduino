@@ -48,7 +48,7 @@ public:
     bool getNextBit( void );
 
     /// See Golem::DataStream
-    void getDescription( Cpl::Text::String& brief );
+    const char* getDescription( Cpl::Text::String& brief );
 
 };
 

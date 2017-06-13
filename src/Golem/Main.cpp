@@ -220,7 +220,8 @@ const char* Main::getFramePolicyDescription( Cpl::Text::String& brief )
         m_frameP->getDescription( brief );
     }
 
-    return brief;}
+    return brief;
+}
 
 const char* Main::getDataStreamPolicyDescription( Cpl::Text::String& brief )
 {
@@ -231,7 +232,8 @@ const char* Main::getDataStreamPolicyDescription( Cpl::Text::String& brief )
         m_streamP->getDescription( brief );
     }
 
-    return brief;}
+    return brief;
+}
 
 const char* Main::getFrameBitColorPolicyDescription( Cpl::Text::String& brief )
 {
@@ -242,7 +244,8 @@ const char* Main::getFrameBitColorPolicyDescription( Cpl::Text::String& brief )
         m_colorP->getDescription( brief );
     }
 
-    return brief;}
+    return brief;
+}
 
 const char* Main::getIntensityRampPolicyDescription( Cpl::Text::String& brief )
 {
@@ -253,7 +256,8 @@ const char* Main::getIntensityRampPolicyDescription( Cpl::Text::String& brief )
         m_rampP->getDescription( brief );
     }
 
-    return brief;}
+    return brief;
+}
 
 const char* Main::getOutputPolicyDescription( Cpl::Text::String& brief )
 {
@@ -267,3 +271,14 @@ const char* Main::getOutputPolicyDescription( Cpl::Text::String& brief )
     return brief;
 }
 
+Frame::FrameConfig_T Main::getFrameConfig( void )
+{
+    Frame::FrameConfig_T result;
+    if ( m_frameP )
+    {
+        Cpl::System::Mutex::ScopeBlock lock( m_lock );
+        result = m_frameP->getConfig();
+    }
+
+    return result;
+}

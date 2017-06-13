@@ -20,6 +20,7 @@
 #include "Golem/ColorSingle.h"
 #include "Golem/RampNone.h"
 #include "Golem/TShell/Cmd/Output.h"
+#include "Golem/TShell/Cmd/Frame.h"
 #include "gestures.h"
 #include "Arduino.h"
 #include <stdlib.h>
@@ -61,7 +62,8 @@ static Cpl::TShell::Dac::Cmd::Help                      helpCmd_( cmdlist_, "inv
 static Cpl::TShell::Dac::Cmd::Trace                     traceCmd_( cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Dac::Cmd::Arduino::Dbg              debugCmd_( cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Dac::Cmd::FreeRTOS::Threads         threads_( cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Output                       outputPolicy( golem, "OutputNeoPixel(all)", cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Output                       outputPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Frame                        framePolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Stdio                               shell_( cmdProcessor_, "DAC-Shell", OPTION_DAC_SHELL_THREAD_PRIORITY );
 
 
@@ -85,7 +87,7 @@ void setup( void )
 
     // Set initial Golem Policies
     Golem::StreamAddress*   streamP = new Golem::StreamAddress( (void*) 0x1c000, (void*) __etext );
-    Golem::FrameSimple*     frameP  = new Golem::FrameSimple( 500, 8, 0, Golem::Frame::eODD );
+    Golem::FrameSimple*     frameP  = new Golem::FrameSimple( 500, 8, 1, Golem::Frame::eNONE );
     Golem::ColorSingle*     colorP  = new Golem::ColorSingle( Golem::FrameBitColor::eGREEN );
     Golem::RampNone*        rampP   = new Golem::RampNone();
     Golem::OutputNeoPixel*  outputP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );

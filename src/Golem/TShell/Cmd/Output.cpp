@@ -22,13 +22,13 @@ using namespace Golem::TShell::Cmd;
 
 ///////////////////////////
 Output::Output( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "o" )
+    : Cpl::TShell::Dac::Cmd::Command( commandList, "out" )
     , m_golem( application )
 {
 }
 
 Output::Output( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "o", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
+    : Cpl::TShell::Dac::Cmd::Command( commandList, "out", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
     , m_golem( application )
 {
 }
@@ -64,25 +64,6 @@ Cpl::TShell::Dac::Command::Result_T Output::execute( Cpl::TShell::Dac::Context_&
         if ( strcmp( tokens.getParameter( 2 ), "all" ) == 0 )
         {
             newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // PAIRS
-        else if ( strcmp( tokens.getParameter( 2 ), "2" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // PAIRS
-        else if ( strcmp( tokens.getParameter( 2 ), "2" ) == 0 )
-        {
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-        }
-
-        // PAIRS
-        else if ( strcmp( tokens.getParameter( 2 ), "2" ) == 0 )
-        {
-            newName    = "OutputNeoPixel(ePAIRS)";
-            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
         }
 
         // PAIRS
@@ -136,7 +117,7 @@ Cpl::TShell::Dac::Command::Result_T Output::execute( Cpl::TShell::Dac::Context_&
             return Command::eERROR_FAILED;
         }
 
-        outtext.format( "new output policy:= %s", m_golem.getOutputPolicyDescription( policyName ) );
+        outtext.format( "new output policy:= %s", newPolicyP->getDescription( policyName ) );
         io &= context.writeFrame( outtext );
         return io ? Command::eSUCCESS : Command::eERROR_IO;
     }
