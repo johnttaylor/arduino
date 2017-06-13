@@ -9,22 +9,22 @@
 * Redistributions of the source code must retain the above copyright notice.
 *----------------------------------------------------------------------------*/
 
-#include "Golem/RampNone.h"
+#include "Golem/FrameBitColor.h"
 
 /// Namespaces
 using namespace Golem;
 
 
-/////////////////////////////////
-RampNone::RampNone(){}
-
-/////////////////////////////////
-uint8_t RampNone::getIntensity( uint32_t elapsedBitTimeMsec, uint32_t bitSizeInMsec )
+const char* FrameBitColor::toString( Color_T color )
 {
-    return OPTION_GOLEM_INTENSITY_RAMP_MAX_INTENSITY;
-}
+    switch ( color )
+    {
+    case eRED:      return "red";
+    case eGREEN:    return "green";
+    case eBLUE:     return "blue";
+    case eWHITE:    return "white";
+    case eOFF:      return "off";
+    }
 
-void RampNone::getDescription( Cpl::Text::String& brief )
-{
-    brief = "RampNone()";
+    return "unknown";
 }

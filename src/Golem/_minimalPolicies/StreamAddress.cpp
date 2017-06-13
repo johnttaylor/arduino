@@ -18,7 +18,8 @@ using namespace Golem;
 
 /////////////////////////////////////////
 StreamAddress::StreamAddress( const void* startAddress, const void* endAddress )
-    : m_endP( (const uint8_t*) endAddress )
+    : m_startP( (const uint8_t*) endAddress )
+    , m_endP( (const uint8_t*) endAddress )
     , m_curP( (const uint8_t*) startAddress )
     , m_bitPos( 0 )
 {
@@ -27,7 +28,7 @@ StreamAddress::StreamAddress( const void* startAddress, const void* endAddress )
 /////////////////////////////////////////
 bool StreamAddress::bitsAreAvailable( void ) const
 {
-    return m_curP <= m_endP; 
+    return m_curP <= m_endP;
 }
 
 
@@ -46,7 +47,12 @@ bool StreamAddress::getNextBit( void )
             CPL_SYSTEM_TRACE_MSG( SECT_, ("new byte=%X", *m_curP) );
         }
     }
-    
-    return currentBit? true: false;
+
+    return currentBit ? true : false;
+}
+
+void StreamAddress::getDescription( Cpl::Text::String& brief )
+{
+    brief.format("StreamAddress(%p,%p)", m_startP, m_endP );
 }
 

@@ -13,6 +13,7 @@
 /** @file */
 
 #include "colony_config.h"
+#include "Cpl/Text/String.h"
 #include <stdint.h>
 
 
@@ -23,22 +24,22 @@
 #define OPTION_GOLEM_INTENSITY_RAMP_MIN_INTENSITY       0
 #endif
 
-/** This constant defines the maximum possible intensity value for the
-    system.
- */
+ /** This constant defines the maximum possible intensity value for the
+     system.
+  */
 #ifndef OPTION_GOLEM_INTENSITY_RAMP_MAX_INTENSITY
 #define OPTION_GOLEM_INTENSITY_RAMP_MAX_INTENSITY       255
 #endif
 
-/** This constant defines the 'mid-point' intensity value for the
-    system.
- */
+  /** This constant defines the 'mid-point' intensity value for the
+      system.
+   */
 #ifndef OPTION_GOLEM_INTENSITY_RAMP_MID_INTENSITY
 #define OPTION_GOLEM_INTENSITY_RAMP_MID_INTENSITY       127
 #endif
 
 
-/// Namespaces
+   /// Namespaces
 namespace Golem {
 
 
@@ -62,8 +63,16 @@ public:
     virtual uint8_t getIntensity( uint32_t elapsedBitTimeMsec, uint32_t bitSizeInMsec ) = 0;
 
 public:
+    /** This method returns a brief description of the current policy. The
+     call is responsible for provide the memory/string that returns
+     the description.
+     */
+    virtual void getDescription( Cpl::Text::String& brief ) = 0;
+
+
+public:
     /// Virtual Destructor
-    virtual ~IntensityRamp(){}
+    virtual ~IntensityRamp() {}
 };
 
 

@@ -29,3 +29,7 @@ FrameBitColor::Color_T ColorSingle::getColor( Frame::Bit_T bitType, bool bitValu
     return bitValue? m_onColor: m_offColor;
 }
 
+void ColorSingle::getDescription( Cpl::Text::String& brief )
+{
+    brief.format( "ColorSingle(%s,%s)", toString(m_onColor), toString(m_offColor) );
+}

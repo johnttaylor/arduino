@@ -12,6 +12,7 @@
 *----------------------------------------------------------------------------*/ 
 /** @file */
 
+#include "Cpl/Text/String.h"
 #include "Golem/FrameBitColor.h"
 #include <stdint.h>
 
@@ -44,6 +45,12 @@ public:
 
     /// Force all of LED(s) to the off state (i.e. out of data)
     virtual void stop(void) = 0;
+
+    /** This method returns a brief description of the current policy. The
+        call is responsible for provide the memory/string that returns
+        the description.
+     */
+    virtual void getDescription( Cpl::Text::String& brief ) = 0;
 
 public:
     /// Virtual destructor

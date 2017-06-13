@@ -74,6 +74,9 @@ public:
     /// See Golem::Output
     void stop( void );
 
+    /// See Golem::Output
+    void getDescription( Cpl::Text::String& brief );
+
 protected:
     /// Helper method
     virtual void setAllLEDs( uint32_t wrgb  );

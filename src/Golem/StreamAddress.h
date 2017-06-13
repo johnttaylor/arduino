@@ -28,6 +28,8 @@ class StreamAddress : public DataStream
 {
 protected:
     ///
+    const uint8_t*  m_startP;
+    ///
     const uint8_t*  m_endP;
     ///
     const uint8_t*  m_curP;
@@ -44,6 +46,10 @@ public:
 
     /// See Golem::DataStream
     bool getNextBit( void );
+
+    /// See Golem::DataStream
+    void getDescription( Cpl::Text::String& brief );
+
 };
 
 

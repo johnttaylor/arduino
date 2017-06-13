@@ -26,13 +26,7 @@ class FrameSimple : public Frame
 {
 protected:
     ///
-    uint32_t    m_bitTime;
-    ///
-    uint8_t     m_stopBits;
-    ///
-    ParityBit_T m_parity;
-    ///
-    uint8_t     m_numDataBits;
+    FrameConfig_T m_config;
 
 public:
     /// Constructor
@@ -50,7 +44,12 @@ public:
 
     /// See Golem::Frame
     uint32_t getBitTime( void ) const;
-
+    
+    /// See Golem::Frame
+    FrameConfig_T getConfig( void ) const;
+    
+    /// See Golem::Frame
+    void getDescription( Cpl::Text::String& brief );
 };
 
 

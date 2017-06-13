@@ -209,3 +209,61 @@ bool Main::setPolicies( Frame*            framePolicyP,
     m_lock.unlock();
     return true;
 }
+
+/////////////////////////////////////////////    
+const char* Main::getFramePolicyDescription( Cpl::Text::String& brief )
+{
+    brief = "none";
+    if ( m_frameP )
+    {
+        Cpl::System::Mutex::ScopeBlock lock( m_lock );
+        m_frameP->getDescription( brief );
+    }
+
+    return brief;}
+
+const char* Main::getDataStreamPolicyDescription( Cpl::Text::String& brief )
+{
+    brief = "none";
+    if ( m_streamP )
+    {
+        Cpl::System::Mutex::ScopeBlock lock( m_lock );
+        m_streamP->getDescription( brief );
+    }
+
+    return brief;}
+
+const char* Main::getFrameBitColorPolicyDescription( Cpl::Text::String& brief )
+{
+    brief = "none";
+    if ( m_colorP )
+    {
+        Cpl::System::Mutex::ScopeBlock lock( m_lock );
+        m_colorP->getDescription( brief );
+    }
+
+    return brief;}
+
+const char* Main::getIntensityRampPolicyDescription( Cpl::Text::String& brief )
+{
+    brief = "none";
+    if ( m_rampP )
+    {
+        Cpl::System::Mutex::ScopeBlock lock( m_lock );
+        m_rampP->getDescription( brief );
+    }
+
+    return brief;}
+
+const char* Main::getOutputPolicyDescription( Cpl::Text::String& brief )
+{
+    brief = "none";
+    if ( m_outputP )
+    {
+        Cpl::System::Mutex::ScopeBlock lock( m_lock );
+        m_outputP->getDescription( brief );
+    }
+
+    return brief;
+}
+

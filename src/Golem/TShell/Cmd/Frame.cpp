@@ -1,68 +1,73 @@
-/*-----------------------------------------------------------------------------
-* This file is part of the Colony.Core Project.  The Colony.Core Project is an
-* open source project with a BSD type of licensing agreement.  See the license
-* agreement (license.txt) in the top/ directory or on the Internet at
-* http://integerfox.com/colony.core/license.txt
-*
-* Copyright (c) 2014, 2015  John T. Taylor
-*
-* Redistributions of the source code must retain the above copyright notice.
-*----------------------------------------------------------------------------*/
-
-#include "Output.h"
-#include "Cpl/Text/String.h"
-#include "Golem/OutputDebug.h"
-#include "Golem/OutputNeoPixel.h"
+/*----------------------------------------------------------------------------- 
+* This file is part of the Arduino Project.  The Arduino Project is an   
+* open source project with a BSD type of licensing agreement.  See the license  
+* agreement (license.txt) in the top/ directory or on the Internet at           
+* http://integerfox.com/arduino/license.txt
+*                                                                               
+* Copyright (c) 2017 John T. Taylor
+*                                                                               
+* Redistributions of the source code must retain the above copyright notice.    
+*----------------------------------------------------------------------------*/ 
 
 
-///
+#include "Frame.h"
+
+
+/// Namespaces
 using namespace Golem::TShell::Cmd;
 
 
 
 ///////////////////////////
-Output::Output( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "o" )
+Frame::Frame( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
+    : Cpl::TShell::Dac::Cmd::Command( commandList, "f" )
     , m_golem( application )
 {
 }
 
-Output::Output( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "o", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
+Frame::Frame( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
+    : Cpl::TShell::Dac::Cmd::Command( commandList, "f", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
     , m_golem( application )
 {
 }
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Output::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw()
+Cpl::TShell::Dac::Command::Result_T Frame::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Frame& outfd ) throw()
 {
-    Cpl::Text::String&  policyName = context.getTokenBuffer();
+    Cpl::Text::String&  newName    = context.getTokenBuffer();
     Cpl::Text::String&  outtext    = context.getOutputBuffer();
     bool                io         = true;
     unsigned            numParms   = tokens.numParameters();
-    Golem::Output*      newPolicyP = 0;
+    Golem::Frame*       newPolicyP = 0;
 
     // Print current Policy
     if ( numParms == 1 )
     {
-        io &= context.writeFrame( m_golem.getOutputPolicyDescription( policyName ) );
+        io &= context.writeFrame( m_golem.getFramePolicyDescription( policyName ) );
         return io ? Command::eSUCCESS : Command::eERROR_IO;
     }
 
-
-    // Policy: OutputDebug
-    if ( numParms == 2 && strcmp( tokens.getParameter( 1 ), "debug" ) == 0 )
+    // Policy: FrameSimple
+    if ( numParms >= 2 && numParms <= 5 )
     {
-        newPolicyP = new Golem::OutputDebug();
-    }
+        // Housekeeping
+        numParms--;
+        unsigned parmIdx = 2;
 
-    // Policy: OutputNeoPixel
-    else if ( numParms == 3 && strcmp( tokens.getParameter( 1 ), "neo" ) == 0 )
-    {
-        // ALL
-        if ( strcmp( tokens.getParameter( 2 ), "all" ) == 0 )
+        // Loop through argument(s)
+        while( numParms-- )
         {
+            const char* param = tokens.getParameter( parmIdx );
+            // Bit Time
+            if ( strncmp( param, "b=", 3 ) == 0 )
+            {
+                uint32_t msec;
+                if ( Cpl::Text::a2ul(msec,param+3) )
+                {
+                    
+
+                newName +    = "OutputNeoPixel(eALL)";
             newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
         }
 
@@ -81,13 +86,13 @@ Cpl::TShell::Dac::Command::Result_T Output::execute( Cpl::TShell::Dac::Context_&
         // PAIRS
         else if ( strcmp( tokens.getParameter( 2 ), "2" ) == 0 )
         {
-            newName    = "OutputNeoPixel(ePAIRS)";
             newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
         }
 
         // PAIRS
         else if ( strcmp( tokens.getParameter( 2 ), "2" ) == 0 )
         {
+            newName    = "OutputNeoPixel(ePAIRS)";
             newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
         }
 
@@ -136,11 +141,12 @@ Cpl::TShell::Dac::Command::Result_T Output::execute( Cpl::TShell::Dac::Context_&
             return Command::eERROR_FAILED;
         }
 
-        outtext.format( "new output policy:= %s", m_golem.getOutputPolicyDescription( policyName ) );
+        outtext.format( "new frame policy:= %s", m_golem.getFramePolicyDescription( policyName ) );
         io &= context.writeFrame( outtext );
         return io ? Command::eSUCCESS : Command::eERROR_IO;
     }
 
     return eERROR_INVALID_ARGS;
 }
+
 

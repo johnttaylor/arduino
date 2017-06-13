@@ -17,6 +17,9 @@ using namespace Golem;
 #define SPIN_IDX_LIMIT          3
 #define QTR_SPIN_IDX_LIMIT      7
 
+static const char* toString_( OutputNeoPixel::Options_T option );
+
+
 ////////////////////////////////////////
 OutputNeoPixel::OutputNeoPixel( Options_T option, uint16_t numberOfLEDs, uint8_t pinNumber, bool isRGBW, neoPixelType ledType )
     : m_ledDriver( numberOfLEDs, pinNumber, ledType )
@@ -35,6 +38,14 @@ OutputNeoPixel::~OutputNeoPixel()
     setAllLEDs( 0x0000 );
     m_ledDriver.show();
 }
+
+////////////////////////////////////////
+void OutputDebug::getDescription( Cpl::Text::String& brief )
+{
+    brief.format( "OutpuNeoPixel(%s)", toString_( m_option ) );
+}
+
+
 
 ////////////////////////////////////////
 void OutputNeoPixel::write( bool newBit, FrameBitColor::Color_T bitColor, uint8_t colorIntensity, Frame::Bit_T bitType )
@@ -69,7 +80,7 @@ void OutputNeoPixel::write( bool newBit, FrameBitColor::Color_T bitColor, uint8_
         case ePAIRS_SPIN_CC:
             for ( led=0; led < m_ledDriver.numPixels(); led += SPIN_IDX_LIMIT + 1 )
             {
-                setPairSpinLED( led, m_currentLed, color  );
+                setPairSpinLED( led, m_currentLed, color );
             }
             if ( bitColor != FrameBitColor::eOFF && ++m_currentLed > SPIN_IDX_LIMIT )
             {
@@ -80,7 +91,7 @@ void OutputNeoPixel::write( bool newBit, FrameBitColor::Color_T bitColor, uint8_
         case ePAIRS_SPIN_C:
             for ( led=0; led < m_ledDriver.numPixels(); led += SPIN_IDX_LIMIT + 1 )
             {
-                setPairSpinLED( led, m_currentLed, color  );
+                setPairSpinLED( led, m_currentLed, color );
             }
             if ( bitColor != FrameBitColor::eOFF && --m_currentLed == UINT16_MAX )
             {
@@ -102,7 +113,7 @@ void OutputNeoPixel::write( bool newBit, FrameBitColor::Color_T bitColor, uint8_
         case eQUARTER_SPIN_C:
             for ( led=0; led < m_ledDriver.numPixels(); led += QTR_SPIN_IDX_LIMIT + 1 )
             {
-                setQuarterSpinLED( led, m_currentLed, color  );
+                setQuarterSpinLED( led, m_currentLed, color );
             }
             if ( bitColor != FrameBitColor::eOFF && --m_currentLed == UINT16_MAX )
             {
@@ -257,4 +268,21 @@ uint32_t OutputNeoPixel::convertToWRGB( FrameBitColor::Color_T bitColor, uint8_t
     }
 
     return m_ledDriver.Color( r, g, b, w );
+}
+
+///////////////////////////////////////////////////////////
+const char* toString_( OutputNeoPixel::Options_T option )
+{
+    switch ( option )
+    {
+    case eALL:              return "all";
+    case ePAIRS:            return "pairs";
+    case eQUARTER:          return "quarter";
+    case ePAIRS_SPIN_C:     return "2spin";
+    case ePAIRS_SPIN_CC:    return "2spincc";
+    case eQUARTER_SPIN_CC:  return "4spincc";
+    case eQUARTER_SPIN_C:   return "4spin";
+    default: break;
+    }
+    return "unknown";
 }

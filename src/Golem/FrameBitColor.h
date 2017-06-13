@@ -1,15 +1,15 @@
 #ifndef Golem_FrameBitColor_h_
 #define Golem_FrameBitColor_h_
-/*----------------------------------------------------------------------------- 
-* This file is part of the Arduino Project.  The Arduino Project is an   
-* open source project with a BSD type of licensing agreement.  See the license  
-* agreement (license.txt) in the top/ directory or on the Internet at           
+/*-----------------------------------------------------------------------------
+* This file is part of the Arduino Project.  The Arduino Project is an
+* open source project with a BSD type of licensing agreement.  See the license
+* agreement (license.txt) in the top/ directory or on the Internet at
 * http://integerfox.com/arduino/license.txt
-*                                                                               
+*
 * Copyright (c) 2017 John T. Taylor
-*                                                                               
-* Redistributions of the source code must retain the above copyright notice.    
-*----------------------------------------------------------------------------*/ 
+*
+* Redistributions of the source code must retain the above copyright notice.
+*----------------------------------------------------------------------------*/
 /** @file */
 
 #include "Golem/Frame.h"
@@ -27,9 +27,9 @@ namespace Golem {
     ---------		Rainbow		Binary				Stream bit pos, stream high, stream low
     start/stop bits:	Blue		high: R|G|B|W|o			rgbworgbwor...
     parity (1):		White		low:  G|B|W|R|o
-    data-one		Red			RG,RB,RW,GB,GW,BW, 
+    data-one		Red			RG,RB,RW,GB,GW,BW,
     data-zero		Green			GR,BR,WR,BG,WG,WB
-    
+
  */
 class FrameBitColor
 {
@@ -44,18 +44,28 @@ public:
         eOFF
     } Color_T;
 
-    
- 
+
+
 public:
     /** Returns the color for the specified bit.  The method assumes that
-        a eSTART_BIT bit is the start of a new 'word'.  
+        a eSTART_BIT bit is the start of a new 'word'.
      */
     virtual Color_T getColor( Frame::Bit_T bitType, bool bitValue ) = 0;
 
+public:
+    /** This method returns a brief description of the current policy. The
+     call is responsible for provide the memory/string that returns
+     the description.
+     */
+    virtual void getDescription( Cpl::Text::String& brief ) = 0;
+
+public:
+    // Converts an enum value to text
+    static const char* toString( Color_T color );
 
 public:
     /// Virtual destructor
-    virtual ~FrameBitColor(){}
+    virtual ~FrameBitColor() {}
 };
 
 

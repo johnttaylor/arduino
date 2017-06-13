@@ -13,6 +13,7 @@
 /** @file */
 
 #include "colony_config.h"
+#include "Cpl/Text/String.h"
 #include <stdint.h>
 
 /// Defines the minimum allowed Bit time for the Application
@@ -52,6 +53,14 @@ public:
         eODD
     } ParityBit_T;
 
+    /// All frame options (in a single struct)
+    typedef struct
+    {
+        Bit_T       m_startBit;
+        uint8_t     m_numDataBits;
+        uint8_t     m_stopBits;
+        ParityBit_T m_parity;
+    } FrameConfig_T;
 
 public:
     /// Minimum data bit size for a Frame
@@ -83,14 +92,26 @@ public:
     /// Returns the parity bit type for the frame
     virtual ParityBit_T getParity( void ) const = 0;
 
-    /** Returns the 'baud rate' - well actual it returns the duration, 
+    /** Returns the 'baud rate' - well actual it returns the duration,
         in milliseconds, of a single bit.
      */
     virtual uint32_t getBitTime( void ) const = 0;
 
+    /// Returns all configuration settings as a single struct
+    virtual FrameConfig_T getConfig( void ) const = 0;
+
+
+public:
+    /** This method returns a brief description of the current policy. The
+     call is responsible for provide the memory/string that returns
+     the description.
+     */
+    virtual void getDescription( Cpl::Text::String& brief ) = 0;
+
+
 public:
     /// Virtual destructor
-    virtual ~Frame(){}
+    virtual ~Frame() {}
 };
 
 

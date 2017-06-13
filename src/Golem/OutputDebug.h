@@ -38,6 +38,9 @@ public:
 
     /// See Golem::Output
     void stop(void);
+
+    /// See Golem::Output
+    void getDescription( Cpl::Text::String& brief );
 };
 
 

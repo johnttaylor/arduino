@@ -18,6 +18,7 @@
 #include "Golem/DataStream.h"
 #include "Golem/IntensityRamp.h"
 #include "Cpl/System/Mutex.h"
+#include "Cpl/Text/String.h"
 
 
 /// The output pin for controlling the NeoPixel LED strip
@@ -157,7 +158,36 @@ public:
                       Output*           outputPolicyP
                       );
 
+public:
+    /** This method returns a brief description of the policy.  The caller is
+        responsible for providing the memory/string used to return the description.
+        This call is thread safe.
+      */
+    const char* getFramePolicyDescription( Cpl::Text::String& brief );
 
+    /** This method returns a brief description of the policy.  The caller is
+        responsible for providing the memory/string used to return the description.
+        This call is thread safe.
+      */
+    const char* getDataStreamPolicyDescription( Cpl::Text::String& brief );
+    
+    /** This method returns a brief description of the policy.  The caller is
+        responsible for providing the memory/string used to return the description.
+        This call is thread safe.
+      */
+    const char* getFrameBitColorPolicyDescription( Cpl::Text::String& brief );
+
+    /** This method returns a brief description of the policy.  The caller is
+        responsible for providing the memory/string used to return the description.
+        This call is thread safe.
+      */
+    const char* getIntensityRampPolicyDescription( Cpl::Text::String& brief );
+
+    /** This method returns a brief description of the policy.  The caller is
+        responsible for providing the memory/string used to return the description.
+        This call is thread safe.
+      */
+    const char* getOutputPolicyDescription( Cpl::Text::String& brief );
 };
 
 

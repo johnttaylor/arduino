@@ -28,8 +28,12 @@ public:
     RampNone();
 
 public:
-    /// See Golem::IntensityRampe
+    /// See Golem::IntensityRamp
     uint8_t getIntensity( uint32_t elapsedBitTimeMsec, uint32_t bitSizeInMsec );
+
+    /// See Golem::IntensityRamp
+    void getDescription( Cpl::Text::String& brief );
+
 };
 
 

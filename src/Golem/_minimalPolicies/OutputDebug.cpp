@@ -46,3 +46,8 @@ void OutputDebug::stop( void )
 {
     Bsp_Api_turnOff_debug1();
 }
+
+void OutputDebug::getDescription( Cpl::Text::String& brief )
+{
+    brief = "OutpuDebug()";
+}

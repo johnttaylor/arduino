@@ -18,7 +18,7 @@
 namespace Golem {
 
 
-/** This concrete class implements the Golem::FrameBitColor using a single 
+/** This concrete class implements the Golem::FrameBitColor using a single
     color.  A '1' bit is the color and '0' bit is off.
  */
 class ColorSingle : public FrameBitColor
@@ -39,6 +39,10 @@ public:
 public:
     /// See Golem::FrameBitColor
     Color_T getColor( Frame::Bit_T bitType, bool bitValue );
+
+    /// See Golem::FrameBitColor
+    void getDescription( Cpl::Text::String& brief );
+
 };
 
 
