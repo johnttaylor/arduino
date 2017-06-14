@@ -53,82 +53,83 @@ void OutputNeoPixel::write( bool newBit, FrameBitColor::Color_T bitColor, uint8_
     uint32_t color;
     uint16_t led;
 
-    if ( newBit )
+    // Start the output will all LEDs off
+    setAllLEDs( 0x0000 );
+    color = convertToWRGB( bitColor, colorIntensity, bitType );
+
+    switch ( m_option )
     {
-        // Start the output will all LEDs off
-        setAllLEDs( 0x0000 );
-        color = convertToWRGB( bitColor, colorIntensity, bitType );
-
-        switch ( m_option )
+    case ePAIRS:
+        for ( led=0; led < m_ledDriver.numPixels(); led+=4 )
         {
-        case ePAIRS:
-            for ( led=0; led < m_ledDriver.numPixels(); led+=4 )
-            {
-                m_ledDriver.setPixelColor( led, color );
-                m_ledDriver.setPixelColor( led + 1, color );
-            }
-            break;
-
-        case eQUARTER:
-            for ( led=0; led < m_ledDriver.numPixels(); led+=4 )
-            {
-                m_ledDriver.setPixelColor( led, color );
-            }
-            break;
-
-
-        case ePAIRS_SPIN_CC:
-            for ( led=0; led < m_ledDriver.numPixels(); led += SPIN_IDX_LIMIT + 1 )
-            {
-                setPairSpinLED( led, m_currentLed, color );
-            }
-            if ( bitColor != FrameBitColor::eOFF && ++m_currentLed > SPIN_IDX_LIMIT )
-            {
-                m_currentLed = 0;
-            }
-            break;
-
-        case ePAIRS_SPIN_C:
-            for ( led=0; led < m_ledDriver.numPixels(); led += SPIN_IDX_LIMIT + 1 )
-            {
-                setPairSpinLED( led, m_currentLed, color );
-            }
-            if ( bitColor != FrameBitColor::eOFF && --m_currentLed == UINT16_MAX )
-            {
-                m_currentLed = SPIN_IDX_LIMIT;
-            }
-            break;
-
-        case eQUARTER_SPIN_CC:
-            for ( led=0; led < m_ledDriver.numPixels(); led += QTR_SPIN_IDX_LIMIT + 1 )
-            {
-                setQuarterSpinLED( led, m_currentLed, color );
-            }
-            if ( bitColor != FrameBitColor::eOFF && ++m_currentLed > QTR_SPIN_IDX_LIMIT )
-            {
-                m_currentLed = 0;
-            }
-            break;
-
-        case eQUARTER_SPIN_C:
-            for ( led=0; led < m_ledDriver.numPixels(); led += QTR_SPIN_IDX_LIMIT + 1 )
-            {
-                setQuarterSpinLED( led, m_currentLed, color );
-            }
-            if ( bitColor != FrameBitColor::eOFF && --m_currentLed == UINT16_MAX )
-            {
-                m_currentLed = QTR_SPIN_IDX_LIMIT;
-            }
-            break;
-
-        case eALL:
-        default:
-            setAllLEDs( convertToWRGB( bitColor, colorIntensity, bitType ) );
-            break;
+            m_ledDriver.setPixelColor( led, color );
+            m_ledDriver.setPixelColor( led + 1, color );
         }
+        break;
 
-        m_ledDriver.show();
+    case eQUARTER:
+        for ( led=0; led < m_ledDriver.numPixels(); led+=4 )
+        {
+            m_ledDriver.setPixelColor( led, color );
+        }
+        break;
+
+
+    case ePAIRS_SPIN_CC:
+    case ePAIRS_FAST_SPIN_CC:
+        for ( led=0; led < m_ledDriver.numPixels(); led += SPIN_IDX_LIMIT + 1 )
+        {
+            setPairSpinLED( led, m_currentLed, color );
+        }
+        if ( (newBit || m_option == ePAIRS_FAST_SPIN_CC) && bitColor != FrameBitColor::eOFF && ++m_currentLed > SPIN_IDX_LIMIT )
+        {
+            m_currentLed = 0;
+        }
+        break;
+
+    case ePAIRS_SPIN_C:
+    case ePAIRS_FAST_SPIN_C:
+        for ( led=0; led < m_ledDriver.numPixels(); led += SPIN_IDX_LIMIT + 1 )
+        {
+            setPairSpinLED( led, m_currentLed, color );
+        }
+        if ( (newBit || m_option == ePAIRS_FAST_SPIN_C)  && bitColor != FrameBitColor::eOFF && --m_currentLed == UINT16_MAX )
+        {
+            m_currentLed = SPIN_IDX_LIMIT;
+        }
+        break;
+
+    case eQUARTER_SPIN_CC:
+    case eQUARTER_FAST_SPIN_CC:
+        for ( led=0; led < m_ledDriver.numPixels(); led += QTR_SPIN_IDX_LIMIT + 1 )
+        {
+            setQuarterSpinLED( led, m_currentLed, color );
+        }
+        if ( (newBit || m_option == eQUARTER_FAST_SPIN_CC)  && bitColor != FrameBitColor::eOFF && ++m_currentLed > QTR_SPIN_IDX_LIMIT )
+        {
+            m_currentLed = 0;
+        }
+        break;
+
+    case eQUARTER_SPIN_C:
+    case eQUARTER_FAST_SPIN_C:
+        for ( led=0; led < m_ledDriver.numPixels(); led += QTR_SPIN_IDX_LIMIT + 1 )
+        {
+            setQuarterSpinLED( led, m_currentLed, color );
+        }
+        if ( (newBit || m_option == eQUARTER_FAST_SPIN_C)  && bitColor != FrameBitColor::eOFF && --m_currentLed == UINT16_MAX )
+        {
+            m_currentLed = QTR_SPIN_IDX_LIMIT;
+        }
+        break;
+
+    case eALL:
+    default:
+        setAllLEDs( convertToWRGB( bitColor, colorIntensity, bitType ) );
+        break;
     }
+
+    m_ledDriver.show();
 }
 
 void OutputNeoPixel::setPairSpinLED( uint16_t baseLed, uint16_t phase, uint32_t color )
@@ -275,13 +276,17 @@ const char* OutputNeoPixel::toString( OutputNeoPixel::Options_T option )
 {
     switch ( option )
     {
-    case eALL:              return "all";
-    case ePAIRS:            return "pairs";
-    case eQUARTER:          return "quarter";
-    case ePAIRS_SPIN_C:     return "2spin";
-    case ePAIRS_SPIN_CC:    return "2spincc";
-    case eQUARTER_SPIN_CC:  return "4spincc";
-    case eQUARTER_SPIN_C:   return "4spin";
+    case eALL:                   return "all";
+    case ePAIRS:                 return "pairs";
+    case eQUARTER:               return "quarter";
+    case ePAIRS_SPIN_C:          return "2spin";
+    case ePAIRS_SPIN_CC:         return "2spincc";
+    case eQUARTER_SPIN_CC:       return "4spincc";
+    case eQUARTER_SPIN_C:        return "4spin";
+    case ePAIRS_FAST_SPIN_C:     return "f2spin";
+    case ePAIRS_FAST_SPIN_CC:    return "f2spincc";
+    case eQUARTER_FAST_SPIN_CC:  return "f4spincc";
+    case eQUARTER_FAST_SPIN_C:   return "f4spin";
     default: break;
     }
     return "unknown";

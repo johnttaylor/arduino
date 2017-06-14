@@ -18,9 +18,10 @@
 #include "Golem/OutputNeoPixel.h"
 #include "Golem/FrameSimple.h"
 #include "Golem/ColorSingle.h"
-#include "Golem/RampNone.h"
+#include "Golem/RampPercent.h"
 #include "Golem/TShell/Cmd/Output.h"
 #include "Golem/TShell/Cmd/Frame.h"
+#include "Golem/TShell/Cmd/Ramp.h"
 #include "gestures.h"
 #include "Arduino.h"
 #include <stdlib.h>
@@ -64,6 +65,7 @@ static Cpl::TShell::Dac::Cmd::Arduino::Dbg              debugCmd_( cmdlist_, "in
 static Cpl::TShell::Dac::Cmd::FreeRTOS::Threads         threads_( cmdlist_, "invoke_special_static_constructor"  );
 static Golem::TShell::Cmd::Output                       outputPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
 static Golem::TShell::Cmd::Frame                        framePolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Ramp                         rampPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Stdio                               shell_( cmdProcessor_, "DAC-Shell", OPTION_DAC_SHELL_THREAD_PRIORITY );
 
 
@@ -86,11 +88,11 @@ void setup( void )
     shell_.launch( Bsp_Serial(), Bsp_Serial() );
 
     // Set initial Golem Policies
-    Golem::StreamAddress*   streamP = new Golem::StreamAddress( (void*) 0x1c000, (void*) __etext );
-    Golem::FrameSimple*     frameP  = new Golem::FrameSimple( 500, 8, 1, Golem::Frame::eNONE );
-    Golem::ColorSingle*     colorP  = new Golem::ColorSingle( Golem::FrameBitColor::eGREEN );
-    Golem::RampNone*        rampP   = new Golem::RampNone();
-    Golem::OutputNeoPixel*  outputP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
+    Golem::DataStream*      streamP = new Golem::StreamAddress( (void*) 0x1c000, (void*) __etext );
+    Golem::Frame*           frameP  = new Golem::FrameSimple( 500, 8, 1, Golem::Frame::eNONE );
+    Golem::FrameBitColor*   colorP  = new Golem::ColorSingle( Golem::FrameBitColor::eGREEN );
+    Golem::IntensityRamp*   rampP   = new Golem::RampPercent(0.0);
+    Golem::Output*          outputP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
     golem.setPolicies( frameP, streamP, colorP, rampP, outputP );
 }
 

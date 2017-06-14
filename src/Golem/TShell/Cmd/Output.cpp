@@ -102,6 +102,30 @@ Cpl::TShell::Dac::Command::Result_T Output::execute( Cpl::TShell::Dac::Context_&
             newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eQUARTER_SPIN_CC, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
         }
 
+         // ePAIRS_FAST_SPIN_C
+        else if ( strcmp( tokens.getParameter( 2 ), "f2c" ) == 0 )
+        {
+            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS_FAST_SPIN_C, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
+        }
+
+        // ePAIRS_FAST_SPIN_CC
+        else if ( strcmp( tokens.getParameter( 2 ), "f2cc" ) == 0 )
+        {
+            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::ePAIRS_FAST_SPIN_CC, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
+        }
+
+        // eQUARTER_FAST_SPIN_C
+        else if ( strcmp( tokens.getParameter( 2 ), "f4c" ) == 0 )
+        {
+            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eQUARTER_FAST_SPIN_C, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
+        }
+
+        // eQUARTER_FAST_SPIN_CC
+        else if ( strcmp( tokens.getParameter( 2 ), "f4cc" ) == 0 )
+        {
+            newPolicyP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eQUARTER_FAST_SPIN_CC, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
+        }
+
         // Unrecognized/unsupported option
         else
         {

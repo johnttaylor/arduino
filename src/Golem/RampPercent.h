@@ -18,14 +18,21 @@
 namespace Golem {
 
 
-/** This concrete class implements the Golem::IntensityRamp interface with no 
-    ramp, i.e. the bit is at 100% intensity for entire duration of the bit time.
+/** This concrete class implements the Golem::IntensityRamp interface that
+    provides a symmetrical ramp (i.e. ramp up, ramp down) where the ramp
+    period is a percentage of the total bit time.
  */
-class RampNone : public IntensityRamp
+class RampPercent : public IntensityRamp
 {
+protected:
+    /// Ramp time (of a single edge) as percentage of total bit time
+    float       m_rampTime;
+
+
 public:
-    /// Constructor
-    RampNone();
+    /// Constructor.  Valid range for 'rampTimeAsPercentageOfBitTime' is [0.0, 0.5]
+    RampPercent( float rampTimeAsPercentageOfBitTime );
+
 
 public:
     /// See Golem::IntensityRamp
