@@ -22,6 +22,7 @@
 #include "Golem/TShell/Cmd/Output.h"
 #include "Golem/TShell/Cmd/Frame.h"
 #include "Golem/TShell/Cmd/Ramp.h"
+#include "Golem/TShell/Cmd/Color.h"
 #include "gestures.h"
 #include "Arduino.h"
 #include <stdlib.h>
@@ -66,6 +67,7 @@ static Cpl::TShell::Dac::Cmd::FreeRTOS::Threads         threads_( cmdlist_, "inv
 static Golem::TShell::Cmd::Output                       outputPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
 static Golem::TShell::Cmd::Frame                        framePolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
 static Golem::TShell::Cmd::Ramp                         rampPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Color                        colorPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Stdio                               shell_( cmdProcessor_, "DAC-Shell", OPTION_DAC_SHELL_THREAD_PRIORITY );
 
 
