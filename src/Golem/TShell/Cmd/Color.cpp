@@ -14,6 +14,7 @@
 #include "Cpl/Text/atob.h"
 #include "Golem/ColorSingle.h"
 #include "Golem/ColorRainbow.h"
+#include "Golem/ColorStream.h"
 #include "Cpl/System/Trace.h"
 
 #define SECT_   "cmd::ramp"
@@ -22,6 +23,7 @@
 using namespace Golem::TShell::Cmd;
 
 static Golem::FrameBitColor::Color_T convertToEnum_( const char* string );
+static Golem::ColorStream::Sequence_T convertOptionToEnum_( const char* string );
 
 ///////////////////////////
 Color::Color( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
@@ -56,14 +58,25 @@ Cpl::TShell::Dac::Command::Result_T Color::execute( Cpl::TShell::Dac::Context_& 
     // Policy: Single Color
     if ( numParms == 4 && strcmp( tokens.getParameter( 1 ), "bin" ) == 0 )
     {
-         newPolicyP = new Golem::ColorSingle( convertToEnum_(tokens.getParameter( 2 )), convertToEnum_(tokens.getParameter( 3 )) );
+        newPolicyP = new Golem::ColorSingle( convertToEnum_( tokens.getParameter( 2 ) ), convertToEnum_( tokens.getParameter( 3 ) ) );
+    }
+
+    // Policy: Stream/Sequence Colors
+    if ( numParms >= 3 && numParms <= 4 &&strcmp( tokens.getParameter( 1 ), "stream" ) == 0 )
+    {
+        bool fast = false;
+        if ( numParms == 4 )
+        {
+            fast = *tokens.getParameter( 3 ) == 'f'? true: false;
+        }
+        newPolicyP = new Golem::ColorStream( convertOptionToEnum_( tokens.getParameter( 2 ) ), fast );
     }
 
 
     // Policy: Rainbow Colors
     if ( numParms == 7 && strcmp( tokens.getParameter( 1 ), "bits" ) == 0 )
     {
-         newPolicyP = new Golem::ColorRainbow( convertToEnum_(tokens.getParameter( 2 )), convertToEnum_(tokens.getParameter( 3 )), convertToEnum_(tokens.getParameter( 4 )), convertToEnum_(tokens.getParameter( 5 )), convertToEnum_(tokens.getParameter( 6 )) );
+        newPolicyP = new Golem::ColorRainbow( convertToEnum_( tokens.getParameter( 2 ) ), convertToEnum_( tokens.getParameter( 3 ) ), convertToEnum_( tokens.getParameter( 4 ) ), convertToEnum_( tokens.getParameter( 5 ) ), convertToEnum_( tokens.getParameter( 6 ) ) );
     }
 
     // Update the application with the new policy
@@ -103,3 +116,19 @@ Golem::FrameBitColor::Color_T convertToEnum_( const char* string )
 
     return Golem::FrameBitColor::eOFF;
 }
+
+Golem::ColorStream::Sequence_T convertOptionToEnum_( const char* string )
+{
+    if ( strcmp( string, "on" ) == 0 )
+    {
+        return Golem::ColorStream::Sequence_T::eON_BITS;
+    }
+    else if ( strcmp( string, "off" ) == 0 )
+    {
+        return Golem::ColorStream::Sequence_T::eOFF_BITS;
+    }
+
+    // Default to ALL Bits        
+    return Golem::ColorStream::Sequence_T::eALL_BITS;
+}
+

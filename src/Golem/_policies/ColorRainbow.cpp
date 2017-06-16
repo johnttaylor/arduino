@@ -27,7 +27,7 @@ ColorRainbow::ColorRainbow( Color_T startColor, Color_T zeroColor, Color_T oneCo
 
 
 //////////////////////////////////
-FrameBitColor::Color_T ColorRainbow::getColor( Frame::Bit_T bitType, bool bitValue )
+FrameBitColor::Color_T ColorRainbow::getColor( Frame::Bit_T bitType, bool bitValue, bool newBit )
 {
  Color_T color = FrameBitColor::eOFF;
 

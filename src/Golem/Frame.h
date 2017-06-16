@@ -18,12 +18,12 @@
 
 /// Defines the minimum allowed Bit time for the Application
 #ifndef OPTION_GOLEM_FRAME_MIN_BIT_TIME 
-#define OPTION_GOLEM_FRAME_MIN_BIT_TIME     400
+#define OPTION_GOLEM_FRAME_MIN_BIT_TIME     200
 #endif
 
 /// Defines the maximum allowed Bit time for the Application
 #ifndef OPTION_GOLEM_FRAME_MAX_BIT_TIME 
-#define OPTION_GOLEM_FRAME_MAX_BIT_TIME     2000
+#define OPTION_GOLEM_FRAME_MAX_BIT_TIME     3000
 #endif
 
 /// Namespaces

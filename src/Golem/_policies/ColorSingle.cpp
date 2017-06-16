@@ -24,7 +24,7 @@ ColorSingle::ColorSingle( Color_T onColor, Color_T offColor )
 
 
 //////////////////////////////////
-FrameBitColor::Color_T ColorSingle::getColor( Frame::Bit_T bitType, bool bitValue )
+FrameBitColor::Color_T ColorSingle::getColor( Frame::Bit_T bitType, bool bitValue, bool newBit )
 {
     return bitValue? m_onColor: m_offColor;
 }

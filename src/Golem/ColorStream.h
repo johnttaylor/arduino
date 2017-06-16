@@ -1,5 +1,5 @@
-#ifndef Golem_ColorSingle_h_
-#define Golem_ColorSingle_h_
+#ifndef Golem_ColorStream_h_
+#define Golem_ColorStream_h_
 /*-----------------------------------------------------------------------------
 * This file is part of the Arduino Project.  The Arduino Project is an
 * open source project with a BSD type of licensing agreement.  See the license
@@ -18,23 +18,32 @@
 namespace Golem {
 
 
-/** This concrete class implements the Golem::FrameBitColor using a single
-    color.  A '1' bit is the color and '0' bit is off.
+/** This concrete class implements the Golem::FrameBitColor by sequencing
+    through the available colors.
  */
-class ColorSingle : public FrameBitColor
+class ColorStream : public FrameBitColor
 {
-protected:
-    /// Color for an '1' bit
-    Color_T m_onColor;
+public:
+    /// Options for the coloring sequencing
+    typedef enum
+    {
+        eON_BITS,   //!< Only 'use' colors for 1 bits
+        eOFF_BITS,  //!< Only 'use' colors for 0 bits
+        eALL_BITS   //!< Sequence colors for ALL bits
+    } Sequence_T;
 
-    /// Color for an '0' bit
-    Color_T m_offColor;
+
+protected:
+    /// 
+    Sequence_T  m_option;
+    ///
+    Color_T     m_currentColor;
+    ///
+    bool        m_fast;
 
 public:
-    /** Constructor. The 'offColor' argument is intended to allow the
-        application to 'invert' the On/Off logic.
-     */
-    ColorSingle( Color_T onColor, Color_T offColor=eOFF );
+    /// Constructor.
+    ColorStream( Sequence_T  option, bool fastSeq = false );
 
 public:
     /// See Golem::FrameBitColor

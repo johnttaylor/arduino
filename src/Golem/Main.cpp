@@ -132,7 +132,7 @@ void Main::process( void )
             }
 
             // Process the current bit
-            FrameBitColor::Color_T bitColor  = m_colorP->getColor( m_currentBit, m_currentValue );
+            FrameBitColor::Color_T bitColor  = m_colorP->getColor( m_currentBit, m_currentValue, newBit );
             uint8_t                intensity = m_rampP->getIntensity( Cpl::System::ElapsedTime::deltaMilliseconds( m_timeMarker ), m_frameP->getBitTime() );
             m_outputP->write( newBit, bitColor, intensity, m_currentBit );
             if ( newBit )

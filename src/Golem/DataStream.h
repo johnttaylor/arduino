@@ -22,13 +22,6 @@ namespace Golem {
 /** This class defines the interface for accessing bits in the Golem data
     stream.
 
-    NOTES:
-    Frame
-    Data: 	4 - 16
-    Parity: N,E,O
-    Stop:   1,2
-
-
     Data Stream:
     start address, end address
     sequence - once

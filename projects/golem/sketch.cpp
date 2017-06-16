@@ -23,8 +23,10 @@
 #include "Golem/TShell/Cmd/Frame.h"
 #include "Golem/TShell/Cmd/Ramp.h"
 #include "Golem/TShell/Cmd/Color.h"
+#include "Golem/TShell/Cmd/Stream.h"
 #include "gestures.h"
 #include "Arduino.h"
+#include "WMath.h"
 #include <stdlib.h>
 
 ////////////////////////////////////////////////////////////
@@ -68,6 +70,7 @@ static Golem::TShell::Cmd::Output                       outputPolicy( golem, cmd
 static Golem::TShell::Cmd::Frame                        framePolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
 static Golem::TShell::Cmd::Ramp                         rampPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
 static Golem::TShell::Cmd::Color                        colorPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Stream                       streamPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Stdio                               shell_( cmdProcessor_, "DAC-Shell", OPTION_DAC_SHELL_THREAD_PRIORITY );
 
 
@@ -85,6 +88,9 @@ void setup( void )
 
     // Initialize the Gesture Sub-system
     setupGestures();
+
+    // Initialize the random number generator (which is built on top of stdlib's rand() and srand())
+    randomSeed(analogRead(0));
 
     // Create/Launch the Command shell
     shell_.launch( Bsp_Serial(), Bsp_Serial() );

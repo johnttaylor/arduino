@@ -34,11 +34,15 @@ protected:
     ///
     const uint8_t*  m_curP;
     ///
+    bool            m_loop;
+    ///
+    bool            m_shuffle;
+    ///
     uint8_t         m_bitPos;
 
 public:
     /// Constructor
-    StreamAddress( const void* startAddress, const void* endAddress );
+    StreamAddress( const void* startAddress, const void* endAddress, bool loop=false, bool shuffle=false );
 
 public:
     /// See Golem::DataStream

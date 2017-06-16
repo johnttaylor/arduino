@@ -21,15 +21,6 @@ namespace Golem {
 /** This class defines the interface for mapping a LED color to a given
     bit in a Golem Data Stream.  Different concrete child classes provide
     different color options.
-
-    NOTES:
-    Colors
-    ---------		Rainbow		Binary				Stream bit pos, stream high, stream low
-    start/stop bits:	Blue		high: R|G|B|W|o			rgbworgbwor...
-    parity (1):		White		low:  G|B|W|R|o
-    data-one		Red			RG,RB,RW,GB,GW,BW,
-    data-zero		Green			GR,BR,WR,BG,WG,WB
-
  */
 class FrameBitColor
 {
@@ -50,7 +41,7 @@ public:
     /** Returns the color for the specified bit.  The method assumes that
         a eSTART_BIT bit is the start of a new 'word'.
      */
-    virtual Color_T getColor( Frame::Bit_T bitType, bool bitValue ) = 0;
+    virtual Color_T getColor( Frame::Bit_T bitType, bool bitValue, bool newBit ) = 0;
 
 public:
     /** This method returns a brief description of the current policy. The

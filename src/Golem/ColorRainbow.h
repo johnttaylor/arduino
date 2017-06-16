@@ -46,7 +46,7 @@ public:
 
 public:
     /// See Golem::FrameBitColor
-    Color_T getColor( Frame::Bit_T bitType, bool bitValue );
+    Color_T getColor( Frame::Bit_T bitType, bool bitValue, bool newBit );
 
     /// See Golem::FrameBitColor
     const char* getDescription( Cpl::Text::String& brief );
