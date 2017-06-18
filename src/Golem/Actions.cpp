@@ -4,7 +4,7 @@
 * agreement (license.txt) in the top/ directory or on the Internet at
 * http://integerfox.com/arduino/license.txt
 *
-* Copyright (c) 2017 John T. Taylor 
+* Copyright (c) 2017 John T. Taylor
 *
 * Redistributions of the source code must retain the above copyright notice.
 *----------------------------------------------------------------------------*/
@@ -16,7 +16,7 @@
 #include "Imu/Motion/Cube/Tilt.h"
 #include "Actions.h"
 
-#define SECT_  "gestures"
+#define SECT_  "actions"
 
 
 /// Namespaces
@@ -30,8 +30,11 @@ Actions::Actions( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver )
     , m_lock( lock )
     , m_feedbackMode( false )
     , m_feedbackOption( eSOLID_ON )
-    , m_feedbackWrgbColor( 0x0 )
+    , m_feedbackWrgbColor( OPTION_GOLEM_FEEDBACK_OFF_WRGB_COLOR )
     , m_feedbackTimeout( 0 )
+    , m_multiTimeout( OPTION_GOLEM_FEEDBACK_MULTI_TILTS_TIMEOUT_MSEC )
+    , m_tiltCount( 0 )
+    , m_currentAction( eINVALID )
     , m_tilted( false )
 {
 }
@@ -40,15 +43,16 @@ Actions::Actions( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver )
 ///////////////////////////////
 void Actions::process( void )
 {
+    runGestures();
+ 
     if ( m_feedbackMode )
     {
         runFeedbackMode();
     }
 
-    runGestures();
 }
 
-bool Actions::isFeedbackModeEnabled(void)
+bool Actions::isFeedbackModeEnabled( void )
 {
     Cpl::System::Mutex::ScopeBlock lock( m_lock );
     return m_feedbackMode;
@@ -70,7 +74,7 @@ void Actions::runFeedbackMode( void )
     {
         if ( Cpl::System::ElapsedTime::expiredMilliseconds( m_feedbackTimeMarker, timeout ) )
         {
-            disableFeedbackMode();
+            disableFeedbackMode_();
         }
         else
         {
@@ -81,7 +85,7 @@ void Actions::runFeedbackMode( void )
 }
 
 
-void Actions::enableFeedbackMode( FeedbackOption_T initialOption, uint32_t initialWrgbColor, unsigned long  timeoutInMsec )
+void Actions::enableFeedbackMode_( FeedbackOption_T initialOption, uint32_t initialWrgbColor, unsigned long  timeoutInMsec )
 {
     m_lock.lock();
     m_feedbackWrgbColor = initialWrgbColor;
@@ -91,13 +95,13 @@ void Actions::enableFeedbackMode( FeedbackOption_T initialOption, uint32_t initi
     m_lock.unlock();
 
     m_feedbackTimeMarker = Cpl::System::ElapsedTime::milliseconds();
-    setAllLEDs( 0 );
+    setAllLEDs( OPTION_GOLEM_FEEDBACK_OFF_WRGB_COLOR );
     m_ledDriver.show();
     CPL_SYSTEM_TRACE_MSG( SECT_, ("enableFeedbackMode(). option=%d, wrgb=%04X, time=%ld", initialOption, initialWrgbColor, timeoutInMsec) );
 
 }
 
-void Actions::updateFeedback( uint32_t newWrgbColor, FeedbackOption_T option, unsigned long  timeoutInMsec )
+void Actions::updateFeedback_( uint32_t newWrgbColor, FeedbackOption_T option, unsigned long  timeoutInMsec )
 {
     Cpl::System::Mutex::ScopeBlock lock( m_lock );
     m_feedbackWrgbColor = newWrgbColor;
@@ -111,15 +115,15 @@ void Actions::updateFeedback( uint32_t newWrgbColor, FeedbackOption_T option, un
         m_feedbackTimeMarker = Cpl::System::ElapsedTime::milliseconds();
     }
 }
-void Actions::disableFeedbackMode( void )
+void Actions::disableFeedbackMode_( void )
 {
     m_lock.lock();
     m_feedbackMode = false;
     m_lock.unlock();
 
-    setAllLEDs( 0 );
+    setAllLEDs( OPTION_GOLEM_FEEDBACK_OFF_WRGB_COLOR );
     m_ledDriver.show();
-    CPL_SYSTEM_TRACE_MSG( SECT_, ("disableFeedbackMode()") );
+    CPL_SYSTEM_TRACE_MSG( SECT_, ("disableFeedbackMode_()") );
 
 }
 
@@ -160,15 +164,20 @@ void Actions::runGestures( void )
                 case Imu::Motion::Cube::Tilt::eSOUTH:
                 case Imu::Motion::Cube::Tilt::eWEST:
                 case Imu::Motion::Cube::Tilt::eEAST:
-                    if ( !m_tilted )
+                    if ( !m_feedbackMode )
                     {
-                        m_tilted = true;
-                        enableFeedbackMode( FeedbackOption_T::eSOLID_ON, OPTION_GOLEM_FEEDBACK_INITIAL_COLOR, OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC );
+                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
+                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
+                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
+                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
+                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
+                        m_feedbackMode = true;
+                        enableFeedbackMode_( event.m_tiltEvent.m_currentState );
                         break;
                     }
                     else
                     {
-                        updateFeedback( OPTION_GOLEM_FEEDBACK_INITIAL_COLOR, FeedbackOption_T::eNO_CHANGE, OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC  );
+                        updateFeedback_( event.m_tiltEvent.m_currentState );
                     }
                     break;
 
@@ -176,7 +185,7 @@ void Actions::runGestures( void )
                     if ( m_tilted )
                     {
                         m_tilted = false;
-                        updateFeedback( 0x0, FeedbackOption_T::eNO_CHANGE, OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC  );
+                        updateFeedback_( 0x0, FeedbackOption_T::eNO_CHANGE, OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC );
                     }
                     break;
 
@@ -188,3 +197,16 @@ void Actions::runGestures( void )
     }
 }
 
+/////////////////////////////////////
+
+void Actions::startAction_( Tilt_T action )
+{
+}
+
+void Actions::updateAction( uint32_t spinnerAdjustment )
+{
+}
+
+void Actions::stopAction( void )
+{
+}
