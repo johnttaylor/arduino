@@ -20,8 +20,8 @@ using namespace Golem;
 
 
 ////////////////////////////////////////
-OutputNeoPixel::OutputNeoPixel( Options_T option, uint16_t numberOfLEDs, uint8_t pinNumber, bool isRGBW, neoPixelType ledType )
-    : m_ledDriver( numberOfLEDs, pinNumber, ledType )
+OutputNeoPixel::OutputNeoPixel( Options_T option, Adafruit_NeoPixel& ledDriver, bool isRGBW )
+    : m_ledDriver( ledDriver )
     , m_option( option )
     , m_currentLed( option == ePAIRS_SPIN_C ? SPIN_IDX_LIMIT : option == eQUARTER_SPIN_C ? QTR_SPIN_IDX_LIMIT : 0 )
     , m_rgbw( isRGBW )

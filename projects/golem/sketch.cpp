@@ -24,7 +24,7 @@
 #include "Golem/TShell/Cmd/Ramp.h"
 #include "Golem/TShell/Cmd/Color.h"
 #include "Golem/TShell/Cmd/Stream.h"
-#include "gestures.h"
+#include "Golem/gestures.h"
 #include "Arduino.h"
 #include "WMath.h"
 #include <stdlib.h>
@@ -55,8 +55,9 @@ extern Cpl::Io::InputOutput& Bsp_Serial( void );
 
 
 ////////////////////////////////////////////////////////////
-static Cpl::System::Mutex policyLock;
-static Golem::Main golem( policyLock );
+static Cpl::System::Mutex policyLock_;
+static Adafruit_NeoPixel ledDriver_( OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_NEO_TYPE+ NEO_KHZ800 );
+static Golem::Main golem_( policyLock_, ledDriver_ );
 extern uint32_t __etext[];
 
 // Shell Processor and Shell commands
@@ -66,11 +67,11 @@ static Cpl::TShell::Dac::Cmd::Help                      helpCmd_( cmdlist_, "inv
 static Cpl::TShell::Dac::Cmd::Trace                     traceCmd_( cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Dac::Cmd::Arduino::Dbg              debugCmd_( cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Dac::Cmd::FreeRTOS::Threads         threads_( cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Output                       outputPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Frame                        framePolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Ramp                         rampPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Color                        colorPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Stream                       streamPolicy( golem, cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Output                       outputPolicy( golem_, ledDriver_, cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Frame                        framePolicy( golem_, cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Ramp                         rampPolicy( golem_, cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Color                        colorPolicy( golem_, cmdlist_, "invoke_special_static_constructor"  );
+static Golem::TShell::Cmd::Stream                       streamPolicy( golem_, cmdlist_, "invoke_special_static_constructor"  );
 static Cpl::TShell::Stdio                               shell_( cmdProcessor_, "DAC-Shell", OPTION_DAC_SHELL_THREAD_PRIORITY );
 
 
@@ -100,8 +101,8 @@ void setup( void )
     Golem::Frame*           frameP  = new Golem::FrameSimple( 500, 8, 1, Golem::Frame::eNONE );
     Golem::FrameBitColor*   colorP  = new Golem::ColorSingle( Golem::FrameBitColor::eGREEN );
     Golem::IntensityRamp*   rampP   = new Golem::RampPercent(0.0);
-    Golem::Output*          outputP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_IS_RGBW, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
-    golem.setPolicies( frameP, streamP, colorP, rampP, outputP );
+    Golem::Output*          outputP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, ledDriver_, OPTION_NEOPIXEL_CFG_IS_RGBW );
+    golem_.setPolicies( frameP, streamP, colorP, rampP, outputP );
 }
 
 /**************************************************************************
@@ -114,7 +115,7 @@ void loop( void )
     Cpl::System::FreeRTOS::Thread::makeNativeMainThreadACplThread();
 
     // Run the Golem app at 20Hz
-    golem.process();
+    golem_.process();
     Cpl::System::Api::sleep( 50 );
 }
 

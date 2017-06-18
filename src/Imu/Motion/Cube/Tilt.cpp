@@ -16,7 +16,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define SECT_   "imu::motion::cube::tilt"
+#define SECT_           "tilt"
+#define SECT_VERBOSE_   "tilt-v"
 //#define SECT_   "sketch"
 
 #define GRAVITY_CONSTANT        980.0
@@ -221,9 +222,9 @@ bool Tilt::process( Driver::Imu::Vector<int16_t>& gravityVector, Event_T& result
             AspectState_T                          currentAspect         = m_aspectState;
             bool                                   currentChanged        = changed;
 
-            changed = checkForTopSurface( abs(filteredVector.x), filteredVector.x, eSOUTH, eNORTH, transposeSouth_, transposeNorth_, m_topXSurfaceFlag, m_topXStartTime, m_topYSurfaceFlag, m_topZSurfaceFlag ) ? true : changed;
-            changed = checkForTopSurface( abs(filteredVector.y), filteredVector.y, eEAST, eWEST, transposeEast_, transposeWest_, m_topYSurfaceFlag, m_topYStartTime, m_topXSurfaceFlag, m_topZSurfaceFlag ) ? true : changed;
-            if ( checkForTopSurface( abs(filteredVector.z), filteredVector.z, eTOP, eBOTTOM, transposeTop_, transposeBottomFlippedY_, m_topZSurfaceFlag, m_topZStartTime, m_topYSurfaceFlag, m_topXSurfaceFlag ) )
+            changed = checkForTopSurface( abs( filteredVector.x ), filteredVector.x, eSOUTH, eNORTH, transposeSouth_, transposeNorth_, m_topXSurfaceFlag, m_topXStartTime, m_topYSurfaceFlag, m_topZSurfaceFlag ) ? true : changed;
+            changed = checkForTopSurface( abs( filteredVector.y ), filteredVector.y, eEAST, eWEST, transposeEast_, transposeWest_, m_topYSurfaceFlag, m_topYStartTime, m_topXSurfaceFlag, m_topZSurfaceFlag ) ? true : changed;
+            if ( checkForTopSurface( abs( filteredVector.z ), filteredVector.z, eTOP, eBOTTOM, transposeTop_, transposeBottomFlippedY_, m_topZSurfaceFlag, m_topZStartTime, m_topYSurfaceFlag, m_topXSurfaceFlag ) )
             {
                 changed = true;
 
@@ -235,12 +236,12 @@ bool Tilt::process( Driver::Imu::Vector<int16_t>& gravityVector, Event_T& result
                     {
                         m_surfaceOrientationPtr = &transposeBottomFlippedX_;
                     }
-                    
+
                     // Flipped over the Y-Axis
-                    
-                    else if ( filteredVector.x >= 0 && filteredVector.y < 0 ) 
+
+                    else if ( filteredVector.x >= 0 && filteredVector.y < 0 )
                     {
-                      m_surfaceOrientationPtr = &transposeBottomFlippedY_;
+                        m_surfaceOrientationPtr = &transposeBottomFlippedY_;
                     }
 
                     // Can't distinguish (e.g. the 'bottom' is not level) -->stay with current surface and try again
@@ -268,15 +269,15 @@ bool Tilt::process( Driver::Imu::Vector<int16_t>& gravityVector, Event_T& result
 
 ///////////////////////////////////////////////////////////////////
 bool Tilt::checkForTopSurface( int16_t                                 absAxisValue,
-                                   int16_t                                 axisValue,
-                                   Surface_T                               positiveSurface,
-                                   Surface_T                               negativeSurface,
-                                   Driver::Imu::TransposeAxises<int16_t>&  positiveTransponse,
-                                   Driver::Imu::TransposeAxises<int16_t>&  negativeTransponse,
-                                   SurfaceTracking_T&                      surfaceFlag,
-                                   unsigned long&                          startTime,
-                                   SurfaceTracking_T&                      otherSurfaceFlag1,
-                                   SurfaceTracking_T&                      otherSurfaceFlag2 )
+                               int16_t                                 axisValue,
+                               Surface_T                               positiveSurface,
+                               Surface_T                               negativeSurface,
+                               Driver::Imu::TransposeAxises<int16_t>&  positiveTransponse,
+                               Driver::Imu::TransposeAxises<int16_t>&  negativeTransponse,
+                               SurfaceTracking_T&                      surfaceFlag,
+                               unsigned long&                          startTime,
+                               SurfaceTracking_T&                      otherSurfaceFlag1,
+                               SurfaceTracking_T&                      otherSurfaceFlag2 )
 {
     bool result = false;
     if ( absAxisValue >= ((int) GRAVITY_CONSTANT - m_verticalThreshold) )
@@ -290,14 +291,14 @@ bool Tilt::checkForTopSurface( int16_t                                 absAxisVa
         {
             startTime   = Cpl::System::ElapsedTime::milliseconds();
             surfaceFlag = axisValue < 0 ? eTRACKING_NEGATIVE : eTRACKING_POSITIVE;
-            CPL_SYSTEM_TRACE_MSG( SECT_, ("Starting TopSurface timer. abs=%d, ax=%d, flag=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, surfaceFlag, positiveSurface, negativeSurface) );
+            CPL_SYSTEM_TRACE_MSG( SECT_VERBOSE_, ("Starting TopSurface timer. abs=%d, ax=%d, flag=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, surfaceFlag, positiveSurface, negativeSurface) );
         }
 
 
         // Has the timer expired?
         if ( surfaceFlag != eSTOPPED && Cpl::System::ElapsedTime::expiredMilliseconds( startTime, m_surfaceSwitchDuration ) )
         {
-            CPL_SYSTEM_TRACE_MSG( SECT_, ("TopSurface timer Expired. abs=%d, ax=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, positiveSurface, negativeSurface) );
+            CPL_SYSTEM_TRACE_MSG( SECT_VERBOSE_, ("TopSurface timer Expired. abs=%d, ax=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, positiveSurface, negativeSurface) );
 
             // Default to the current surface
             Surface_T newSurface = m_currentTop;
@@ -336,7 +337,7 @@ bool Tilt::checkForTopSurface( int16_t                                 absAxisVa
     else
     {
         surfaceFlag = eSTOPPED;
-        CPL_SYSTEM_TRACE_MSG( SECT_, ("Stopping TopSurface timer. abs=%d, ax=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, positiveSurface, negativeSurface) );
+        CPL_SYSTEM_TRACE_MSG( SECT_VERBOSE_, ("Stopping TopSurface timer. abs=%d, ax=%d, posSurface=%d, negSurface=%d", absAxisValue, axisValue, positiveSurface, negativeSurface) );
     }
 
     return result;
@@ -348,9 +349,11 @@ bool Tilt::updateState( AspectState_T newState, float newTiltAngle )
     if ( newState != m_aspectState || newTiltAngle != m_tiltAngle )
     {
         result = true;
+        CPL_SYSTEM_TRACE_MSG( SECT_, ("Tilt::updateState(). changed=%d, aspect=%d, angle=%d", result, newState, (int)newTiltAngle) );
     }
     m_aspectState    = newState;
     m_tiltAngle      = newTiltAngle;
+
 
     return result;
 }

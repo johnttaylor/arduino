@@ -4,13 +4,14 @@
 * agreement (license.txt) in the top/ directory or on the Internet at
 * http://integerfox.com/arduino/license.txt
 *
-* Copyright (c) 2017 John T. Taylor Elasped
+* Copyright (c) 2017 John T. Taylor 
 *
 * Redistributions of the source code must retain the above copyright notice.
 *----------------------------------------------------------------------------*/
 
 
 #include "Main.h"
+#include "Actions.h"
 #include "Cpl/System/ElapsedTime.h"
 #include "Cpl/System/Trace.h"
 
@@ -24,8 +25,8 @@ using namespace Golem;
 
 
 ///////////////////////////////
-Main::Main( Cpl::System::Mutex& lock )
-    : m_frameP( 0 )
+Main::Main( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver )
+    :m_frameP( 0 )
     , m_colorP( 0 )
     , m_outputP( 0 )
     , m_streamP( 0 )
@@ -43,6 +44,7 @@ Main::Main( Cpl::System::Mutex& lock )
     , m_dataBit( Frame::MAXIMUM_DATA_BITS )
     , m_paritySum( 0 )
     , m_dirty( false )
+    , m_actions( lock, ledDriver )
 {
 }
 
@@ -50,8 +52,18 @@ Main::Main( Cpl::System::Mutex& lock )
 ///////////////////////////////
 void Main::process( void )
 {
+    m_actions.process();
+
+    if ( !m_actions.isFeedbackModeEnabled() )
+    {
+        runPolicies();
+    }
+}
+
+void Main::runPolicies( void )
+{
     CPL_SYSTEM_TRACE_FUNC( SECTVERBOSE_ );
-    CPL_SYSTEM_TRACE_MSG( SECTVERBOSE_, ("process().  current policies: frameP=%p, streamP=%, colorP=%p, rampP=%p, outputP=%p",
+    CPL_SYSTEM_TRACE_MSG( SECTVERBOSE_, ("runPolicies().  current policies: frameP=%p, streamP=%p, colorP=%p, rampP=%p, outputP=%p",
                           m_frameP, m_streamP, m_colorP, m_rampP, m_outputP) );
 
     // I must have ALL policies to do anything...
@@ -282,3 +294,5 @@ Frame::FrameConfig_T Main::getFrameConfig( void )
 
     return result;
 }
+
+

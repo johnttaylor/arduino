@@ -18,18 +18,18 @@
 #define SECT_   "cmd::stream"
 
 /// Namespaces
-using namespace Golem::TShell::Cmd;
+using namespace Golem::TShell;
 
 
 
 ///////////////////////////
-Stream::Stream( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
+Cmd::Stream::Stream( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
     : Cpl::TShell::Dac::Cmd::Command( commandList, "stream" )
     , m_golem( application )
 {
 }
 
-Stream::Stream( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
+Cmd::Stream::Stream( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
     : Cpl::TShell::Dac::Cmd::Command( commandList, "stream", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
     , m_golem( application )
 {
@@ -37,7 +37,7 @@ Stream::Stream( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Stream::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw()
+Cpl::TShell::Dac::Command::Result_T Cmd::Stream::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw()
 {
     Cpl::Text::String&          newName    = context.getTokenBuffer();
     Cpl::Text::String&          outtext    = context.getOutputBuffer();

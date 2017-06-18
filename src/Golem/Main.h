@@ -17,30 +17,30 @@
 #include "Golem/Output.h"
 #include "Golem/DataStream.h"
 #include "Golem/IntensityRamp.h"
-#include "Cpl/System/Mutex.h"
+#include "Golem/Actions.h"
 #include "Cpl/Text/String.h"
+
 
 
 /// The output pin for controlling the NeoPixel LED strip
 #ifndef OPTION_NEOPIXEL_CFG_PIN
-#define OPTION_NEOPIXEL_CFG_PIN         30
+#define OPTION_NEOPIXEL_CFG_PIN                 30
 #endif
 
 /// Number of LEDs in the LED strip
 #ifndef OPTION_NEOPIXEL_CFG_NUM_PIXELS
-#define OPTION_NEOPIXEL_CFG_NUM_PIXELS  16
+#define OPTION_NEOPIXEL_CFG_NUM_PIXELS          16
 #endif
 
 /// Type of NexoPixel strip
 #ifndef OPTION_NEOPIXEL_CFG_NEO_TYPE
-#define OPTION_NEOPIXEL_CFG_NEO_TYPE    NEO_GRBW
+#define OPTION_NEOPIXEL_CFG_NEO_TYPE            NEO_GRBW
 #endif
 
 /// Boolean flag to indicate 3 color (RGB) or 4 color (RGBW) LEDs
 #ifndef OPTION_NEOPIXEL_CFG_IS_RGBW
-#define OPTION_NEOPIXEL_CFG_IS_RGBW     true
+#define OPTION_NEOPIXEL_CFG_IS_RGBW             true
 #endif
-
 
 /// Namespaces
 namespace Golem {
@@ -62,62 +62,65 @@ class Main
 {
 protected:
     /// Policy Instance in use
-    Frame*              m_frameP;
+    Frame*                  m_frameP;
 
     /// Policy Instance in use
-    FrameBitColor*      m_colorP;
+    FrameBitColor*          m_colorP;
 
     /// Policy Instance in use
-    Output*             m_outputP;
+    Output*                 m_outputP;
 
     /// Policy Instance in use
-    DataStream*         m_streamP;
+    DataStream*             m_streamP;
 
     /// Policy Instance in use
-    IntensityRamp*      m_rampP;
+    IntensityRamp*          m_rampP;
 
     /// Policy Instance in to use Next
-    Frame*              m_newFrameP;
+    Frame*                  m_newFrameP;
 
     /// Policy Instance in use
-    FrameBitColor*      m_newColorP;
+    FrameBitColor*          m_newColorP;
 
     /// Policy Instance in use Next
-    Output*             m_newOutputP;
+    Output*                 m_newOutputP;
 
     /// Policy Instance in use Next
-    DataStream*         m_newStreamP;
+    DataStream*             m_newStreamP;
 
     /// Policy Instance in use Next
-    IntensityRamp*      m_newRampP;
+    IntensityRamp*          m_newRampP;
 
     /// Mutex use to safely request new policies
-    Cpl::System::Mutex& m_lock;
+    Cpl::System::Mutex&     m_lock;
 
     /// Timer marker of last bit
-    unsigned long       m_timeMarker;
+    unsigned long           m_timeMarker;
 
     /// The current bit being processed
-    Frame::Bit_T        m_currentBit;
+    Frame::Bit_T            m_currentBit;
 
     /// The current bit's value
-    bool                m_currentValue;
+    bool                    m_currentValue;
 
     /// The current stop bit processed
-    uint8_t             m_stopBit;
+    uint8_t                 m_stopBit;
 
     /// The current data bit processed
-    uint8_t             m_dataBit;
+    uint8_t                 m_dataBit;
 
     /// Used to calculate the parity bit
-    uint8_t             m_paritySum;
+    uint8_t                 m_paritySum;
 
     /// At least one new Policy is available
-    bool                m_dirty;
+    bool                    m_dirty;
+
+    /// Action sub-system
+    Actions                 m_actions;
 
 public:
     /// Constructor
-    Main( Cpl::System::Mutex& lock );
+    Main( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver );
 
 public:
     /** This method provides the 'execution time slice' for the Golem
@@ -195,6 +198,18 @@ public:
         policy. This call is thread safe.
      */
     Frame::FrameConfig_T getFrameConfig( void );
+
+public:
+    /// This method pauses the current policies
+    void pausePolicies(void);
+
+    /// This method resumes the current policies
+     void resumePolicies(void);
+
+protected:
+    /// Helper
+    void runPolicies( void );
+
 };
 
 

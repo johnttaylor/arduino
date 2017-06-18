@@ -16,6 +16,8 @@
 #include "colony_config.h"
 #include "Golem/Main.h"
 #include "Cpl/TShell/Dac/Cmd/Command.h"
+#include "Adafruit_NeoPixel.h"
+
 
 /** Usage
                                        "         1         2         3         4         5         6         7         8"
@@ -46,7 +48,11 @@ class Output : public Cpl::TShell::Dac::Cmd::Command
 {
 protected:
     /// Reference to my application
-    Golem::Main&    m_golem;
+    Golem::Main&        m_golem;
+
+    /// Reference to the NeoPixel driver
+    Adafruit_NeoPixel&  m_ledDriver;
+
 
 public:
     /// See Cpl::TShell::Dac::Command
@@ -58,10 +64,10 @@ public:
 
 public:
     /// Constructor
-    Output( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw();
+    Output( Golem::Main& application, Adafruit_NeoPixel& ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw();
 
     /// Constructor.  Used to create a static instance of the command
-    Output( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw();
+    Output( Golem::Main& application, Adafruit_NeoPixel& ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw();
 
 
 public:

@@ -50,7 +50,7 @@ public:
     
 protected:
     /// NeoPixel driver
-    Adafruit_NeoPixel   m_ledDriver;
+    Adafruit_NeoPixel&  m_ledDriver;
 
     /// Output option
     Options_T           m_option;
@@ -66,7 +66,7 @@ protected:
 
 public:
     /// Constructor
-    OutputNeoPixel( Options_T option, uint16_t numberOfLEDs, uint8_t pinNumber, bool isRGBW=false, neoPixelType ledType=NEO_GRB + NEO_KHZ800 );
+    OutputNeoPixel( Options_T option, Adafruit_NeoPixel& ledDriver, bool isRGBW=false );
 
     /// Destructor
     ~OutputNeoPixel();

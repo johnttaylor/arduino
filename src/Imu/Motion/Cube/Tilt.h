@@ -63,7 +63,7 @@ public:
         eSOUTH,             //!< The south surface is the side perpendicular to the negative X-Axis
         eWEST,              //!< The west surface is the side perpendicular to the positive Y-Axis
         eBOTTOM,            //!< The bottom surface is the side perpendicular to the negative Z-Axis
-        eTOP                //!< The top surface is the side perpendicular to the positive Y-Axis
+        eTOP                //!< The top surface is the side perpendicular to the positive Z-Axis
     };
 
     typedef struct
