@@ -44,7 +44,7 @@ Main::Main( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver )
     , m_dataBit( Frame::MAXIMUM_DATA_BITS )
     , m_paritySum( 0 )
     , m_dirty( false )
-    , m_actions( lock, ledDriver )
+    , m_actions( ledDriver )
 {
 }
 
@@ -53,8 +53,7 @@ Main::Main( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver )
 void Main::process( void )
 {
     m_actions.process();
-
-    if ( !m_actions.isFeedbackModeEnabled() )
+    if ( !m_actions.isActionDetectionInProgress() )
     {
         runPolicies();
     }

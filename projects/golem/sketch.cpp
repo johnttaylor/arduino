@@ -17,7 +17,7 @@
 #include "Golem/StreamAddress.h"
 #include "Golem/OutputNeoPixel.h"
 #include "Golem/FrameSimple.h"
-#include "Golem/ColorSingle.h"
+#include "Golem/ColorStream.h"
 #include "Golem/RampPercent.h"
 #include "Golem/TShell/Cmd/Output.h"
 #include "Golem/TShell/Cmd/Frame.h"
@@ -99,9 +99,9 @@ void setup( void )
     // Set initial Golem Policies
     Golem::DataStream*      streamP = new Golem::StreamAddress( (void*) 0x1c000, (void*) __etext );
     Golem::Frame*           frameP  = new Golem::FrameSimple( 500, 8, 1, Golem::Frame::eNONE );
-    Golem::FrameBitColor*   colorP  = new Golem::ColorSingle( Golem::FrameBitColor::eGREEN );
+    Golem::FrameBitColor*   colorP  = new Golem::ColorStream( Golem::ColorStream::eALL_BITS );
     Golem::IntensityRamp*   rampP   = new Golem::RampPercent(0.0);
-    Golem::Output*          outputP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eALL, ledDriver_, OPTION_NEOPIXEL_CFG_IS_RGBW );
+    Golem::Output*          outputP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eQUARTER_SPIN_C, ledDriver_, OPTION_NEOPIXEL_CFG_IS_RGBW );
     golem_.setPolicies( frameP, streamP, colorP, rampP, outputP );
 }
 

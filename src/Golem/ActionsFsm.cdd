@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<c:Diagram
+xmlns:c="http://www.cadifra.com/schema/1.0"
+xmlns:c1v3="http://www.cadifra.com/schema/1.3"
+ProductVersion="1.3.3">
+
+<Page id="r1"
+Size="1"
+Width="21590"
+Height="27940"
+Rows="1"
+Columns="1"
+Margins="1016 1016 1016 1016"
+CutGlueMargins="1016 1016 1016 1016"
+Scale="1"/>
+
+<DiagramType id="r2"
+TypeValue="5"/>
+
+<Style id="r3">
+<dir n="Base" Typeface="arial" Size="11" Bold="0">
+<dir n="Free Text" Size="10" Bold="0"/>
+<dir n="State Diagram">
+<dir n="State" Bold="0">
+<dir n="Compartment" Size="8"/>
+<dir n="Header" Bold="1"/>
+</dir>
+<dir n="Transition" Bold="0"/>
+</dir>
+</dir>
+</Style>
+
+<State id="r4"
+Pos="300 -1600"
+Size="3200 1000">
+<Text>Idle</Text>
+</State>
+
+<State id="r7"
+Pos="5800 -3300"
+Size="12600 14500"
+Large="1">
+<Text>ControllingLEDOutputs</Text>
+<State id="r5"
+Pos="11600 -5600"
+Size="2000 1000">
+<Text>Titled</Text>
+</State>
+<State id="r6"
+Pos="11900 -12900"
+Size="4800 2600">
+<Text>AckTilt</Text>
+<Compartment id="r92"
+Pos="11900 -13600"
+Size="4800 1900">
+<Text>onEntry:<p/>
+stopTimeoutTimer();<p/>
+stopMultiTimer();<p/>
+startAckTimer();<p/>
+setAckTiltVisualCue();</Text>
+</Compartment>
+</State>
+<InitialState id="r15"
+Pos="6900 -4400"/>
+<State id="r20"
+Pos="11800 -10800"
+Size="2000 1000">
+<Text>Homed</Text>
+</State>
+<State id="r69"
+Pos="6500 -10900"
+Size="700 700">
+<Text>&lt;&gt;</Text>
+</State>
+<State id="r100"
+Pos="6400 -13900"
+Size="3100 2200">
+<Text>AckExit</Text>
+<Compartment id="r122"
+Pos="6400 -14600"
+Size="3100 1500">
+<Text>onEntry:<p/>
+stopSpinnerTimer();<p/>
+startAckTimer();<p/>
+setAckExitVisualCue();</Text>
+</Compartment>
+</State>
+</State>
+
+<State id="r8"
+Pos="12700 -20400"
+Size="2000 1000">
+<Text>Spinning</Text>
+</State>
+
+<State id="r9"
+Pos="11900 -1700"
+Size="2100 1000">
+<Text>TimedOut</Text>
+</State>
+
+<Transition id="r10">
+<End id="r48"
+Pos="2900 -2600"
+State="r4"
+Type="1"/>
+<Segment id="r47"/>
+<Join id="r46"
+Pos="2900 -5400"/>
+<Segment id="r11">
+<Anchor id="r13"
+Pos="4200 -5400">
+<FreeText id="r14"
+Pos="4635 -5200"
+Origin="3">
+<Text>#isTilt()/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r12"
+Pos="5800 -5400"
+State="r7"
+Type="2"/>
+</Transition>
+
+<Transition id="r16">
+<End id="r95"
+Pos="7200 -4773.2050807568876"
+State="r15"
+Type="1"/>
+<Segment id="r94"
+Oblique="1"/>
+<Join id="r93"
+Pos="7200 -4700"/>
+<Segment id="r31"/>
+<Join id="r30"
+Pos="7200 -4500"/>
+<Segment id="r17">
+<Anchor id="r18"
+Pos="7200 -4500">
+<FreeText id="r19"
+Pos="7800 -4662"
+Origin="1">
+<Text>/<p/>
+beginTilt();<p/>
+setTiltVisualCue();<p/>
+startTimeoutTimer();<p/>
+startMultiTimer();</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<Join id="r66"
+Pos="12400 -4500"/>
+<Segment id="r67"/>
+<End id="r68"
+Pos="12400 -5600"
+State="r5"
+Type="2"/>
+</Transition>
+
+<Transition id="r21">
+<End id="r22"
+Pos="12800 -6600"
+State="r5"
+Type="1"/>
+<Segment id="r23">
+<Anchor id="r25"
+Pos="12800 -6600">
+<FreeText id="r26"
+Pos="12559 -7500"
+Origin="2">
+<Text>#isHomed()/<p/>
+startTimeoutTimer();<p/>
+startMultiTimer();<p/>
+setHomedVisualCue();<p/>
+updateHomed();</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r24"
+Pos="12800 -10800"
+State="r20"
+Type="2"/>
+</Transition>
+
+<Transition id="r27">
+<End id="r62"
+Pos="12800 -11800"
+State="r20"
+Type="1"/>
+<Segment id="r142">
+<Anchor id="r28"
+Pos="12800 -12900">
+<FreeText id="r29"
+Pos="13400 -12500"
+Origin="4">
+<Text>#isValidAction()/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r143"
+Pos="12800 -12900"
+State="r6"
+Type="2"/>
+</Transition>
+
+<Transition id="r32">
+<End id="r33"
+Pos="15300 -3300"
+State="r7"
+Type="1"/>
+<Segment id="r34"/>
+<Join id="r35"
+Pos="15300 -2300"/>
+<Segment id="r36">
+<Anchor id="r42"
+Pos="14000 -2300">
+<FreeText id="r43"
+Pos="14600 -2100"
+Origin="4">
+<Text>#isTimeoutExpired()/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r37"
+Pos="14000 -2300"
+State="r9"
+Type="2"/>
+</Transition>
+
+<Transition id="r38">
+<End id="r39"
+Pos="11900 -2300"
+State="r9"
+Type="1"/>
+<Segment id="r40">
+<Anchor id="r44"
+Pos="5000 -2300">
+<FreeText id="r45"
+Pos="5000 -2100"
+Origin="4">
+<Text>#isHomed()/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r41"
+Pos="3500 -2300"
+State="r4"
+Type="2"/>
+</Transition>
+
+<Transition id="r49">
+<End id="r65"
+Pos="13800 -11300"
+State="r20"
+Type="1"/>
+<Segment id="r64"/>
+<Join id="r63"
+Pos="14300 -11300"/>
+<Segment id="r50"/>
+<Join id="r51"
+Pos="14300 -6200"/>
+<Segment id="r52">
+<Anchor id="r54"
+Pos="13600 -6200">
+<FreeText id="r55"
+Pos="14500 -6500"
+Origin="1">
+<Text>#isTilt()/<p/>
+startTimeoutTimer();<p/>
+startMultiTimer();<p/>
+setTiltVisualCue();<p/>
+updateTilt();</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r53"
+Pos="13600 -6200"
+State="r5"
+Type="2"/>
+</Transition>
+
+<Transition id="r56">
+<End id="r57"
+Pos="13000 -5600"
+State="r5"
+Type="1"/>
+<Segment id="r58">
+<Anchor id="r60"
+Pos="13000 -4200">
+<FreeText id="r61"
+Pos="13200 -4200"
+Origin="1">
+<Text>#isMultiTimerExpired()/<p/>
+stopTimeoutTimer();</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r59"
+Pos="13000 -2700"
+State="r9"
+Type="2"/>
+</Transition>
+
+<Transition id="r70">
+<End id="r71"
+Pos="11800 -11300"
+State="r20"
+Type="1"/>
+<Segment id="r72">
+<Anchor id="r74"
+Pos="8300 -11300">
+<FreeText id="r75"
+Pos="7600 -11100"
+Origin="4">
+<Text>#isMultiTimerExpired()/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r73"
+Pos="7200 -11300"
+State="r69"
+Type="2"/>
+</Transition>
+
+<Transition id="r76">
+<End id="r77"
+Pos="6900 -11600"
+State="r69"
+Type="1"/>
+<Segment id="r78"/>
+<Join id="r79"
+Pos="6900 -13300"/>
+<Segment id="r80">
+<Anchor id="r88"
+Pos="7600 -13300">
+<FreeText id="r89"
+Pos="7600 -13100"
+Origin="4">
+<Text>[isValidMultiAction()]/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r81"
+Pos="11900 -13300"
+State="r6"
+Type="2"/>
+</Transition>
+
+<Transition id="r82">
+<End id="r83"
+Pos="6500 -11300"
+State="r69"
+Type="1"/>
+<Segment id="r84">
+<Anchor id="r90"
+Pos="5300 -11300">
+<FreeText id="r91"
+Pos="3927 -11100"
+Origin="3">
+<Text>[else]</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<Join id="r85"
+Pos="2000 -11300"/>
+<Segment id="r86"/>
+<End id="r87"
+Pos="2000 -2600"
+State="r4"
+Type="2"/>
+</Transition>
+
+<Transition id="r96">
+<End id="r111"
+Pos="13900 -15500"
+State="r6"
+Type="1"/>
+<Segment id="r110">
+<Anchor id="r98"
+Pos="13900 -17500">
+<FreeText id="r99"
+Pos="13660 -17908"
+Origin="2">
+<Text>#isAckTimerExpired()/<p/>
+beginAction();<p/>
+startSpinnerTimer();</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r97"
+Pos="13900 -20400"
+State="r8"
+Type="2"/>
+</Transition>
+
+<Transition id="r101">
+<End id="r102"
+Pos="14400 -20400"
+State="r8"
+Type="1"/>
+<Segment id="r103"/>
+<Join id="r104"
+Pos="14400 -19700"/>
+<Segment id="r105">
+<Anchor id="r108"
+Pos="14400 -19700">
+<FreeText id="r109"
+Pos="14400 -19500"
+Origin="4">
+<Text>#isSpinnerChange()/<p/>
+updateAction();<p/>
+startSpinnerTimer();</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<Join id="r106"
+Pos="15700 -19700"/>
+<Segment id="r107"/>
+<Join id="r112"
+Pos="15700 -20800"/>
+<Segment id="r113"/>
+<End id="r114"
+Pos="14700 -20800"
+State="r8"
+Type="2"/>
+</Transition>
+
+<Transition id="r115">
+<End id="r130"
+Pos="12700 -20800"
+State="r8"
+Type="1"/>
+<Segment id="r116">
+<Anchor id="r117"
+Pos="9200 -20800">
+<FreeText id="r118"
+Pos="10700 -20954"
+Origin="1">
+<Text>#isTilt()/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<Join id="r119"
+Pos="8800 -20800"/>
+<Segment id="r120"/>
+<End id="r121"
+Pos="8800 -16100"
+State="r100"
+Type="2"/>
+</Transition>
+
+<Transition id="r123">
+<End id="r140"
+Pos="13600 -21400"
+State="r8"
+Type="1"/>
+<Segment id="r139"/>
+<Join id="r138"
+Pos="13600 -22300"/>
+<Segment id="r124">
+<Anchor id="r128"
+Pos="10000 -22300">
+<FreeText id="r129"
+Pos="8700 -22454"
+Origin="1">
+<Text>#isSpinnerTimerExpired()/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<Join id="r125"
+Pos="7100 -22300"/>
+<Segment id="r126"/>
+<End id="r127"
+Pos="7100 -16100"
+State="r100"
+Type="2"/>
+</Transition>
+
+<Transition id="r131">
+<End id="r141"
+Pos="6400 -15000"
+State="r100"
+Type="1"/>
+<Segment id="r132">
+<Anchor id="r136"
+Pos="2500 -15000">
+<FreeText id="r137"
+Pos="1500 -15254"
+Origin="1">
+<Text>#isAckTimerExpired()/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<Join id="r133"
+Pos="1800 -15000"/>
+<Segment id="r134"/>
+<End id="r135"
+Pos="1800 -13800"
+State="r151"
+Type="2"/>
+</Transition>
+
+<InitialState id="r144"
+Pos="4500 -300"/>
+
+<Transition id="r145">
+<End id="r146"
+Pos="4500 -500"
+State="r144"
+Type="1"/>
+<Segment id="r147"/>
+<Join id="r148"
+Pos="2000 -500"/>
+<Segment id="r149"/>
+<End id="r150"
+Pos="2000 -1600"
+State="r4"
+Type="2"/>
+</Transition>
+
+<State id="r151"
+Pos="300 -12800"
+Size="3600 1000">
+<Text>WaitingForHomed</Text>
+</State>
+
+<Transition id="r152">
+<End id="r153"
+Pos="900 -12800"
+State="r151"
+Type="1"/>
+<Segment id="r154">
+<Anchor id="r156"
+Pos="900 -12000">
+<FreeText id="r157"
+Pos="1100 -12000"
+Origin="1">
+<Text>#isHomed()/</Text>
+</FreeText>
+</Anchor>
+</Segment>
+<End id="r155"
+Pos="900 -2600"
+State="r4"
+Type="2"/>
+</Transition>
+
+</c:Diagram>

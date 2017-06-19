@@ -10,7 +10,6 @@
 *----------------------------------------------------------------------------*/
 
 
-#include "gestures.h"
 #include "Cpl/System/ElapsedTime.h"
 #include "Cpl/System/Trace.h"
 #include "Imu/Motion/Cube/Tilt.h"
@@ -25,188 +24,308 @@ using namespace Golem;
 
 
 ///////////////////////////////
-Actions::Actions( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver )
+Actions::Actions( Adafruit_NeoPixel& ledDriver )
     : m_ledDriver( ledDriver )
-    , m_lock( lock )
-    , m_feedbackMode( false )
-    , m_feedbackOption( eSOLID_ON )
-    , m_feedbackWrgbColor( OPTION_GOLEM_FEEDBACK_OFF_WRGB_COLOR )
-    , m_feedbackTimeout( 0 )
-    , m_multiTimeout( OPTION_GOLEM_FEEDBACK_MULTI_TILTS_TIMEOUT_MSEC )
     , m_tiltCount( 0 )
-    , m_currentAction( eINVALID )
-    , m_tilted( false )
+    , m_tiltAction( eINVALID )
+    , m_currentTilt( Imu::Motion::Cube::Tilt::AspectState_T::eUNKNOWN )
+    , m_timeoutTimerActive( false )
+    , m_multiTimerActive( false )
+    , m_ackTimerActive( false )
+    , m_spinnerTimerActive( false )
 {
+    // Initialize my FSM
+    initialize();
+}
+
+
+bool Actions::isActionDetectionInProgress( void )
+{
+    return isInControllingLEDOutputs();
+}
+
+void Actions::process( void )
+{
+    CPL_SYSTEM_TRACE_FUNC( SECT_ );
+
+    bool newEvent = getNextGestureEvent( m_currentGestureEvent );
+    if ( !newEvent )
+    {
+        // 'Nullify' my current gesture event when there is NO gesture event
+        m_currentGestureEvent.m_spinnerCount             = 0;
+        m_currentGestureEvent.m_tiltEventOccurred        = false;
+        m_currentGestureEvent.m_tiltEvent.m_currentState = Imu::Motion::Cube::Tilt::AspectState_T::eUNKNOWN;
+        m_currentGestureEvent.m_tiltEvent.m_currentTop   = Imu::Motion::Cube::Tilt::Surface_T::eTOP;
+    }
+
+    CPL_SYSTEM_TRACE_MSG( SECT_, ("process(). newEvent=%d, curState=%s, aspect=%d, angle=%d, currentTop=%d, tiltAction=%d, spinner=%ld",
+                          newEvent, getNameByState( getInnermostActiveState() ), m_currentGestureEvent.m_tiltEvent.m_currentState, (int) m_currentGestureEvent.m_tiltEvent.m_tiltAngle, m_currentGestureEvent.m_tiltEvent.m_currentTop, m_tiltAction, m_currentGestureEvent.m_spinnerCount) );
+
+    m_now = Cpl::System::ElapsedTime::milliseconds();
+    processEvent( ACTIONSFSM_NO_MSG );
+}
+
+
+
+/////////////////////////////////////
+bool Actions::isAckTimerExpired()
+{
+    bool expired = m_ackTimerActive && Cpl::System::ElapsedTime::expiredMilliseconds( m_ackTimerMarker, OPTION_GOLEM_FEEDBACK_ACK_TILTS_TIMEOUT_MSEC, m_now );
+    if ( expired )
+    {
+        m_ackTimerActive = false;
+    }
+    return expired;
+}
+
+bool Actions::isMultiTimerExpired()
+{
+    bool expired = m_multiTimerActive && Cpl::System::ElapsedTime::expiredMilliseconds( m_multiTimerMarker, OPTION_GOLEM_FEEDBACK_MULTI_TILTS_TIMEOUT_MSEC, m_now );
+    if ( expired )
+    {
+        m_multiTimerActive = false;
+    }
+    return expired;
+}
+
+bool Actions::isSpinnerTimerExpired()
+{
+    bool expired =  m_spinnerTimerActive && Cpl::System::ElapsedTime::expiredMilliseconds( m_spinnerTimerMarker, OPTION_GOLEM_FEEDBACK_SPINNER_TIMEOUT_MSEC, m_now );
+    if ( expired )
+    {
+        m_spinnerTimerActive = false;
+    }
+    return expired;
+}
+
+bool Actions::isTimeoutExpired()
+{
+    bool expired = m_timeoutTimerActive && Cpl::System::ElapsedTime::expiredMilliseconds( m_timeoutTimerMarker, OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC, m_now );
+    if ( expired )
+    {
+        m_timeoutTimerActive = false;
+    }
+    return expired;
+}
+
+bool Actions::isSpinnerChange()
+{
+    // Don't consume spinner changes if I am tilted
+    return !m_currentGestureEvent.m_tiltEventOccurred && m_currentGestureEvent.m_spinnerCount != 0;
+}
+
+bool Actions::isHomed()
+{
+    bool homed = false;
+    if ( m_currentGestureEvent.m_tiltEvent.m_currentTop == Imu::Motion::Cube::Tilt::eTOP )
+    {
+        homed = m_currentGestureEvent.m_tiltEvent.m_currentState == Imu::Motion::Cube::Tilt::eHOMED;
+    }
+    return homed;
+}
+
+bool Actions::isTilt()
+{
+    bool tilted = false;
+    if ( m_currentGestureEvent.m_tiltEvent.m_currentTop == Imu::Motion::Cube::Tilt::eTOP )
+    {
+        switch ( m_currentGestureEvent.m_tiltEvent.m_currentState )
+        {
+        case Imu::Motion::Cube::Tilt::eNORTH:
+        case Imu::Motion::Cube::Tilt::eSOUTH:
+        case Imu::Motion::Cube::Tilt::eWEST:
+        case Imu::Motion::Cube::Tilt::eEAST:
+            tilted = true;
+            break;
+        default:
+            break;
+        }
+    }
+
+    return tilted;
+}
+
+bool Actions::isValidAction()
+{
+    if ( m_tiltAction == eROCKER )
+    {
+        return true;
+    }
+
+    // If I get here, then there is NO valid action!
+    return false;
+}
+
+bool Actions::isValidMultiAction() throw()
+{
+    if ( m_tiltCount == 1 )
+    {
+        m_tiltAction = eSINGLE;
+        return true;
+    }
+    else if ( m_tiltCount == 2 )
+    {
+        m_tiltAction = eDOUBLE;
+        return true;
+    }
+    else if ( m_tiltCount == 3 )
+    {
+        m_tiltAction = eTRIPLE;
+        return true;
+    }
+
+    // If I get here, then there is NO valid action!
+    return false;
+}
+
+/////////////////////////////////////
+void Actions::beginAction() throw()
+{
+}
+
+void Actions::beginTilt() throw()
+{
+    m_tiltCount     = 1;
+    m_tiltAction    = eINVALID;
+    m_currentTilt   = m_currentGestureEvent.m_tiltEvent.m_currentState;
+}
+
+void Actions::setAckExitVisualCue() throw()
+{
+    setAllLEDs( OPTION_GOLEM_FEEDBACK_EXIT_WRGB_COLOR );
+    m_ledDriver.show();
+}
+
+void Actions::setAckTiltVisualCue() throw()
+{
+    setAllLEDs( OPTION_GOLEM_FEEDBACK_ACK_TILT_WRGB_COLOR );
+    m_ledDriver.show();
+}
+
+void Actions::setHomedVisualCue() throw()
+{
+    setAllLEDs( OPTION_GOLEM_FEEDBACK_OFF_WRGB_COLOR );
+    m_ledDriver.show();
+}
+
+void Actions::setTiltVisualCue() throw()
+{
+    setAllLEDs( OPTION_GOLEM_FEEDBACK_ON_WRGB_COLOR );
+    m_ledDriver.show();
+}
+
+void Actions::startAckTimer() throw()
+{
+    m_ackTimerMarker = m_now;
+    m_ackTimerActive = true;
+}
+
+void Actions::startSpinnerTimer() throw()
+{
+    m_spinnerTimerMarker = m_now;
+    m_spinnerTimerActive = true;
+}
+
+void Actions::startMultiTimer() throw()
+{
+    m_multiTimerMarker = m_now;
+    m_multiTimerActive = true;
+}
+
+void Actions::startTimeoutTimer() throw()
+{
+    m_timeoutTimerMarker = m_now;
+    m_timeoutTimerActive = true;
+}
+
+void Actions::stopMultiTimer() throw()
+{
+    m_multiTimerActive = false;
+}
+
+void Actions::stopSpinnerTimer() throw()
+{
+    m_spinnerTimerActive = false;
+}
+
+void Actions::stopTimeoutTimer() throw()
+{
+    m_timeoutTimerActive = false;
+}
+
+void Actions::updateAction() throw()
+{
+}
+
+void Actions::updateHomed() throw()
+{
+    // No actions currently needed (6/18/2017)
+}
+
+void Actions::updateTilt() throw()
+{
+    // React to the actual tilt
+    switch ( m_currentGestureEvent.m_tiltEvent.m_currentState )
+    {
+    case Imu::Motion::Cube::Tilt::eTILT_NORTH:
+        if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_NORTH )
+        {
+            m_tiltCount++;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_SOUTH )
+        {
+            m_tiltAction = eROCKER;
+        }
+        m_currentTilt = m_currentGestureEvent.m_tiltEvent.m_currentState;
+        break;
+
+    case Imu::Motion::Cube::Tilt::eTILT_SOUTH:
+        if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_SOUTH )
+        {
+            m_tiltCount++;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_NORTH )
+        {
+            m_tiltAction = eROCKER;
+        }
+        m_currentTilt = m_currentGestureEvent.m_tiltEvent.m_currentState;
+        break;
+
+    case Imu::Motion::Cube::Tilt::eTILT_WEST:
+        if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_WEST )
+        {
+            m_tiltCount++;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_EAST )
+        {
+            m_tiltAction = eROCKER;
+        }
+        m_currentTilt = m_currentGestureEvent.m_tiltEvent.m_currentState;
+        break;
+
+    case Imu::Motion::Cube::Tilt::eTILT_EAST:
+        if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_EAST )
+        {
+            m_tiltCount++;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_WEST )
+        {
+            m_tiltAction = eROCKER;
+        }
+        m_currentTilt = m_currentGestureEvent.m_tiltEvent.m_currentState;
+        break;
+
+    default:
+        break;
+    }
 }
 
 
 ///////////////////////////////
-void Actions::process( void )
-{
-    runGestures();
- 
-    if ( m_feedbackMode )
-    {
-        runFeedbackMode();
-    }
-
-}
-
-bool Actions::isFeedbackModeEnabled( void )
-{
-    Cpl::System::Mutex::ScopeBlock lock( m_lock );
-    return m_feedbackMode;
-}
-
-/////////////////////////////////////////////    
-void Actions::runFeedbackMode( void )
-{
-    CPL_SYSTEM_TRACE_FUNC( SECT_ );
-
-    m_lock.lock();
-    FeedbackOption_T    option  = m_feedbackOption;
-    uint32_t            rgbw    = m_feedbackWrgbColor;
-    unsigned long       timeout = m_feedbackTimeout;
-    m_lock.unlock();
-
-    // Option: SOLID_ON
-    if ( option == eSOLID_ON )
-    {
-        if ( Cpl::System::ElapsedTime::expiredMilliseconds( m_feedbackTimeMarker, timeout ) )
-        {
-            disableFeedbackMode_();
-        }
-        else
-        {
-            setAllLEDs( rgbw );
-            m_ledDriver.show();
-        }
-    }
-}
-
-
-void Actions::enableFeedbackMode_( FeedbackOption_T initialOption, uint32_t initialWrgbColor, unsigned long  timeoutInMsec )
-{
-    m_lock.lock();
-    m_feedbackWrgbColor = initialWrgbColor;
-    m_feedbackOption    = initialOption == eNO_CHANGE ? eSOLID_ON : initialOption;
-    m_feedbackMode      = true;
-    m_feedbackTimeout   = timeoutInMsec;
-    m_lock.unlock();
-
-    m_feedbackTimeMarker = Cpl::System::ElapsedTime::milliseconds();
-    setAllLEDs( OPTION_GOLEM_FEEDBACK_OFF_WRGB_COLOR );
-    m_ledDriver.show();
-    CPL_SYSTEM_TRACE_MSG( SECT_, ("enableFeedbackMode(). option=%d, wrgb=%04X, time=%ld", initialOption, initialWrgbColor, timeoutInMsec) );
-
-}
-
-void Actions::updateFeedback_( uint32_t newWrgbColor, FeedbackOption_T option, unsigned long  timeoutInMsec )
-{
-    Cpl::System::Mutex::ScopeBlock lock( m_lock );
-    m_feedbackWrgbColor = newWrgbColor;
-    if ( option != eNO_CHANGE )
-    {
-        m_feedbackOption = option;
-    }
-    if ( timeoutInMsec != 0 )
-    {
-        m_feedbackTimeout    = timeoutInMsec;
-        m_feedbackTimeMarker = Cpl::System::ElapsedTime::milliseconds();
-    }
-}
-void Actions::disableFeedbackMode_( void )
-{
-    m_lock.lock();
-    m_feedbackMode = false;
-    m_lock.unlock();
-
-    setAllLEDs( OPTION_GOLEM_FEEDBACK_OFF_WRGB_COLOR );
-    m_ledDriver.show();
-    CPL_SYSTEM_TRACE_MSG( SECT_, ("disableFeedbackMode_()") );
-
-}
-
 void Actions::setAllLEDs( uint32_t wrgb )
 {
     for ( uint16_t i=0; i < m_ledDriver.numPixels(); i++ )
     {
         m_ledDriver.setPixelColor( i, wrgb );
     }
-}
-
-/////////////////////////////////////
-void Actions::runGestures( void )
-{
-    CPL_SYSTEM_TRACE_FUNC( SECT_ );
-
-    GestureEvent_t event;
-
-    // Was there a gesture?
-    if ( getNextGestureEvent( event ) )
-    {
-        CPL_SYSTEM_TRACE_MSG( SECT_, ("Gesture Event occurred") );
-
-        // Did a tilt event occur?
-        if ( event.m_tiltEventOccurred )
-        {
-            CPL_SYSTEM_TRACE_MSG( SECT_, ("Tilt Event occurred. aspect=%d, angle=%d, currentTop=%d", event.m_tiltEvent.m_currentState, (int) event.m_tiltEvent.m_tiltAngle, event.m_tiltEvent.m_currentTop) );
-
-            // I am oriented correctly, i.e. the top IS the top
-            if ( event.m_tiltEvent.m_currentTop == Imu::Motion::Cube::Tilt::eTOP )
-            {
-                CPL_SYSTEM_TRACE_MSG( SECT_, ("Taking action on Tilt Event") );
-
-                // React to the actual tilt
-                switch ( event.m_tiltEvent.m_currentState )
-                {
-                case Imu::Motion::Cube::Tilt::eNORTH:
-                case Imu::Motion::Cube::Tilt::eSOUTH:
-                case Imu::Motion::Cube::Tilt::eWEST:
-                case Imu::Motion::Cube::Tilt::eEAST:
-                    if ( !m_feedbackMode )
-                    {
-                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
-                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
-                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
-                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
-                        // FIXME: Enter feedback mode, What exits me (timeout)?  Multi-tilt actions. When start Spin actions? Call spinner
-                        m_feedbackMode = true;
-                        enableFeedbackMode_( event.m_tiltEvent.m_currentState );
-                        break;
-                    }
-                    else
-                    {
-                        updateFeedback_( event.m_tiltEvent.m_currentState );
-                    }
-                    break;
-
-                case Imu::Motion::Cube::Tilt::eHOMED:
-                    if ( m_tilted )
-                    {
-                        m_tilted = false;
-                        updateFeedback_( 0x0, FeedbackOption_T::eNO_CHANGE, OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC );
-                    }
-                    break;
-
-                default:
-                    break;
-                }
-            }
-        }
-    }
-}
-
-/////////////////////////////////////
-
-void Actions::startAction_( Tilt_T action )
-{
-}
-
-void Actions::updateAction( uint32_t spinnerAdjustment )
-{
-}
-
-void Actions::stopAction( void )
-{
 }

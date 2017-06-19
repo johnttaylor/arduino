@@ -12,14 +12,16 @@
 *----------------------------------------------------------------------------*/
 /** @file */
 
+#include "Golem/ActionsFsm_.h"
 #include "Cpl/System/Mutex.h"
 #include <stdint.h>
+#include "gestures.h"
 #include "Adafruit_NeoPixel.h"
 
 
 /// Timeout period, in msec, for the feedback interval
 #ifndef OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC
-#define OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC              2000
+#define OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC              3000
 #endif
 
 /// Timeout period, in msec, for 'multiple tilts'
@@ -27,9 +29,24 @@
 #define OPTION_GOLEM_FEEDBACK_MULTI_TILTS_TIMEOUT_MSEC  (OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC/2)
 #endif
 
-/// Feedback ON Ccolor 
-#ifndef OPTION_GOLEM_FEEDBACK_INITIAL_WRGB_COLOR
-#define OPTION_GOLEM_FEEDBACK_INITIAL_WRGB_COLOR        0xFF000000  // white
+/// Timeout period, in msec, for acknowledging a tilt action
+#ifndef OPTION_GOLEM_FEEDBACK_ACK_TILTS_TIMEOUT_MSEC
+#define OPTION_GOLEM_FEEDBACK_ACK_TILTS_TIMEOUT_MSEC    (OPTION_GOLEM_FEEDBACK_MULTI_TILTS_TIMEOUT_MSEC/2)
+#endif
+
+/// Timeout period, in msec, for updating polices using the 'spinner'
+#ifndef OPTION_GOLEM_FEEDBACK_SPINNER_TIMEOUT_MSEC
+#define OPTION_GOLEM_FEEDBACK_SPINNER_TIMEOUT_MSEC      (1000*60)   // 1 minute
+#endif
+
+/// Feedback ON Color 
+#ifndef OPTION_GOLEM_FEEDBACK_ON_WRGB_COLOR
+#define OPTION_GOLEM_FEEDBACK_ON_WRGB_COLOR             0xFF000000  // white
+#endif
+
+/// Feedback 'Spinner' Color 
+#ifndef OPTION_GOLEM_FEEDBACK_ACK_TILT_WRGB_COLOR
+#define OPTION_GOLEM_FEEDBACK_ACK_TILT_WRGB_COLOR       0x0000FF00  // Green
 #endif
 
 /// Feedback OFF Color 
@@ -37,11 +54,18 @@
 #define OPTION_GOLEM_FEEDBACK_OFF_WRGB_COLOR            0x00000000  // off
 #endif
 
+/// Feedback Exiting Color 
+#ifndef OPTION_GOLEM_FEEDBACK_EXIT_WRGB_COLOR
+#define OPTION_GOLEM_FEEDBACK_EXIT_WRGB_COLOR           0x00FF0000  // red
+#endif
+
 /// Namespaces
 namespace Golem {
 
 
-/** Converts tilt/spin gestures into actions/commands
+/** Converts tilt/spin gestures into actions/commands.  This class is not
+    thread safe, i.e. it needs to run/execute in the same thread as the
+    Golem::Main class.
 
     Tilt (any axis)				bit time, spin +/-
     Tilt x2 (any axis)			output -->cycle through all|2|....
@@ -55,9 +79,9 @@ namespace Golem {
 
 
  */
-class Actions
+class Actions : public ActionsFsm
 {
-public:
+protected:
     /// Tilt sequences
     typedef enum
     {
@@ -74,56 +98,66 @@ public:
         eINVALID                            //!< An unsupported/unrecognized tilt sequence
     } Tilt_T;
 
-public:
-    /// The possible types of visual feedback cues
+    /// States
     typedef enum
     {
-        eSOLID_ON,              //!< Turn on all of the LEDs and stay on till command to FLASH
-        eNO_CHANGE              //!< Retain previous feedback option.  If 'eNO_CHANGE' is used as the initial feedback state, internally the feedback state is set to eSOLID_ON
-    } FeedbackOption_T;
+        eIDLE=0,                            //!< No actions in progress
+        eTILTED,                            //!< Currently Tilted
+        eACKNOWLEDGE_TILT,                  //!< Pause to visually acknowledge that tilt action was recognized/accepted
+        eSPINNER_IN_PROGRESS,               //!< Accepted a Tilt Action, now processing Spinner events
+        eTIMEOUT                            //!< No valid Tilt action was found before timing out
+    } State_T;
+
 
 protected:
     /// LED Driver
     Adafruit_NeoPixel&      m_ledDriver;
 
-    /// Mutex for thread safety
-    Cpl::System::Mutex&     m_lock;
-
-    /// Flag that keeps track of executing policies vs. feedback mode
-    bool                    m_feedbackMode;
-
-    /// Current feedback option
-    FeedbackOption_T        m_feedbackOption;
-
-    /// Current feedback color (rgbw format)
-    uint32_t                m_feedbackWrgbColor;
+    ///
+    GestureEvent_t          m_currentGestureEvent;
 
     /// Time marker for timing out Feedback mode
-    unsigned long           m_feedbackTimeMarker;
-
-    /// Timeout period, in milliseconds, for feedback mode
-    unsigned long           m_feedbackTimeout;
+    unsigned long           m_timeoutTimerMarker;
 
     /// Time marker for timing out multi-tilt sequences
-    unsigned long           m_multiTimeMarker;
+    unsigned long           m_multiTimerMarker;
 
-    /// Timeout period, in milliseconds, for multi-tilt sequences
-    unsigned long           m_multiTimeout;
+    /// Time marker for timing out ack'ing the detection of tilt action
+    unsigned long           m_ackTimerMarker;
+    
+    /// Time marker for timing out spinner mode 
+    unsigned long           m_spinnerTimerMarker;
+
+    /// Current time of when event/fsm processing
+    unsigned long           m_now;
 
     /// Number of tilt actions in the current multi-tilt sequence
     uint16_t                m_tiltCount;
-    
-    /// Current Tilt action
-    Tilt_T                  m_currentAction;
 
-    /// Tracks i-am-tilted
-    bool                    m_tilted;
+    /// Action detected
+    Tilt_T                  m_tiltAction;
+
+    /// Current Tilt 
+    Imu::Motion::Cube::Tilt::AspectState_T m_currentTilt;
+
+    /// Timer state
+    bool                    m_timeoutTimerActive;
+
+    /// Timer state
+    bool                    m_multiTimerActive;
+
+    /// Timer state
+    bool                    m_ackTimerActive;
+
+    /// Timer state
+    bool                    m_spinnerTimerActive;
+
 
 
 
 public:
     /// Constructor
-    Actions( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver );
+    Actions( Adafruit_NeoPixel& ledDriver );
 
 public:
     /** This method provides the 'execution time slice' for the action handler.
@@ -134,54 +168,101 @@ public:
 
 
 public:
-    /** Returns the true if the feedback mode is enabled. This method is
-        thread safe.
-     */
-    bool isFeedbackModeEnabled( void );
+    /// Returns the true if the feedback mode is enabled. 
+    bool isActionDetectionInProgress( void );
 
 
-public:
-    /** This method temporarily puts the Golem into feedback mode.  Golem
-        will automatically timeout of feedback mode (and revert to policy mode)
-        if the application does not call disableFeedbackMode_().  This method
-        is thread safe.
-     */
-    void enableFeedbackMode_( FeedbackOption_T initialOption, uint32_t initialWrgbColor, unsigned long  timeoutInMsec=OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC );
 
-    /** This method updates the current feedback output.  f 'timeoutInMsec' is
-        zero then no change is made the timeout period (that was specified on
-        the enableFeedbackMode() call). This method is thread safe.
-     */
-    void updateFeedback_( uint32_t wrbgColor, FeedbackOption_T option=eNO_CHANGE, unsigned long  timeoutInMsec=0 );
+protected:
+    /// See Golem::ActionFsmContext_
+    void beginAction() throw();
 
-    /** This method cancels feedback mode.  If Golem is not in feedback mode
-        this method does nothing. This method is thread safe.
-     */
-    void disableFeedbackMode_( void );
+    /// See Golem::ActionFsmContext_
+    void beginTilt() throw();
+
+    /// See Golem::ActionFsmContext_
+    void setAckExitVisualCue() throw();
+
+    /// See Golem::ActionFsmContext_
+    void setAckTiltVisualCue() throw();
+
+    /// See Golem::ActionFsmContext_
+    void setHomedVisualCue() throw();
+
+    /// See Golem::ActionFsmContext_
+    void setTiltVisualCue() throw();
+
+    /// See Golem::ActionFsmContext_
+    void startAckTimer() throw();
+
+    /// See Golem::ActionFsmContext_
+    void startSpinnerTimer() throw();
+
+    /// See Golem::ActionFsmContext_
+    void startMultiTimer() throw();
+
+    /// See Golem::ActionFsmContext_
+    void startTimeoutTimer() throw();
+
+    /// See Golem::ActionFsmContext_
+    void stopMultiTimer() throw();
+
+    /// See Golem::ActionFsmContext_
+    void stopSpinnerTimer() throw();
+
+    /// See Golem::ActionFsmContext_
+    void stopTimeoutTimer() throw();
+
+    /// See Golem::ActionFsmContext_
+    void updateAction() throw();
+
+    /// See Golem::ActionFsmContext_
+    void updateHomed() throw();
+
+    /// See Golem::ActionFsmContext_
+    void updateTilt() throw();
+
+
+protected:
+    /// See Golem::ActionFsmContext_
+    bool isAckTimerExpired() throw();
+
+    /// See Golem::ActionFsmContext_
+    bool isHomed() throw();
+
+    /// See Golem::ActionFsmContext_
+    bool isMultiTimerExpired() throw();
+
+    /// See Golem::ActionFsmContext_
+    bool isSpinnerChange() throw();
+
+    /// See Golem::ActionFsmContext_
+    bool isSpinnerTimerExpired() throw();
+
+    /// See Golem::ActionFsmContext_
+    bool isTilt() throw();
+
+    /// See Golem::ActionFsmContext_
+    bool isTimeoutExpired() throw();
+
+    /// See Golem::ActionFsmContext_
+    bool isValidAction() throw();
+
+    /// See Golem::ActionFsmContext_
+    bool isValidMultiAction() throw();
+
+protected:
+    /// Helper
+    void enableFeedbackMode( uint32_t initialWrgbColor, unsigned long  timeoutInMsec=OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC, unsigned long multiTimerTimeoutInMsec=OPTION_GOLEM_FEEDBACK_MULTI_TILTS_TIMEOUT_MSEC );
+
+    /// Helper
+    void updateFeedback( uint32_t wrbgColor, unsigned long  timeoutInMsec=0, unsigned long multiTimerTimeoutInMsec=0 );
 
     /// Helper method that converts individual color intensity into a single RGBW value
     static inline uint32_t convertToRGBW_( uint8_t red, uint8_t green, uint8_t blue, uint8_t white ) { return Adafruit_NeoPixel::Color( red, green, blue, white ); }
 
-public:
-    /// This method carries on the detected action
-    void startAction_( Tilt_T action );
-
-    /// This method updates the action base on current rotation
-    void updateAction( uint32_t spinnerAdjustment );
-
-    /// This method terminates the detected action
-    void stopAction( void );
-
-protected:
-    /// Helper 
-    void runFeedbackMode( void );
-
-    /// Helper 
-    void runGestures( void );
-
     /// Helper
     void setAllLEDs( uint32_t wrgb );
-
 };
 
 
