@@ -150,9 +150,9 @@ public:
         does NOT mean the new policy have been applied.  Golem waits for the
         "opportune moment" to apply the new policies.  If setPolicies() is
         called twice BEFORE the policies from the 1st call have been applied,
-        the method return false.  When false is returned - the application is
-        responsible for cleaning-up/destroying the 'new' policies instances
-        that it tried to change (since Golem did not accept them).
+        the method return false.  When false is returned this method will
+        call delete() on non-null function arguments to properly clean up
+        when the new policies can not be updated.
      */
     bool setPolicies( Frame*            framePolicyP,
                       DataStream*       streamPolicyP,
@@ -200,11 +200,18 @@ public:
     Frame::FrameConfig_T getFrameConfig( void );
 
 public:
+    /** This method a reference to the one and only instance of Golem 
+        application.  If the instance/application has not been created
+        yet - the method returns 0.
+     */
+    static Main* getApplicationPointer( void );
+
+public:
     /// This method pauses the current policies
-    void pausePolicies(void);
+    void pausePolicies( void );
 
     /// This method resumes the current policies
-     void resumePolicies(void);
+    void resumePolicies( void );
 
 protected:
     /// Helper

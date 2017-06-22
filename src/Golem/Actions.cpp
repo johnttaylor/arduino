@@ -14,8 +14,11 @@
 #include "Cpl/System/Trace.h"
 #include "Imu/Motion/Cube/Tilt.h"
 #include "Actions.h"
+#include "Main.h"
+#include "FrameSimple.h"
 
-#define SECT_  "actions"
+#define SECT_     "actions"
+#define SECT_DO   "actions-do"
 
 
 /// Namespaces
@@ -63,6 +66,34 @@ void Actions::process( void )
 
     m_now = Cpl::System::ElapsedTime::milliseconds();
     processEvent( ACTIONSFSM_NO_MSG );
+}
+
+
+
+/////////////////////////////////////
+void Actions::doSingleAction( void )
+{
+    Main*                   golemP        = Main::getApplicationPointer();
+    Frame::FrameConfig_T    currentConfig = golemP->getFrameConfig();
+    if ( m_currentGestureEvent.m_spinnerCount != 0 )
+    {
+        uint32_t      newBitTime = currentConfig.m_bitTime + m_currentGestureEvent.m_spinnerCount; 
+        Golem::Frame* newPolicyP = new Golem::FrameSimple( newBitTime, currentConfig.m_numDataBits, currentConfig.m_stopBits, currentConfig.m_parity );
+        golemP->setPolicies( newPolicyP, 0, 0, 0, 0 );
+        CPL_SYSTEM_TRACE_MSG( SECT_DO, ("Action::Single.  New bit time=%ld, old bit time=%ld", newBitTime, currentConfig.m_bitTime) );
+    }
+}
+
+void Actions::doDoubleAction( void )
+{
+}
+
+void Actions::doTripleAction( void )
+{
+}
+
+void Actions::doRockerAction( void )
+{
 }
 
 
@@ -181,6 +212,7 @@ bool Actions::isValidMultiAction() throw()
 /////////////////////////////////////
 void Actions::beginAction() throw()
 {
+    updateAction();
 }
 
 void Actions::beginTilt() throw()
@@ -255,7 +287,25 @@ void Actions::stopTimeoutTimer() throw()
 
 void Actions::updateAction() throw()
 {
+    switch ( m_tiltAction )
+    {
+    case eSINGLE:
+        doSingleAction();
+        break;
+    case eDOUBLE:
+        doDoubleAction();
+        break;
+    case eTRIPLE:
+        doTripleAction();
+        break;
+    case eROCKER:
+        doRockerAction();
+        break;
+    default:
+        break;
+    }
 }
+
 
 void Actions::updateHomed() throw()
 {

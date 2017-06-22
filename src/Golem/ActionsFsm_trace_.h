@@ -31,8 +31,8 @@ const char* const ActionsFsmTraceEvents[] = {
     "isHomed()",
     "isValidAction()",
     "isTimeoutExpired()",
-    "isMultiTimerExpired()",
     "isAckTimerExpired()",
+    "isMultiTimerExpired()",
     "isSpinnerChange()",
     "isSpinnerTimerExpired()"
 };

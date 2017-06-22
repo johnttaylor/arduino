@@ -62,12 +62,14 @@ namespace Golem  {
     bool ActionsFsm::isInAckTilt(void) const {return(((stateVars.stateVarControllingLEDOutputs== AckTilt)&&(stateVars.stateVar== ControllingLEDOutputs)) ? (true) : (false));}
     bool ActionsFsm::isInControllingLEDOutputs(void) const {return(((stateVars.stateVar== ControllingLEDOutputs)) ? (true) : (false));}
     bool ActionsFsm::isInSpinning(void) const {return(((stateVars.stateVar== Spinning)) ? (true) : (false));}
-    bool ActionsFsm::isInTimedOut(void) const {return(((stateVars.stateVar== TimedOut)) ? (true) : (false));}
+    bool ActionsFsm::isInTimedOut(void) const {return(((stateVars.stateVarControllingLEDOutputs== TimedOut)&&(stateVars.stateVar== ControllingLEDOutputs)) ? (true) : (false));}
 
     // Helper to get id of innermost active state
 
     unsigned short ActionsFsm::getInnermostActiveState(void) const {
-        if(isInAckTilt()){
+        if(isInTimedOut()){
+            return TimedOut;
+        }else if(isInAckTilt()){
             return AckTilt;
         }else if(isInTitled()){
             return Titled;
@@ -75,8 +77,6 @@ namespace Golem  {
             return Homed;
         }else if(isInAckExit()){
             return AckExit;
-        }else if(isInTimedOut()){
-            return TimedOut;
         }else if(isInSpinning()){
             return Spinning;
         }else if(isInIdle()){
@@ -166,15 +166,16 @@ namespace Golem  {
                             /* Transition from Titled to TimedOut */
                             evConsumed=16;
 
-
                             /* Action code for transition  */
                             stopTimeoutTimer();
 
+                            /* OnEntry code of state TimedOut */
+                            startAckTimer();
+                            setAckExitVisualCue();
 
                             /* adjust state variables  */
-                            stateVarsCopy.stateVar = TimedOut;
-                            stateVarsCopy.stateVarControllingLEDOutputs = Titled;
-                            ActionsFsmTraceEvent(7);
+                            stateVarsCopy.stateVarControllingLEDOutputs = TimedOut;
+                            ActionsFsmTraceEvent(8);
                         }else{
                             /* Intentionally left blank */
                         } /*end of event selection */
@@ -194,11 +195,27 @@ namespace Golem  {
                             /* adjust state variables  */
                             stateVarsCopy.stateVar = Spinning;
                             stateVarsCopy.stateVarControllingLEDOutputs = Titled;
-                            ActionsFsmTraceEvent(8);
+                            ActionsFsmTraceEvent(7);
                         }else{
                             /* Intentionally left blank */
                         } /*end of event selection */
                     break; /* end of case AckTilt  */
+
+                    case TimedOut:
+                        if(isAckTimerExpired()){
+                            /* Transition from TimedOut to WaitingForHomed */
+                            evConsumed=16;
+
+
+
+                            /* adjust state variables  */
+                            stateVarsCopy.stateVar = WaitingForHomed;
+                            stateVarsCopy.stateVarControllingLEDOutputs = Titled;
+                            ActionsFsmTraceEvent(7);
+                        }else{
+                            /* Intentionally left blank */
+                        } /*end of event selection */
+                    break; /* end of case TimedOut  */
 
                     case Homed:
                         if(isMultiTimerExpired()){
@@ -268,7 +285,7 @@ namespace Golem  {
                             /* adjust state variables  */
                             stateVarsCopy.stateVar = WaitingForHomed;
                             stateVarsCopy.stateVarControllingLEDOutputs = Titled;
-                            ActionsFsmTraceEvent(8);
+                            ActionsFsmTraceEvent(7);
                         }else{
                             /* Intentionally left blank */
                         } /*end of event selection */
@@ -287,8 +304,13 @@ namespace Golem  {
                         evConsumed=16;
                         
 
+                        /* OnEntry code of state TimedOut */
+                        startAckTimer();
+                        setAckExitVisualCue();
+
                         /* adjust state variables  */
-                        stateVarsCopy.stateVar = TimedOut;
+                        stateVarsCopy.stateVar = ControllingLEDOutputs;
+                        stateVarsCopy.stateVarControllingLEDOutputs = TimedOut;
                         ActionsFsmTraceEvent(6);
                     }else{
                         /* Intentionally left blank */
@@ -341,20 +363,6 @@ namespace Golem  {
                     /* Intentionally left blank */
                 } /*end of event selection */
             break; /* end of case Spinning  */
-
-            case TimedOut:
-                if(isHomed()){
-                    /* Transition from TimedOut to Idle */
-                    evConsumed=16;
-
-
-                    /* adjust state variables  */
-                    stateVarsCopy.stateVar = Idle;
-                    ActionsFsmTraceEvent(4);
-                }else{
-                    /* Intentionally left blank */
-                } /*end of event selection */
-            break; /* end of case TimedOut  */
 
             case WaitingForHomed:
                 if(isHomed()){

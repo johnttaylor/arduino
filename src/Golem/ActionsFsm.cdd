@@ -32,27 +32,27 @@ TypeValue="5"/>
 </Style>
 
 <State id="r4"
-Pos="300 -1600"
+Pos="1300 -4600"
 Size="3200 1000">
 <Text>Idle</Text>
 </State>
 
 <State id="r7"
-Pos="5800 -3300"
-Size="12600 14500"
+Pos="6300 -1600"
+Size="12600 19300"
 Large="1">
 <Text>ControllingLEDOutputs</Text>
 <State id="r5"
-Pos="11600 -5600"
+Pos="12100 -8700"
 Size="2000 1000">
 <Text>Titled</Text>
 </State>
 <State id="r6"
-Pos="11900 -12900"
+Pos="12400 -16000"
 Size="4800 2600">
 <Text>AckTilt</Text>
 <Compartment id="r92"
-Pos="11900 -13600"
+Pos="12400 -16700"
 Size="4800 1900">
 <Text>onEntry:<p/>
 stopTimeoutTimer();<p/>
@@ -61,24 +61,36 @@ startAckTimer();<p/>
 setAckTiltVisualCue();</Text>
 </Compartment>
 </State>
+<State id="r9"
+Pos="10800 -2700"
+Size="3600 2000">
+<Text>TimedOut</Text>
+<Compartment id="r31"
+Pos="10800 -3400"
+Size="3600 1300">
+<Text>onEntry:<p/>
+startAckTimer();<p/>
+setAckExitVisualCue();</Text>
+</Compartment>
+</State>
 <InitialState id="r15"
-Pos="6900 -4400"/>
+Pos="11200 -6200"/>
 <State id="r20"
-Pos="11800 -10800"
+Pos="12300 -13900"
 Size="2000 1000">
 <Text>Homed</Text>
 </State>
 <State id="r69"
-Pos="6500 -10900"
+Pos="7000 -14000"
 Size="700 700">
 <Text>&lt;&gt;</Text>
 </State>
 <State id="r100"
-Pos="6400 -13900"
+Pos="6900 -17000"
 Size="3100 2200">
 <Text>AckExit</Text>
 <Compartment id="r122"
-Pos="6400 -14600"
+Pos="6900 -17700"
 Size="3100 1500">
 <Text>onEntry:<p/>
 stopSpinnerTimer();<p/>
@@ -89,59 +101,50 @@ setAckExitVisualCue();</Text>
 </State>
 
 <State id="r8"
-Pos="12700 -20400"
+Pos="13200 -23500"
 Size="2000 1000">
 <Text>Spinning</Text>
 </State>
 
-<State id="r9"
-Pos="11900 -1700"
-Size="2100 1000">
-<Text>TimedOut</Text>
-</State>
-
 <Transition id="r10">
 <End id="r48"
-Pos="2900 -2600"
+Pos="3900 -5600"
 State="r4"
 Type="1"/>
 <Segment id="r47"/>
 <Join id="r46"
-Pos="2900 -5400"/>
+Pos="3900 -8500"/>
 <Segment id="r11">
 <Anchor id="r13"
-Pos="4200 -5400">
+Pos="4700 -8500">
 <FreeText id="r14"
-Pos="4635 -5200"
-Origin="3">
+Pos="4356 -8200"
+Origin="4">
 <Text>#isTilt()/</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <End id="r12"
-Pos="5800 -5400"
+Pos="6300 -8500"
 State="r7"
 Type="2"/>
 </Transition>
 
 <Transition id="r16">
 <End id="r95"
-Pos="7200 -4773.2050807568876"
+Pos="11500 -6573.2050807568876"
 State="r15"
 Type="1"/>
 <Segment id="r94"
 Oblique="1"/>
-<Join id="r93"
-Pos="7200 -4700"/>
-<Segment id="r31"/>
 <Join id="r30"
-Pos="7200 -4500"/>
+Pos="11500 -6400"/>
 <Segment id="r17">
 <Anchor id="r18"
-Pos="7200 -4500">
+Pos="11500 -6400">
 <FreeText id="r19"
-Pos="7800 -4662"
-Origin="1">
+Pos="12114 -6362"
+Origin="2">
 <Text>/<p/>
 beginTilt();<p/>
 setTiltVisualCue();<p/>
@@ -151,24 +154,24 @@ startMultiTimer();</Text>
 </Anchor>
 </Segment>
 <Join id="r66"
-Pos="12400 -4500"/>
+Pos="12900 -6400"/>
 <Segment id="r67"/>
 <End id="r68"
-Pos="12400 -5600"
+Pos="12900 -8700"
 State="r5"
 Type="2"/>
 </Transition>
 
 <Transition id="r21">
 <End id="r22"
-Pos="12800 -6600"
+Pos="13300 -9700"
 State="r5"
 Type="1"/>
 <Segment id="r23">
 <Anchor id="r25"
-Pos="12800 -6600">
+Pos="13300 -9700">
 <FreeText id="r26"
-Pos="12559 -7500"
+Pos="13059 -10600"
 Origin="2">
 <Text>#isHomed()/<p/>
 startTimeoutTimer();<p/>
@@ -179,93 +182,96 @@ updateHomed();</Text>
 </Anchor>
 </Segment>
 <End id="r24"
-Pos="12800 -10800"
+Pos="13300 -13900"
 State="r20"
 Type="2"/>
 </Transition>
 
 <Transition id="r27">
 <End id="r62"
-Pos="12800 -11800"
+Pos="13300 -14900"
 State="r20"
 Type="1"/>
 <Segment id="r142">
 <Anchor id="r28"
-Pos="12800 -12900">
+Pos="13300 -16000">
 <FreeText id="r29"
-Pos="13400 -12500"
+Pos="13900 -15600"
 Origin="4">
 <Text>#isValidAction()/</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <End id="r143"
-Pos="12800 -12900"
+Pos="13300 -16000"
 State="r6"
 Type="2"/>
 </Transition>
 
 <Transition id="r32">
 <End id="r33"
-Pos="15300 -3300"
+Pos="18900 -3100"
 State="r7"
 Type="1"/>
-<Segment id="r34"/>
-<Join id="r35"
-Pos="15300 -2300"/>
 <Segment id="r36">
 <Anchor id="r42"
-Pos="14000 -2300">
+Pos="14500 -3100">
 <FreeText id="r43"
-Pos="14600 -2100"
-Origin="4">
+Pos="15100 -3354"
+Origin="1">
 <Text>#isTimeoutExpired()/</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <End id="r37"
-Pos="14000 -2300"
+Pos="14400 -3100"
 State="r9"
 Type="2"/>
 </Transition>
 
-<Transition id="r38">
-<End id="r39"
-Pos="11900 -2300"
+<Transition id="r34">
+<End id="r35"
+Pos="10800 -3100"
 State="r9"
 Type="1"/>
-<Segment id="r40">
-<Anchor id="r44"
-Pos="5000 -2300">
-<FreeText id="r45"
-Pos="5000 -2100"
-Origin="4">
-<Text>#isHomed()/</Text>
+<Segment id="r38">
+<Anchor id="r93"
+Pos="3000 -3100">
+<FreeText id="r158"
+Pos="6700 -3354"
+Origin="1">
+<Text>#isAckTimerExpired()/</Text>
 </FreeText>
 </Anchor>
 </Segment>
-<End id="r41"
-Pos="3500 -2300"
-State="r4"
+<Join id="r39"
+Pos="400 -3100"/>
+<Segment id="r40"/>
+<Join id="r41"
+Pos="400 -16200"/>
+<Segment id="r44"/>
+<End id="r45"
+Pos="1300 -16200"
+State="r151"
 Type="2"/>
 </Transition>
 
 <Transition id="r49">
 <End id="r65"
-Pos="13800 -11300"
+Pos="14300 -14400"
 State="r20"
 Type="1"/>
 <Segment id="r64"/>
 <Join id="r63"
-Pos="14300 -11300"/>
+Pos="14800 -14400"/>
 <Segment id="r50"/>
 <Join id="r51"
-Pos="14300 -6200"/>
+Pos="14800 -9300"/>
 <Segment id="r52">
 <Anchor id="r54"
-Pos="13600 -6200">
+Pos="14100 -9300">
 <FreeText id="r55"
-Pos="14500 -6500"
+Pos="15000 -9600"
 Origin="1">
 <Text>#isTilt()/<p/>
 startTimeoutTimer();<p/>
@@ -276,112 +282,112 @@ updateTilt();</Text>
 </Anchor>
 </Segment>
 <End id="r53"
-Pos="13600 -6200"
+Pos="14100 -9300"
 State="r5"
 Type="2"/>
 </Transition>
 
 <Transition id="r56">
 <End id="r57"
-Pos="13000 -5600"
+Pos="13400 -8700"
 State="r5"
 Type="1"/>
 <Segment id="r58">
 <Anchor id="r60"
-Pos="13000 -4200">
+Pos="13400 -7300">
 <FreeText id="r61"
-Pos="13200 -4200"
-Origin="1">
+Pos="13600 -6492"
+Origin="4">
 <Text>#isMultiTimerExpired()/<p/>
 stopTimeoutTimer();</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <End id="r59"
-Pos="13000 -2700"
+Pos="13400 -4700"
 State="r9"
 Type="2"/>
 </Transition>
 
 <Transition id="r70">
 <End id="r71"
-Pos="11800 -11300"
+Pos="12300 -14400"
 State="r20"
 Type="1"/>
 <Segment id="r72">
 <Anchor id="r74"
-Pos="8300 -11300">
+Pos="8800 -14400">
 <FreeText id="r75"
-Pos="7600 -11100"
+Pos="8100 -14200"
 Origin="4">
 <Text>#isMultiTimerExpired()/</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <End id="r73"
-Pos="7200 -11300"
+Pos="7700 -14400"
 State="r69"
 Type="2"/>
 </Transition>
 
 <Transition id="r76">
 <End id="r77"
-Pos="6900 -11600"
+Pos="7400 -14700"
 State="r69"
 Type="1"/>
 <Segment id="r78"/>
 <Join id="r79"
-Pos="6900 -13300"/>
+Pos="7400 -16400"/>
 <Segment id="r80">
 <Anchor id="r88"
-Pos="7600 -13300">
+Pos="8100 -16400">
 <FreeText id="r89"
-Pos="7600 -13100"
+Pos="8100 -16200"
 Origin="4">
 <Text>[isValidMultiAction()]/</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <End id="r81"
-Pos="11900 -13300"
+Pos="12400 -16400"
 State="r6"
 Type="2"/>
 </Transition>
 
 <Transition id="r82">
 <End id="r83"
-Pos="6500 -11300"
+Pos="7000 -14400"
 State="r69"
 Type="1"/>
 <Segment id="r84">
 <Anchor id="r90"
-Pos="5300 -11300">
+Pos="5800 -14400">
 <FreeText id="r91"
-Pos="3927 -11100"
+Pos="4927 -14100"
 Origin="3">
 <Text>[else]</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <Join id="r85"
-Pos="2000 -11300"/>
+Pos="3000 -14400"/>
 <Segment id="r86"/>
 <End id="r87"
-Pos="2000 -2600"
+Pos="3000 -5600"
 State="r4"
 Type="2"/>
 </Transition>
 
 <Transition id="r96">
 <End id="r111"
-Pos="13900 -15500"
+Pos="14400 -18600"
 State="r6"
 Type="1"/>
 <Segment id="r110">
 <Anchor id="r98"
-Pos="13900 -17500">
+Pos="14400 -20600">
 <FreeText id="r99"
-Pos="13660 -17908"
+Pos="14160 -21008"
 Origin="2">
 <Text>#isAckTimerExpired()/<p/>
 beginAction();<p/>
@@ -390,24 +396,24 @@ startSpinnerTimer();</Text>
 </Anchor>
 </Segment>
 <End id="r97"
-Pos="13900 -20400"
+Pos="14400 -23500"
 State="r8"
 Type="2"/>
 </Transition>
 
 <Transition id="r101">
 <End id="r102"
-Pos="14400 -20400"
+Pos="14900 -23500"
 State="r8"
 Type="1"/>
 <Segment id="r103"/>
 <Join id="r104"
-Pos="14400 -19700"/>
+Pos="14900 -22800"/>
 <Segment id="r105">
 <Anchor id="r108"
-Pos="14400 -19700">
+Pos="14900 -22800">
 <FreeText id="r109"
-Pos="14400 -19500"
+Pos="14900 -22600"
 Origin="4">
 <Text>#isSpinnerChange()/<p/>
 updateAction();<p/>
@@ -416,133 +422,133 @@ startSpinnerTimer();</Text>
 </Anchor>
 </Segment>
 <Join id="r106"
-Pos="15700 -19700"/>
+Pos="16200 -22800"/>
 <Segment id="r107"/>
 <Join id="r112"
-Pos="15700 -20800"/>
+Pos="16200 -23900"/>
 <Segment id="r113"/>
 <End id="r114"
-Pos="14700 -20800"
+Pos="15200 -23900"
 State="r8"
 Type="2"/>
 </Transition>
 
 <Transition id="r115">
 <End id="r130"
-Pos="12700 -20800"
+Pos="13200 -23900"
 State="r8"
 Type="1"/>
 <Segment id="r116">
 <Anchor id="r117"
-Pos="9200 -20800">
+Pos="9700 -23900">
 <FreeText id="r118"
-Pos="10700 -20954"
+Pos="11200 -24054"
 Origin="1">
 <Text>#isTilt()/</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <Join id="r119"
-Pos="8800 -20800"/>
+Pos="9300 -23900"/>
 <Segment id="r120"/>
 <End id="r121"
-Pos="8800 -16100"
+Pos="9300 -19200"
 State="r100"
 Type="2"/>
 </Transition>
 
 <Transition id="r123">
 <End id="r140"
-Pos="13600 -21400"
+Pos="14100 -24500"
 State="r8"
 Type="1"/>
 <Segment id="r139"/>
 <Join id="r138"
-Pos="13600 -22300"/>
+Pos="14100 -25400"/>
 <Segment id="r124">
 <Anchor id="r128"
-Pos="10000 -22300">
+Pos="10500 -25400">
 <FreeText id="r129"
-Pos="8700 -22454"
+Pos="9200 -25554"
 Origin="1">
 <Text>#isSpinnerTimerExpired()/</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <Join id="r125"
-Pos="7100 -22300"/>
+Pos="7600 -25400"/>
 <Segment id="r126"/>
 <End id="r127"
-Pos="7100 -16100"
+Pos="7600 -19200"
 State="r100"
 Type="2"/>
 </Transition>
 
 <Transition id="r131">
 <End id="r141"
-Pos="6400 -15000"
+Pos="6900 -18100"
 State="r100"
 Type="1"/>
 <Segment id="r132">
 <Anchor id="r136"
-Pos="2500 -15000">
+Pos="3800 -18100">
 <FreeText id="r137"
-Pos="1500 -15254"
+Pos="2100 -18554"
 Origin="1">
 <Text>#isAckTimerExpired()/</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <Join id="r133"
-Pos="1800 -15000"/>
+Pos="3800 -18100"/>
 <Segment id="r134"/>
 <End id="r135"
-Pos="1800 -13800"
+Pos="3800 -16800"
 State="r151"
 Type="2"/>
 </Transition>
 
 <InitialState id="r144"
-Pos="4500 -300"/>
+Pos="4000 -3700"/>
 
 <Transition id="r145">
 <End id="r146"
-Pos="4500 -500"
+Pos="4000 -3900"
 State="r144"
 Type="1"/>
 <Segment id="r147"/>
 <Join id="r148"
-Pos="2000 -500"/>
+Pos="3000 -3900"/>
 <Segment id="r149"/>
 <End id="r150"
-Pos="2000 -1600"
+Pos="3000 -4600"
 State="r4"
 Type="2"/>
 </Transition>
 
 <State id="r151"
-Pos="300 -12800"
+Pos="1300 -15800"
 Size="3600 1000">
 <Text>WaitingForHomed</Text>
 </State>
 
 <Transition id="r152">
 <End id="r153"
-Pos="900 -12800"
+Pos="1900 -15800"
 State="r151"
 Type="1"/>
 <Segment id="r154">
 <Anchor id="r156"
-Pos="900 -12000">
+Pos="1900 -15000">
 <FreeText id="r157"
-Pos="1100 -12000"
+Pos="2100 -15000"
 Origin="1">
 <Text>#isHomed()/</Text>
 </FreeText>
 </Anchor>
 </Segment>
 <End id="r155"
-Pos="900 -2600"
+Pos="1900 -5600"
 State="r4"
 Type="2"/>
 </Transition>

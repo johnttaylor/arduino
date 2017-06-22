@@ -22,7 +22,7 @@
 /// Namespaces
 using namespace Golem;
 
-
+static Main* g_thisP = 0;
 
 ///////////////////////////////
 Main::Main( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver )
@@ -46,6 +46,7 @@ Main::Main( Cpl::System::Mutex& lock, Adafruit_NeoPixel& ledDriver )
     , m_dirty( false )
     , m_actions( ledDriver )
 {
+    g_thisP = this;
 }
 
 
@@ -57,6 +58,11 @@ void Main::process( void )
     {
         runPolicies();
     }
+}
+
+Main* Main::getApplicationPointer( void )
+{
+    return g_thisP;
 }
 
 void Main::runPolicies( void )
@@ -206,6 +212,11 @@ bool Main::setPolicies( Frame*            framePolicyP,
     m_lock.unlock();
     if ( isDirty )
     {
+        delete framePolicyP;    // Note: The C++ standard says it okay to call delete() on a null pointer
+        delete streamPolicyP;
+        delete colorPolicyP;
+        delete rampPolicyP;
+        delete outputPolicyP;
         return false;
     }
 

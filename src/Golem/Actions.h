@@ -124,7 +124,7 @@ protected:
 
     /// Time marker for timing out ack'ing the detection of tilt action
     unsigned long           m_ackTimerMarker;
-    
+
     /// Time marker for timing out spinner mode 
     unsigned long           m_spinnerTimerMarker;
 
@@ -253,11 +253,18 @@ protected:
 
 protected:
     /// Helper
-    void enableFeedbackMode( uint32_t initialWrgbColor, unsigned long  timeoutInMsec=OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC, unsigned long multiTimerTimeoutInMsec=OPTION_GOLEM_FEEDBACK_MULTI_TILTS_TIMEOUT_MSEC );
+    void doSingleAction( void );
 
     /// Helper
-    void updateFeedback( uint32_t wrbgColor, unsigned long  timeoutInMsec=0, unsigned long multiTimerTimeoutInMsec=0 );
+    void doDoubleAction( void );
 
+    /// Helper
+    void doTripleAction( void );
+
+    /// Helper
+    void doRockerAction( void );
+
+protected:
     /// Helper method that converts individual color intensity into a single RGBW value
     static inline uint32_t convertToRGBW_( uint8_t red, uint8_t green, uint8_t blue, uint8_t white ) { return Adafruit_NeoPixel::Color( red, green, blue, white ); }
 
