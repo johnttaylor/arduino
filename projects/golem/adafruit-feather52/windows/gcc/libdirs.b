@@ -8,6 +8,7 @@ src/Bsp/Adafruit/feather52/gcc
 src/Driver/Imu/Bno055
 src/Imu/Motion/Cube
 src/Cpl/TShell/Dac/Cmd/Arduino
+src/Cpl/Io/Serial/Adafruit/Nrf5/BLE
 
 # Colony::Core libraries (note: the Feather52/Arduino boards uses FreeRTOS)
 //colony.core/src/Cpl/Io
@@ -34,7 +35,7 @@ src/Cpl/TShell/Dac/Cmd/Arduino
 //colony.core/src/Cpl/Log/_default
 
 
-# Sensor libraries
+# Sensor and LED libraries
 $ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_BNO055
 $ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_Unified_Sensor
 $ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_NeoPixel
@@ -50,6 +51,13 @@ $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/cores/nRF5/freertos/source/port
 $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/cores/nRF5/utility
 $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/cores/nRF5/SDK/components/toolchain
 $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/Wire
-#$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/Bluefruit52Lib/src
-#$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/Bluefruit52Lib/src/clients
-#$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/Bluefruit52Lib/src/services
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/Bluefruit52Lib/src
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/Bluefruit52Lib/src/clients
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/Bluefruit52Lib/src/services
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/Bluefruit52Lib/src/utility
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/nffs/src
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/nffs/src/fs/fs/src
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/nffs/src/fs/nffs/src
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/nffs/src/hw/hal/src
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/nffs/src/kernel/os/src
+$ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/libraries/nffs/src/util/crc/src

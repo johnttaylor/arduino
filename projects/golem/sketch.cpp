@@ -25,8 +25,10 @@
 #include "Golem/TShell/Cmd/Color.h"
 #include "Golem/TShell/Cmd/Stream.h"
 #include "Golem/gestures.h"
+#include "Cpl/Io/Serial/Adafruit/Nrf5/BLE/InputOutput.h"
 #include "Arduino.h"
 #include "WMath.h"
+#include <bluefruit.h>
 #include <stdlib.h>
 
 ////////////////////////////////////////////////////////////
@@ -34,9 +36,13 @@
 
 /// Thread priority for the debug shell
 #ifndef OPTION_DAC_SHELL_THREAD_PRIORITY
-#define OPTION_DAC_SHELL_THREAD_PRIORITY    CPL_SYSTEM_THREAD_PRIORITY_NORMAL 
+#define OPTION_DAC_SHELL_THREAD_PRIORITY        CPL_SYSTEM_THREAD_PRIORITY_NORMAL 
 #endif
 
+/// Since of the buffer to use for the BLE UART Received data
+#ifndef OPTION_GOLEM_BLE_UART_RX_BUFFER
+#define OPTION_GOLEM_BLE_UART_RX_BUFFER         BLE_UART_DEFAULT_FIFO_DEPTH   // default is 256 bytes
+#endif
 
 // Cpl::System::Trace section identifier
 #define SECT_ "sketch"
@@ -53,25 +59,35 @@ extern Cpl::Io::InputOutput& Bsp_Serial( void );
 //    return 512 * 6;
 //}
 
+////////////////////////////////////////////////////////////
+// BLE Service
+static BLEDis  bledis;
+static BLEUart bleuart( OPTION_GOLEM_BLE_UART_RX_BUFFER );
+static BLEBas  blebas;
+static void setupBLE( void );
+static void ble_connect_callback( void );
+static void ble_disconnect_callback( uint8_t reason );
+static Cpl::Io::Serial::Adafruit::Nrf5::BLE::InputOutput bleStdio( bleuart );
+
 
 ////////////////////////////////////////////////////////////
 static Cpl::System::Mutex policyLock_;
-static Adafruit_NeoPixel ledDriver_( OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_NEO_TYPE+ NEO_KHZ800 );
+static Adafruit_NeoPixel ledDriver_( OPTION_NEOPIXEL_CFG_NUM_PIXELS, OPTION_NEOPIXEL_CFG_PIN, OPTION_NEOPIXEL_CFG_NEO_TYPE + NEO_KHZ800 );
 static Golem::Main golem_( policyLock_, ledDriver_ );
 extern uint32_t __etext[];
 
 // Shell Processor and Shell commands
 static Cpl::Container::Map<Cpl::TShell::Dac::Command>   cmdlist_;
 static Cpl::TShell::Dac::Maker                          cmdProcessor_( cmdlist_ );
-static Cpl::TShell::Dac::Cmd::Help                      helpCmd_( cmdlist_, "invoke_special_static_constructor"  );
-static Cpl::TShell::Dac::Cmd::Trace                     traceCmd_( cmdlist_, "invoke_special_static_constructor"  );
-static Cpl::TShell::Dac::Cmd::Arduino::Dbg              debugCmd_( cmdlist_, "invoke_special_static_constructor"  );
-static Cpl::TShell::Dac::Cmd::FreeRTOS::Threads         threads_( cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Output                       outputPolicy( golem_, ledDriver_, cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Frame                        framePolicy( golem_, cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Ramp                         rampPolicy( golem_, cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Color                        colorPolicy( golem_, cmdlist_, "invoke_special_static_constructor"  );
-static Golem::TShell::Cmd::Stream                       streamPolicy( golem_, cmdlist_, "invoke_special_static_constructor"  );
+static Cpl::TShell::Dac::Cmd::Help                      helpCmd_( cmdlist_, "invoke_special_static_constructor" );
+static Cpl::TShell::Dac::Cmd::Trace                     traceCmd_( cmdlist_, "invoke_special_static_constructor" );
+static Cpl::TShell::Dac::Cmd::Arduino::Dbg              debugCmd_( cmdlist_, "invoke_special_static_constructor" );
+static Cpl::TShell::Dac::Cmd::FreeRTOS::Threads         threads_( cmdlist_, "invoke_special_static_constructor" );
+static Golem::TShell::Cmd::Output                       outputPolicy( golem_, ledDriver_, cmdlist_, "invoke_special_static_constructor" );
+static Golem::TShell::Cmd::Frame                        framePolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
+static Golem::TShell::Cmd::Ramp                         rampPolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
+static Golem::TShell::Cmd::Color                        colorPolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
+static Golem::TShell::Cmd::Stream                       streamPolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
 static Cpl::TShell::Stdio                               shell_( cmdProcessor_, "DAC-Shell", OPTION_DAC_SHELL_THREAD_PRIORITY );
 
 
@@ -87,22 +103,33 @@ void setup( void )
     // Initialize CPL
     Cpl::System::Api::initialize();
 
+    CPL_SYSTEM_TRACE_ENABLE();
+    CPL_SYSTEM_TRACE_ENABLE_SECTION( SECT_ );
+
     // Initialize the Gesture Sub-system
     setupGestures();
 
     // Initialize the random number generator (which is built on top of stdlib's rand() and srand())
-    randomSeed(analogRead(0));
+    randomSeed( analogRead( 0 ) );
 
     // Create/Launch the Command shell
-    shell_.launch( Bsp_Serial(), Bsp_Serial() );
+#ifndef USE_BLEUART_TSHELL
+    shell_.launch( Bsp_Serial(), Bsp_Serial() ); 
+#else
+    bleStdio.start();
+    shell_.launch( bleStdio, bleStdio );
+#endif
 
     // Set initial Golem Policies
     Golem::DataStream*      streamP = new Golem::StreamAddress( (void*) 0x1c000, (void*) __etext );
     Golem::Frame*           frameP  = new Golem::FrameSimple( 500, 8, 1, Golem::Frame::eNONE );
     Golem::FrameBitColor*   colorP  = new Golem::ColorStream( Golem::ColorStream::eALL_BITS );
-    Golem::IntensityRamp*   rampP   = new Golem::RampPercent(0.0);
+    Golem::IntensityRamp*   rampP   = new Golem::RampPercent( 0.0 );
     Golem::Output*          outputP = new Golem::OutputNeoPixel( Golem::OutputNeoPixel::eQUARTER_SPIN_C, ledDriver_, OPTION_NEOPIXEL_CFG_IS_RGBW );
     golem_.setPolicies( frameP, streamP, colorP, rampP, outputP );
+
+    // Setup Bluetooth comms/services
+    setupBLE();
 }
 
 /**************************************************************************
@@ -119,3 +146,66 @@ void loop( void )
     Cpl::System::Api::sleep( 50 );
 }
 
+///////////
+void setupBLE( void )
+{
+    // Setup the BLE LED to be enabled on CONNECT
+    // Note: This is actually the default behavior, but provided
+    // here in case you want to control this LED manually via PIN 19
+    Bluefruit.autoConnLed( true );
+
+    Bluefruit.begin();
+    Bluefruit.setName( "Golem" );
+    Bluefruit.setConnectCallback( ble_connect_callback );
+    Bluefruit.setDisconnectCallback( ble_disconnect_callback );
+
+    // Configure and Start Device Information Service
+    bledis.setManufacturer( "Integer Fox" );
+    bledis.setModel( "Prototype I" );
+    bledis.begin();
+
+    // Configure and Start BLE Uart Service
+    bleuart.begin();
+
+    // Start BLE Battery Service
+    blebas.begin();
+    blebas.write( 100 ); // FIXME: Need to implement actual Battery/ADC reading....
+
+    // 
+    // Set up Advertising Packet
+    //
+    Bluefruit.Advertising.addFlags( BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE );
+    Bluefruit.Advertising.addTxPower();
+
+    // Include bleuart 128-bit uuid
+    Bluefruit.Advertising.addService( bleuart );
+
+    // There is no room for Name in Advertising packet
+    // Use Scan response for Name
+    Bluefruit.ScanResponse.addName();
+
+
+    // 
+    // Start Advertising
+    //
+    Bluefruit.Advertising.start();
+}
+
+void ble_connect_callback( void )
+{
+    Bsp_Serial().write( "BLE Connected.\r\n" );
+}
+
+void ble_disconnect_callback( uint8_t reason )
+{
+    Bsp_Serial().write( "BLE Disconnected. Auto starting advertising.\r\n" );
+}
+
+void rtos_idle_callback( void )
+{
+    // Don't call any other FreeRTOS blocking API()
+    // Perform background task(s) here
+
+    // Request CPU to enter low-power mode until an event/interrupt occurs
+    waitForEvent();
+}

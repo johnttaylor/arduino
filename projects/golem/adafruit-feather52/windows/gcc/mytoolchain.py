@@ -61,7 +61,7 @@ FINAL_OUTPUT_NAME = 'sketch'
 
 # Set project specific 'base' (i.e always used) options
 base_release = BuildValues()        # Do NOT comment out this line
-build_options         = ''
+build_options         = '-DUSE_BLEUART_TSHELL '
 base_release.cflags   = ' -Wall -Werror -DF_CPU=64000000 -DARDUINO=10802 ' + build_options
 base_release.asmflags = ' -Wall -DF_CPU=64000000 -DARDUINO=10802'
 base_release.inc      = ' -I' + ARDUINO_SKETCH_FOLDER + r'\libraries\Adafruit_BNO055' + \

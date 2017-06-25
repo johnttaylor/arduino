@@ -41,7 +41,7 @@ OutputNeoPixel::~OutputNeoPixel()
 ////////////////////////////////////////
 const char* OutputNeoPixel::getDescription( Cpl::Text::String& brief )
 {
-    brief.format( "OutpuNeoPixel(%s)", toString( m_option ) );
+    brief.format( "OutputNeoPixel(%s)", toString( m_option ) );
     return brief;
 }
 
