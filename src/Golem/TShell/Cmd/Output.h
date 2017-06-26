@@ -23,9 +23,9 @@
                                        "         1         2         3         4         5         6         7         8"
                                        "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
 */
-#define GOLEMSHELLCMD_USAGE_OUTPUT_      "out\n" \
-                                         "out debug\n"  \
-                                         "out neo (all|2|4|2c|2cc|4c|4cc|f2c|f2cc|f4c|f4cc)\n"
+#define GOLEMSHELLCMD_USAGE_OUTPUT_      "output\n" \
+                                         "output debug\n"  \
+                                         "output neo (all|2|4|2c|2cc|4c|4cc|f2c|f2cc|f4c|f4cc)\n"
 
 /// Detailed Help text
 #ifndef GOLEMSHELLCMD_DETAIL_OUTPUT_

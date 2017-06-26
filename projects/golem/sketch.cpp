@@ -24,6 +24,7 @@
 #include "Golem/TShell/Cmd/Ramp.h"
 #include "Golem/TShell/Cmd/Color.h"
 #include "Golem/TShell/Cmd/Stream.h"
+#include "Golem/TShell/Cmd/Battery.h"
 #include "Golem/gestures.h"
 #include "Cpl/Io/Serial/Adafruit/Nrf5/BLE/InputOutput.h"
 #include "Arduino.h"
@@ -53,17 +54,16 @@
 // Get access to the serial port
 extern Cpl::Io::InputOutput& Bsp_Serial( void );
 
-//extern uint32_t setLoopStacksize( void );
-//uint32_t setLoopStacksize( void )
-//{
-//    return 512 * 6;
-//}
+extern uint32_t setLoopStacksize( void );
+uint32_t setLoopStacksize( void )
+{
+    return 512;
+}
 
 ////////////////////////////////////////////////////////////
 // BLE Service
 static BLEDis  bledis;
 static BLEUart bleuart( OPTION_GOLEM_BLE_UART_RX_BUFFER );
-static BLEBas  blebas;
 static void setupBLE( void );
 static void ble_connect_callback( void );
 static void ble_disconnect_callback( uint8_t reason );
@@ -88,6 +88,7 @@ static Golem::TShell::Cmd::Frame                        framePolicy( golem_, cmd
 static Golem::TShell::Cmd::Ramp                         rampPolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
 static Golem::TShell::Cmd::Color                        colorPolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
 static Golem::TShell::Cmd::Stream                       streamPolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
+static Golem::TShell::Cmd::Battery                      batteryStatus( cmdlist_, "invoke_special_static_constructor" );
 static Cpl::TShell::Stdio                               shell_( cmdProcessor_, "DAC-Shell", OPTION_DAC_SHELL_THREAD_PRIORITY );
 
 
@@ -166,10 +167,6 @@ void setupBLE( void )
 
     // Configure and Start BLE Uart Service
     bleuart.begin();
-
-    // Start BLE Battery Service
-    blebas.begin();
-    blebas.write( 100 ); // FIXME: Need to implement actual Battery/ADC reading....
 
     // 
     // Set up Advertising Packet

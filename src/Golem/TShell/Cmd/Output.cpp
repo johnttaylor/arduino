@@ -22,14 +22,14 @@ using namespace Golem::TShell::Cmd;
 
 ///////////////////////////
 Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "out" )
+    : Cpl::TShell::Dac::Cmd::Command( commandList, "output" )
     , m_golem( application )
     , m_ledDriver( ledDriver )
 {
 }
 
 Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "out", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
+    : Cpl::TShell::Dac::Cmd::Command( commandList, "output", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
     , m_golem( application )
     , m_ledDriver( ledDriver )
 {

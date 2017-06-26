@@ -33,10 +33,24 @@
 #include "cores/nRF5/freertos/source/include/FreeRTOS.h"
 
 
-
 //////////////////////////////////////////////////////////
 /// Board Specific APIs
 //////////////////////////////////////////////////////////
+
+/** This method reads the Battery ADC pin and returns the results.  If any
+    argument is set to null/0, then that value is not returned.  
+    NOTES:
+        o This is blocking/busy wait call
+        o The analog reference and resolution settings of the ADC are
+          modified by this call.  It is the responsibility of the 
+          application to preserve/restore the ADC configuration.
+ */
+void Bsp_readBatteryAdc( float* batteryMvP, uint8_t* batteryPercentageP, float* adcMvP, int* rawAdcP );
+
+/** This method converts the 'raw battery ADC in millivolts' to remaining percent
+    battery.
+ */
+uint8_t Bsp_batteryAdcMvToPercent( float mvolts );
 
 
 /** Initialize the primary serial port AND it waits for
