@@ -52,6 +52,7 @@ public:
      */
     virtual const char* getDescription( Cpl::Text::String& brief ) = 0;
 
+    
 public:
     /// Virtual destructor
     virtual ~Output(){}

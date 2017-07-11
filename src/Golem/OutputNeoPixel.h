@@ -94,6 +94,7 @@ protected:
     /// Helper method
     void setQuarterSpinLED( uint16_t baseLed, uint16_t phase, uint32_t color );
 
+public:
     /// Helper method
     static const char* toString( OutputNeoPixel::Options_T option );
 };

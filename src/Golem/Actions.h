@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include "gestures.h"
 #include "Adafruit_NeoPixel.h"
-
+#include "Golem/OutputNeoPixel.h"
 
 /// Timeout period, in msec, for the feedback interval
 #ifndef OPTION_GOLEM_FEEDBACK_TIMEOUT_MSEC
@@ -111,46 +111,58 @@ protected:
 
 protected:
     /// LED Driver
-    Adafruit_NeoPixel&      m_ledDriver;
+    Adafruit_NeoPixel&          m_ledDriver;
 
     ///
-    GestureEvent_t          m_currentGestureEvent;
+    GestureEvent_t              m_currentGestureEvent;
 
     /// Time marker for timing out Feedback mode
-    unsigned long           m_timeoutTimerMarker;
+    unsigned long               m_timeoutTimerMarker;
 
     /// Time marker for timing out multi-tilt sequences
-    unsigned long           m_multiTimerMarker;
+    unsigned long               m_multiTimerMarker;
 
     /// Time marker for timing out ack'ing the detection of tilt action
-    unsigned long           m_ackTimerMarker;
+    unsigned long               m_ackTimerMarker;
 
     /// Time marker for timing out spinner mode 
-    unsigned long           m_spinnerTimerMarker;
+    unsigned long               m_spinnerTimerMarker;
 
     /// Current time of when event/fsm processing
-    unsigned long           m_now;
+    unsigned long               m_now;
 
     /// Number of tilt actions in the current multi-tilt sequence
-    uint16_t                m_tiltCount;
+    uint16_t                    m_tiltCount;
+
+    /// Number of clockwise 'tilt-turns'
+    uint16_t                    m_clockWise;
+
+    /// Number of counter-clockwise 'tilt-turns'
+    uint16_t                    m_counterClockwise;
+
+    /// Work variable to accumulate spin counts
+    int32_t                     m_spinAccumulator;
+
+    /// Tracks discrete 'spin states'
+    OutputNeoPixel::Options_T   m_outputState;
 
     /// Action detected
-    Tilt_T                  m_tiltAction;
+    Tilt_T                      m_tiltAction;
 
     /// Current Tilt 
     Imu::Motion::Cube::Tilt::AspectState_T m_currentTilt;
 
     /// Timer state
-    bool                    m_timeoutTimerActive;
+    bool                        m_timeoutTimerActive;
 
     /// Timer state
-    bool                    m_multiTimerActive;
+    bool                        m_multiTimerActive;
 
     /// Timer state
-    bool                    m_ackTimerActive;
+    bool                        m_ackTimerActive;
 
     /// Timer state
-    bool                    m_spinnerTimerActive;
+    bool                        m_spinnerTimerActive;
 
 
 
@@ -263,6 +275,24 @@ protected:
 
     /// Helper
     void doRockerAction( void );
+
+    /// Helper
+    void doCornerClockwiseAction( void );
+
+    /// Helper
+    void doCornerCounterClockwiseAction( void );
+
+    /// Helper
+    void doCircleClockwiseAction( void );
+
+    /// Helper
+    void doDoubleCircleClockwiseAction( void );
+
+    /// Helper
+    void doCircleCounterClockwiseAction( void );
+
+    /// Helper
+    void doDoubleCircleCounterClockwiseAction( void );
 
 protected:
     /// Helper method that converts individual color intensity into a single RGBW value

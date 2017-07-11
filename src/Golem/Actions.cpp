@@ -20,6 +20,9 @@
 #define SECT_     "actions"
 #define SECT_DO   "actions-do"
 
+#ifndef OPTION_GOLEM_NEXT_SPIN_STATE_THRESHOLD
+#define OPTION_GOLEM_NEXT_SPIN_STATE_THRESHOLD          OPTION_GESTURES_SPINNER_FAST_WEIGHT
+#endif
 
 /// Namespaces
 using namespace Golem;
@@ -30,6 +33,7 @@ using namespace Golem;
 Actions::Actions( Adafruit_NeoPixel& ledDriver )
     : m_ledDriver( ledDriver )
     , m_tiltCount( 0 )
+    , m_outputState( OutputNeoPixel::eQUARTER_SPIN_C )  // Needs to match the start up state defined by the sketch.
     , m_tiltAction( eINVALID )
     , m_currentTilt( Imu::Motion::Cube::Tilt::AspectState_T::eUNKNOWN )
     , m_timeoutTimerActive( false )
@@ -77,7 +81,7 @@ void Actions::doSingleAction( void )
     Frame::FrameConfig_T    currentConfig = golemP->getFrameConfig();
     if ( m_currentGestureEvent.m_spinnerCount != 0 )
     {
-        uint32_t      newBitTime = currentConfig.m_bitTime + m_currentGestureEvent.m_spinnerCount; 
+        uint32_t      newBitTime = currentConfig.m_bitTime + m_currentGestureEvent.m_spinnerCount;
         Golem::Frame* newPolicyP = new Golem::FrameSimple( newBitTime, currentConfig.m_numDataBits, currentConfig.m_stopBits, currentConfig.m_parity );
         golemP->setPolicies( newPolicyP, 0, 0, 0, 0 );
         CPL_SYSTEM_TRACE_MSG( SECT_DO, ("Action::Single.  New bit time=%ld, old bit time=%ld", newBitTime, currentConfig.m_bitTime) );
@@ -86,6 +90,71 @@ void Actions::doSingleAction( void )
 
 void Actions::doDoubleAction( void )
 {
+    Main* golemP   = Main::getApplicationPointer();
+    bool  newState = false;
+    bool  advance  = false;
+
+    // Accumulate 'enough' spin to advance to the next state
+    m_spinAccumulator += m_currentGestureEvent.m_spinnerCount;
+    if ( m_spinAccumulator > OPTION_GOLEM_NEXT_SPIN_STATE_THRESHOLD )
+    {
+        advance  = true;
+        newState = true;
+    }
+    else if ( m_spinAccumulator < -OPTION_GOLEM_NEXT_SPIN_STATE_THRESHOLD )
+    {
+        advance  = false;
+        newState = true;
+    }
+
+    // Take action....
+    if ( newState )
+    {
+        // Determine the next output state
+        Golem::OutputNeoPixel::Options_T previous = m_outputState;
+        switch ( m_outputState )
+        {
+        case Golem::OutputNeoPixel::eALL:
+            m_outputState = advance ? Golem::OutputNeoPixel::ePAIRS : Golem::OutputNeoPixel::eQUARTER_FAST_SPIN_CC;
+            break;
+        case Golem::OutputNeoPixel::ePAIRS:
+            m_outputState = advance ? Golem::OutputNeoPixel::ePAIRS_SPIN_C : Golem::OutputNeoPixel::eALL;
+            break;
+        case Golem::OutputNeoPixel::ePAIRS_SPIN_C:
+            m_outputState = advance ? Golem::OutputNeoPixel::ePAIRS_SPIN_CC : Golem::OutputNeoPixel::ePAIRS;
+            break;
+        case Golem::OutputNeoPixel::ePAIRS_SPIN_CC:
+            m_outputState = advance ? Golem::OutputNeoPixel::ePAIRS_FAST_SPIN_C : Golem::OutputNeoPixel::ePAIRS_SPIN_C;
+            break;
+        case Golem::OutputNeoPixel::ePAIRS_FAST_SPIN_C:
+            m_outputState = advance ? Golem::OutputNeoPixel::ePAIRS_SPIN_CC : Golem::OutputNeoPixel::ePAIRS_FAST_SPIN_CC;
+            break;
+        case Golem::OutputNeoPixel::ePAIRS_FAST_SPIN_CC:
+            m_outputState = advance ? Golem::OutputNeoPixel::eQUARTER : Golem::OutputNeoPixel::ePAIRS_FAST_SPIN_C;
+            break;
+        case Golem::OutputNeoPixel::eQUARTER:
+            m_outputState = advance ? Golem::OutputNeoPixel::eQUARTER_SPIN_C : Golem::OutputNeoPixel::ePAIRS_FAST_SPIN_CC;
+            break;
+        case Golem::OutputNeoPixel::eQUARTER_SPIN_C:
+            m_outputState = advance ? Golem::OutputNeoPixel::eQUARTER_SPIN_CC : Golem::OutputNeoPixel::eQUARTER;
+            break;
+        case Golem::OutputNeoPixel::eQUARTER_SPIN_CC:
+            m_outputState = advance ? Golem::OutputNeoPixel::eQUARTER_FAST_SPIN_C : Golem::OutputNeoPixel::eQUARTER_SPIN_C;
+            break;
+        case Golem::OutputNeoPixel::eQUARTER_FAST_SPIN_C:
+            m_outputState = advance ? Golem::OutputNeoPixel::eQUARTER_FAST_SPIN_CC : Golem::OutputNeoPixel::eQUARTER_SPIN_CC;
+            break;
+        case Golem::OutputNeoPixel::eQUARTER_FAST_SPIN_CC:
+            m_outputState = advance ? Golem::OutputNeoPixel::eALL : Golem::OutputNeoPixel::eQUARTER_FAST_SPIN_C;
+            break;
+        }
+
+        // Create the new output policy
+        Golem::Output* newPolicyP = new Golem::OutputNeoPixel( m_outputState, m_ledDriver, OPTION_NEOPIXEL_CFG_IS_RGBW );
+        golemP->setPolicies( 0, 0, 0, 0, newPolicyP );
+        m_spinAccumulator = 0;
+        CPL_SYSTEM_TRACE_MSG( SECT_DO, ("Action::Double.  new output policy=%s, previous=%s", OutputNeoPixel::toString( m_outputState ), OutputNeoPixel::toString( previous )) );
+    }
 }
 
 void Actions::doTripleAction( void )
@@ -96,7 +165,29 @@ void Actions::doRockerAction( void )
 {
 }
 
+void Actions::doCornerClockwiseAction( void )
+{
+}
 
+void Actions::doCornerCounterClockwiseAction( void )
+{
+}
+
+void Actions::doCircleClockwiseAction( void )
+{
+}
+
+void Actions::doDoubleCircleClockwiseAction( void )
+{
+}
+
+void Actions::doCircleCounterClockwiseAction( void )
+{
+}
+
+void Actions::doDoubleCircleCounterClockwiseAction( void )
+{
+}
 
 /////////////////////////////////////
 bool Actions::isAckTimerExpired()
@@ -189,6 +280,36 @@ bool Actions::isValidAction()
 
 bool Actions::isValidMultiAction() throw()
 {
+    if ( m_clockWise == 1 )
+    {
+        m_tiltAction = eCORNER_CLOCKWISE;
+        return true;
+    }
+    if ( m_counterClockwise == 1 )
+    {
+        m_tiltAction = eCORNER_COUNTER_CLOCKWISE;
+        return true;
+    }
+    if ( m_clockWise == 4 )
+    {
+        m_tiltAction = eCIRCLE_CLOCKWISE;
+        return true;
+    }
+    if ( m_counterClockwise == 4 )
+    {
+        m_tiltAction = eCIRCLE_COUNTER_CLOCKWISE;
+        return true;
+    }
+    if ( m_clockWise == 8 )
+    {
+        m_tiltAction = eDOUBLE_CIRCLE_CLOCKWISE;
+        return true;
+    }
+    if ( m_counterClockwise == 8 )
+    {
+        m_tiltAction = eDOUBLE_CIRCLE_COUNTER_CLOCKWISE;
+        return true;
+    }
     if ( m_tiltCount == 1 )
     {
         m_tiltAction = eSINGLE;
@@ -212,14 +333,16 @@ bool Actions::isValidMultiAction() throw()
 /////////////////////////////////////
 void Actions::beginAction() throw()
 {
-    updateAction();
+    m_spinAccumulator = 0;
 }
 
 void Actions::beginTilt() throw()
 {
-    m_tiltCount     = 1;
-    m_tiltAction    = eINVALID;
-    m_currentTilt   = m_currentGestureEvent.m_tiltEvent.m_currentState;
+    m_tiltCount        = 1;
+    m_clockWise        = 0;
+    m_counterClockwise = 0;
+    m_tiltAction       = eINVALID;
+    m_currentTilt      = m_currentGestureEvent.m_tiltEvent.m_currentState;
 }
 
 void Actions::setAckExitVisualCue() throw()
@@ -301,6 +424,30 @@ void Actions::updateAction() throw()
     case eROCKER:
         doRockerAction();
         break;
+    case eCORNER_CLOCKWISE:
+        doCornerClockwiseAction();
+        break;
+
+    case eCORNER_COUNTER_CLOCKWISE:
+        doCornerCounterClockwiseAction();
+        break;
+
+    case eCIRCLE_CLOCKWISE:
+        doCircleClockwiseAction();
+        break;
+
+    case eDOUBLE_CIRCLE_CLOCKWISE:
+        doDoubleCircleClockwiseAction();
+        break;
+
+    case eCIRCLE_COUNTER_CLOCKWISE:
+        doCircleCounterClockwiseAction();
+        break;
+
+    case eDOUBLE_CIRCLE_COUNTER_CLOCKWISE:
+        doDoubleCircleCounterClockwiseAction();
+        break;
+
     default:
         break;
     }
@@ -321,10 +468,24 @@ void Actions::updateTilt() throw()
         if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_NORTH )
         {
             m_tiltCount++;
+            m_counterClockwise = 0;
+            m_clockWise        = 0;
         }
         else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_SOUTH )
         {
             m_tiltAction = eROCKER;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_WEST )
+        {
+            m_counterClockwise = 0;
+            m_tiltCount        = 0;
+            m_clockWise++;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_EAST )
+        {
+            m_counterClockwise++;
+            m_clockWise = 0;
+            m_tiltCount = 0;
         }
         m_currentTilt = m_currentGestureEvent.m_tiltEvent.m_currentState;
         break;
@@ -338,6 +499,18 @@ void Actions::updateTilt() throw()
         {
             m_tiltAction = eROCKER;
         }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_EAST )
+        {
+            m_counterClockwise = 0;
+            m_tiltCount        = 0;
+            m_clockWise++;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_WEST )
+        {
+            m_counterClockwise++;
+            m_clockWise = 0;
+            m_tiltCount = 0;
+        }
         m_currentTilt = m_currentGestureEvent.m_tiltEvent.m_currentState;
         break;
 
@@ -350,6 +523,18 @@ void Actions::updateTilt() throw()
         {
             m_tiltAction = eROCKER;
         }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_SOUTH )
+        {
+            m_counterClockwise = 0;
+            m_tiltCount        = 0;
+            m_clockWise++;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_NORTH )
+        {
+            m_counterClockwise++;
+            m_clockWise = 0;
+            m_tiltCount = 0;
+        }
         m_currentTilt = m_currentGestureEvent.m_tiltEvent.m_currentState;
         break;
 
@@ -361,6 +546,18 @@ void Actions::updateTilt() throw()
         else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_WEST )
         {
             m_tiltAction = eROCKER;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_NORTH )
+        {
+            m_counterClockwise = 0;
+            m_tiltCount        = 0;
+            m_clockWise++;
+        }
+        else if ( m_currentTilt == Imu::Motion::Cube::Tilt::eTILT_SOUTH )
+        {
+            m_counterClockwise++;
+            m_clockWise = 0;
+            m_tiltCount = 0;
         }
         m_currentTilt = m_currentGestureEvent.m_tiltEvent.m_currentState;
         break;
