@@ -67,10 +67,10 @@ namespace Golem {
     thread safe, i.e. it needs to run/execute in the same thread as the
     Golem::Main class.
 
-    Tilt (any axis)				bit time, spin +/-
-    Tilt x2 (any axis)			output -->cycle through all|2|....
-    Tilt x3 (any axis)			ramp -->cycle through 0 to 50 to 0
-    Tilt + opposite Tilt			colors -->cycle through on, off, all, all+fast
+    Tilt (any axis)				frame   --> spin +/- bit times
+    Tilt x2 (any axis)			output  --> spin cycles through [all, pairs, pairs-spin-c, ... quarter-fast-spin-cc]
+    Tilt x3 (any axis)			ramp    --> spin cycles through 0 to 50 to 0
+    Tilt + opposite Tilt		colors  --> cycle through on, off, all, all+fast
     Tilt + opposite | 90 tilt + opposite
     Tilt each axis clockwise/cc		on|off
     Tilt each axis clockwise/cc x2		BLE on|off
