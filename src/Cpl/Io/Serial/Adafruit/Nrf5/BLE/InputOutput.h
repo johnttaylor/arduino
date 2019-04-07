@@ -71,7 +71,7 @@ public:
               the start() method MUST be called BEFORE the Cpl::System::Initialize()
               method is called.
      */
-    void start( void ) throw();
+    void start( void ) noexcept;
 
 public:
     /// Pull in overloaded methods from base class

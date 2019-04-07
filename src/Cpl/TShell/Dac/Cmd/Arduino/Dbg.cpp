@@ -20,19 +20,19 @@ using namespace Cpl::TShell::Dac::Cmd::Arduino;
 
 
 ///////////////////////////
-Dbg::Dbg( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
+Dbg::Dbg( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
 :Cpl::TShell::Dac::Cmd::Command(commandList, "dbg")
     {
     }
 
-Dbg::Dbg( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
+Dbg::Dbg( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
 :Cpl::TShell::Dac::Cmd::Command(commandList, "dbg", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance)
     {
     }
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Dbg::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw()
+Cpl::TShell::Dac::Command::Result_T Dbg::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
     {
     //Cpl::Text::String&  token    = context.getTokenBuffer();
     //Cpl::Text::String&  outtext  = context.getOutputBuffer();

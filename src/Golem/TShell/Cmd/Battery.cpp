@@ -27,19 +27,19 @@ using namespace Golem::TShell::Cmd;
 
 
 ///////////////////////////
-Battery::Battery( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
+Battery::Battery( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
     : Cpl::TShell::Dac::Cmd::Command( commandList, "battery" )
 {
 }
 
-Battery::Battery( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
+Battery::Battery( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
     : Cpl::TShell::Dac::Cmd::Command( commandList, "battery", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
 {
 }
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Battery::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw()
+Cpl::TShell::Dac::Command::Result_T Battery::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
 {
     //Cpl::Text::String&          newName    = context.getTokenBuffer();
     Cpl::Text::String&          outtext    = context.getOutputBuffer();

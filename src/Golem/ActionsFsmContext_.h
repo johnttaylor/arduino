@@ -19,81 +19,81 @@ class ActionsFsmContext_
 {
 public:
     /// Action
-    virtual void beginAction() throw() = 0;
+    virtual void beginAction() noexcept = 0;
 
     /// Action
-    virtual void beginTilt() throw() = 0;
+    virtual void beginTilt() noexcept = 0;
 
     /// Action
-    virtual void setAckExitVisualCue() throw() = 0;
+    virtual void setAckExitVisualCue() noexcept = 0;
 
     /// Action
-    virtual void setAckTiltVisualCue() throw() = 0;
+    virtual void setAckTiltVisualCue() noexcept = 0;
 
     /// Action
-    virtual void setHomedVisualCue() throw() = 0;
+    virtual void setHomedVisualCue() noexcept = 0;
 
     /// Action
-    virtual void setTiltVisualCue() throw() = 0;
+    virtual void setTiltVisualCue() noexcept = 0;
 
     /// Action
-    virtual void startAckTimer() throw() = 0;
+    virtual void startAckTimer() noexcept = 0;
 
     /// Action
-    virtual void startMultiTimer() throw() = 0;
+    virtual void startMultiTimer() noexcept = 0;
 
     /// Action
-    virtual void startSpinnerTimer() throw() = 0;
+    virtual void startSpinnerTimer() noexcept = 0;
 
     /// Action
-    virtual void startTimeoutTimer() throw() = 0;
+    virtual void startTimeoutTimer() noexcept = 0;
 
     /// Action
-    virtual void stopMultiTimer() throw() = 0;
+    virtual void stopMultiTimer() noexcept = 0;
 
     /// Action
-    virtual void stopSpinnerTimer() throw() = 0;
+    virtual void stopSpinnerTimer() noexcept = 0;
 
     /// Action
-    virtual void stopTimeoutTimer() throw() = 0;
+    virtual void stopTimeoutTimer() noexcept = 0;
 
     /// Action
-    virtual void updateAction() throw() = 0;
+    virtual void updateAction() noexcept = 0;
 
     /// Action
-    virtual void updateHomed() throw() = 0;
+    virtual void updateHomed() noexcept = 0;
 
     /// Action
-    virtual void updateTilt() throw() = 0;
+    virtual void updateTilt() noexcept = 0;
 
 
 public:
     /// Guard
-    virtual bool isAckTimerExpired() throw() = 0;
+    virtual bool isAckTimerExpired() noexcept = 0;
 
     /// Guard
-    virtual bool isHomed() throw() = 0;
+    virtual bool isHomed() noexcept = 0;
 
     /// Guard
-    virtual bool isMultiTimerExpired() throw() = 0;
+    virtual bool isMultiTimerExpired() noexcept = 0;
 
     /// Guard
-    virtual bool isSpinnerChange() throw() = 0;
+    virtual bool isSpinnerChange() noexcept = 0;
 
     /// Guard
-    virtual bool isSpinnerTimerExpired() throw() = 0;
+    virtual bool isSpinnerTimerExpired() noexcept = 0;
 
     /// Guard
-    virtual bool isTilt() throw() = 0;
+    virtual bool isTilt() noexcept = 0;
 
     /// Guard
-    virtual bool isTimeoutExpired() throw() = 0;
+    virtual bool isTimeoutExpired() noexcept = 0;
 
     /// Guard
-    virtual bool isValidAction() throw() = 0;
+    virtual bool isValidAction() noexcept = 0;
 
     /// Guard
-    virtual bool isValidMultiAction() throw() = 0;
+    virtual bool isValidMultiAction() noexcept = 0;
 
 
 public:

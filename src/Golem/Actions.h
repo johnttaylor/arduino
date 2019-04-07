@@ -187,81 +187,81 @@ public:
 
 protected:
     /// See Golem::ActionFsmContext_
-    void beginAction() throw();
+    void beginAction() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void beginTilt() throw();
+    void beginTilt() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void setAckExitVisualCue() throw();
+    void setAckExitVisualCue() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void setAckTiltVisualCue() throw();
+    void setAckTiltVisualCue() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void setHomedVisualCue() throw();
+    void setHomedVisualCue() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void setTiltVisualCue() throw();
+    void setTiltVisualCue() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void startAckTimer() throw();
+    void startAckTimer() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void startSpinnerTimer() throw();
+    void startSpinnerTimer() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void startMultiTimer() throw();
+    void startMultiTimer() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void startTimeoutTimer() throw();
+    void startTimeoutTimer() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void stopMultiTimer() throw();
+    void stopMultiTimer() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void stopSpinnerTimer() throw();
+    void stopSpinnerTimer() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void stopTimeoutTimer() throw();
+    void stopTimeoutTimer() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void updateAction() throw();
+    void updateAction() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void updateHomed() throw();
+    void updateHomed() noexcept;
 
     /// See Golem::ActionFsmContext_
-    void updateTilt() throw();
+    void updateTilt() noexcept;
 
 
 protected:
     /// See Golem::ActionFsmContext_
-    bool isAckTimerExpired() throw();
+    bool isAckTimerExpired() noexcept;
 
     /// See Golem::ActionFsmContext_
-    bool isHomed() throw();
+    bool isHomed() noexcept;
 
     /// See Golem::ActionFsmContext_
-    bool isMultiTimerExpired() throw();
+    bool isMultiTimerExpired() noexcept;
 
     /// See Golem::ActionFsmContext_
-    bool isSpinnerChange() throw();
+    bool isSpinnerChange() noexcept;
 
     /// See Golem::ActionFsmContext_
-    bool isSpinnerTimerExpired() throw();
+    bool isSpinnerTimerExpired() noexcept;
 
     /// See Golem::ActionFsmContext_
-    bool isTilt() throw();
+    bool isTilt() noexcept;
 
     /// See Golem::ActionFsmContext_
-    bool isTimeoutExpired() throw();
+    bool isTimeoutExpired() noexcept;
 
     /// See Golem::ActionFsmContext_
-    bool isValidAction() throw();
+    bool isValidAction() noexcept;
 
     /// See Golem::ActionFsmContext_
-    bool isValidMultiAction() throw();
+    bool isValidMultiAction() noexcept;
 
 protected:
     /// Helper

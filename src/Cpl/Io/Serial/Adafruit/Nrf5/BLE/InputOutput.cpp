@@ -31,7 +31,7 @@ InputOutput::~InputOutput( void )
 }
 
 
-void InputOutput::start( void )throw()
+void InputOutput::start( void )noexcept
 {
     if ( !m_started )
     {

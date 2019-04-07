@@ -26,13 +26,13 @@ static Golem::FrameBitColor::Color_T convertToEnum_( const char* string );
 static Golem::ColorStream::Sequence_T convertOptionToEnum_( const char* string );
 
 ///////////////////////////
-Color::Color( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
+Color::Color( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
     : Cpl::TShell::Dac::Cmd::Command( commandList, "color" )
     , m_golem( application )
 {
 }
 
-Color::Color( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
+Color::Color( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
     : Cpl::TShell::Dac::Cmd::Command( commandList, "color", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
     , m_golem( application )
 {
@@ -40,7 +40,7 @@ Color::Color( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Co
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Color::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw()
+Cpl::TShell::Dac::Command::Result_T Color::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
 {
     Cpl::Text::String&          newName    = context.getTokenBuffer();
     Cpl::Text::String&          outtext    = context.getOutputBuffer();

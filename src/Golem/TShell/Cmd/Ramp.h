@@ -49,23 +49,23 @@ protected:
 
 public:
     /// See Cpl::TShell::Dac::Command
-    const char* getUsage() const throw() { return GOLEMSHELLCMD_USAGE_RAMP_; }
+    const char* getUsage() const noexcept { return GOLEMSHELLCMD_USAGE_RAMP_; }
 
     /// See Cpl::TShell::Dac::Command
-    const char* getHelp() const throw() { return GOLEMSHELLCMD_DETAIL_RAMP_; }
+    const char* getHelp() const noexcept { return GOLEMSHELLCMD_DETAIL_RAMP_; }
 
 
 public:
     /// Constructor
-    Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw();
+    Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept;
 
     /// Constructor.  Used to create a static instance of the command
-    Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw();
+    Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept;
 
 
 public:
     /// See Cpl::TShell::Dac::Command
-    Cpl::TShell::Dac::Command::Result_T execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw();
+    Cpl::TShell::Dac::Command::Result_T execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept;
 
 
 };

@@ -56,23 +56,23 @@ protected:
 
 public:
     /// See Cpl::TShell::Dac::Command
-    const char* getUsage() const throw() { return GOLEMSHELLCMD_USAGE_OUTPUT_; }
+    const char* getUsage() const noexcept { return GOLEMSHELLCMD_USAGE_OUTPUT_; }
 
     /// See Cpl::TShell::Dac::Command
-    const char* getHelp() const throw() { return GOLEMSHELLCMD_DETAIL_OUTPUT_; }
+    const char* getHelp() const noexcept { return GOLEMSHELLCMD_DETAIL_OUTPUT_; }
 
 
 public:
     /// Constructor
-    Output( Golem::Main& application, Adafruit_NeoPixel& ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw();
+    Output( Golem::Main& application, Adafruit_NeoPixel& ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept;
 
     /// Constructor.  Used to create a static instance of the command
-    Output( Golem::Main& application, Adafruit_NeoPixel& ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw();
+    Output( Golem::Main& application, Adafruit_NeoPixel& ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept;
 
 
 public:
     /// See Cpl::TShell::Dac::Command
-    Cpl::TShell::Dac::Command::Result_T execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw();
+    Cpl::TShell::Dac::Command::Result_T execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept;
 
 };
 

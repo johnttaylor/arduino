@@ -21,14 +21,14 @@ using namespace Golem::TShell::Cmd;
 
 
 ///////////////////////////
-Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
+Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
     : Cpl::TShell::Dac::Cmd::Command( commandList, "output" )
     , m_golem( application )
     , m_ledDriver( ledDriver )
 {
 }
 
-Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
+Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
     : Cpl::TShell::Dac::Cmd::Command( commandList, "output", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
     , m_golem( application )
     , m_ledDriver( ledDriver )
@@ -37,7 +37,7 @@ Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Co
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Output::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw()
+Cpl::TShell::Dac::Command::Result_T Output::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
 {
     Cpl::Text::String&  policyName = context.getTokenBuffer();
     Cpl::Text::String&  outtext    = context.getOutputBuffer();

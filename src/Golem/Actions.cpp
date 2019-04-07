@@ -278,7 +278,7 @@ bool Actions::isValidAction()
     return false;
 }
 
-bool Actions::isValidMultiAction() throw()
+bool Actions::isValidMultiAction() noexcept
 {
     if ( m_clockWise == 1 )
     {
@@ -331,12 +331,12 @@ bool Actions::isValidMultiAction() throw()
 }
 
 /////////////////////////////////////
-void Actions::beginAction() throw()
+void Actions::beginAction() noexcept
 {
     m_spinAccumulator = 0;
 }
 
-void Actions::beginTilt() throw()
+void Actions::beginTilt() noexcept
 {
     m_tiltCount        = 1;
     m_clockWise        = 0;
@@ -345,70 +345,70 @@ void Actions::beginTilt() throw()
     m_currentTilt      = m_currentGestureEvent.m_tiltEvent.m_currentState;
 }
 
-void Actions::setAckExitVisualCue() throw()
+void Actions::setAckExitVisualCue() noexcept
 {
     setAllLEDs( OPTION_GOLEM_FEEDBACK_EXIT_WRGB_COLOR );
     m_ledDriver.show();
 }
 
-void Actions::setAckTiltVisualCue() throw()
+void Actions::setAckTiltVisualCue() noexcept
 {
     setAllLEDs( OPTION_GOLEM_FEEDBACK_ACK_TILT_WRGB_COLOR );
     m_ledDriver.show();
 }
 
-void Actions::setHomedVisualCue() throw()
+void Actions::setHomedVisualCue() noexcept
 {
     setAllLEDs( OPTION_GOLEM_FEEDBACK_OFF_WRGB_COLOR );
     m_ledDriver.show();
 }
 
-void Actions::setTiltVisualCue() throw()
+void Actions::setTiltVisualCue() noexcept
 {
     setAllLEDs( OPTION_GOLEM_FEEDBACK_ON_WRGB_COLOR );
     m_ledDriver.show();
 }
 
-void Actions::startAckTimer() throw()
+void Actions::startAckTimer() noexcept
 {
     m_ackTimerMarker = m_now;
     m_ackTimerActive = true;
 }
 
-void Actions::startSpinnerTimer() throw()
+void Actions::startSpinnerTimer() noexcept
 {
     m_spinnerTimerMarker = m_now;
     m_spinnerTimerActive = true;
 }
 
-void Actions::startMultiTimer() throw()
+void Actions::startMultiTimer() noexcept
 {
     m_multiTimerMarker = m_now;
     m_multiTimerActive = true;
 }
 
-void Actions::startTimeoutTimer() throw()
+void Actions::startTimeoutTimer() noexcept
 {
     m_timeoutTimerMarker = m_now;
     m_timeoutTimerActive = true;
 }
 
-void Actions::stopMultiTimer() throw()
+void Actions::stopMultiTimer() noexcept
 {
     m_multiTimerActive = false;
 }
 
-void Actions::stopSpinnerTimer() throw()
+void Actions::stopSpinnerTimer() noexcept
 {
     m_spinnerTimerActive = false;
 }
 
-void Actions::stopTimeoutTimer() throw()
+void Actions::stopTimeoutTimer() noexcept
 {
     m_timeoutTimerActive = false;
 }
 
-void Actions::updateAction() throw()
+void Actions::updateAction() noexcept
 {
     switch ( m_tiltAction )
     {
@@ -454,12 +454,12 @@ void Actions::updateAction() throw()
 }
 
 
-void Actions::updateHomed() throw()
+void Actions::updateHomed() noexcept
 {
     // No actions currently needed (6/18/2017)
 }
 
-void Actions::updateTilt() throw()
+void Actions::updateTilt() noexcept
 {
     // React to the actual tilt
     switch ( m_currentGestureEvent.m_tiltEvent.m_currentState )

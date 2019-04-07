@@ -23,13 +23,13 @@ using namespace Golem::TShell::Cmd;
 
 
 ///////////////////////////
-Ramp::Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) throw()
+Ramp::Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
     : Cpl::TShell::Dac::Cmd::Command( commandList, "ramp" )
     , m_golem( application )
 {
 }
 
-Ramp::Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) throw()
+Ramp::Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
     : Cpl::TShell::Dac::Cmd::Command( commandList, "ramp", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
     , m_golem( application )
 {
@@ -37,7 +37,7 @@ Ramp::Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Comm
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Ramp::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) throw()
+Cpl::TShell::Dac::Command::Result_T Ramp::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
 {
     Cpl::Text::String&          newName    = context.getTokenBuffer();
     Cpl::Text::String&          outtext    = context.getOutputBuffer();
