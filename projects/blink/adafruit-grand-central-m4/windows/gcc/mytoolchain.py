@@ -26,6 +26,7 @@ import os
 # get definition of the Options strcuture
 from nqbplib.base import BuildValues
 from nqbplib.my_globals import NQBP_WORK_ROOT
+from nqbplib.my_globals import NQBP_PKG_ROOT
 
 # Get the location of the compiler toolchain
 env_error = None
@@ -47,7 +48,8 @@ if ( ARDUINO_BSP_VER == None ):
 # Set the name for the final output item (with NO file extension)
 FINAL_OUTPUT_NAME = 'blink'
 
-
+# BSP directory that contains the vector table 
+bsp_objects = '_BUILT_DIR_.src/Bsp/Adafruit/grand_central_m4'
 
 #
 # For build config/variant: "Release"
@@ -55,9 +57,11 @@ FINAL_OUTPUT_NAME = 'blink'
 
 # Set project specific 'base' (i.e always used) options
 base_release = BuildValues()        # Do NOT comment out this line
-base_release.cflags    = ' -Wall -DF_CPU=120000000L -DARDUINO=10810 -DVARIANT_QSPI_BAUD_DEFAULT=50000000 -DENABLE_CACHE '
-base_release.linkflags = '-Tflash_with_bootloader.ld'
-
+base_release.cflags       = ' -Wall -DF_CPU=120000000L -DARDUINO=10810 -DVARIANT_QSPI_BAUD_DEFAULT=50000000 -DENABLE_CACHE '
+base_release.inc         += " -I{}{}src\\Bsp\\Adafruit\\grand_central_m4\\FreeRTOS\\Source\\Include".format(NQBP_PKG_ROOT(), os.sep)
+base_release.inc         += ' -I{}{}src\Bsp\Adafruit\grand_central_m4\FreeRTOS\Source\portable\GCC\ARM_CM4F'.format(NQBP_PKG_ROOT(), os.sep )
+base_release.linkflags    = '-Tflash_without_bootloader.ld'
+base_release.firstobjs    = bsp_objects;
 
 # Set project specific 'optimized' options
 optimzed_release = BuildValues()    # Do NOT comment out this line
