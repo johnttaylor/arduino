@@ -20,18 +20,16 @@
   by Colby Newman
 */
 
-#include "Arduino.h"
-#include "FreeRTOS.h"
+#include "Bsp/Api.h"
 #include "task.h"
-
 
 // the setup function runs once when you press reset or power the board
 void setup()
 {
-    // initialize digital pin LED_BUILTIN as an output.
-    pinMode( LED_BUILTIN, OUTPUT );
+    // Initialize the board 
+    Bsp_Api_initialize();
+    Bsp_beginArduinoSerialObject( 115200, SERIAL_8N1 );
 
-    Serial.begin( 115200 );
     Serial.println( "Blink Applet WITH FreeRTOS" ); Serial.println( "" );
 }
 

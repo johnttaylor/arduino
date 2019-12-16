@@ -27,9 +27,10 @@
 
 
 #include "colony_config.h"
-#include "wiringh"
 #include "FreeRTOS.h"
-
+#include "USBAPI.h"
+#include "HardwareSerial.h"
+#include "variant.h"
 
 //////////////////////////////////////////////////////////
 /// Board Specific APIs
@@ -119,12 +120,12 @@ void Bsp_beginArduinoSerialObject( unsigned long baudrate, uint16_t frameConfig 
 
 /// Default Mapping for the "debug LED 1"
 #ifndef OPTION_BSP_DEBUG_LED1_INDEX
-#define OPTION_BSP_DEBUG_LED1_INDEX             PIN_LED1
+#define OPTION_BSP_DEBUG_LED1_INDEX             PIN_LED
 #endif
 
 /// Default Mapping for the "debug LED 2"
 #ifndef OPTION_BSP_DEBUG_LED2_INDEX
-#define OPTION_BSP_DEBUG_LED2_INDEX             PIN_LED2
+#define OPTION_BSP_DEBUG_LED2_INDEX             DEBUG_LED_IS_NOT_SUPPORTED
 #endif
 
 

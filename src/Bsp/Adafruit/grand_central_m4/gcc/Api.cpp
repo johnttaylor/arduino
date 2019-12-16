@@ -16,7 +16,7 @@
 #define SECT_   "bsp"
 
 
-static Cpl::Io::Serial::Arduino::InputOutput fd_();
+static Cpl::Io::Serial::Arduino::InputOutput fd_;
 extern Cpl::Io::InputOutput& Bsp_Serial( void );
 
 
@@ -25,15 +25,14 @@ extern Cpl::Io::InputOutput& Bsp_Serial( void );
 void Bsp_Api_initialize( void )
 {
     // Configure the LEDs as output pins 
-    pinMode( PIN_LED1, OUTPUT );
-    pinMode( PIN_LED2, OUTPUT );
+    pinMode( OPTION_BSP_DEBUG_LED1_INDEX, OUTPUT );
 }
 
 void Bsp_beginArduinoSerialObject( unsigned long baudrate, uint16_t frameConfig )
 {
     fd_.start( baudrate, frameConfig );
-    while ( fd_.isReady() == false )
-        ;
+    //while ( fd_.isReady() == false )
+    //    ;
 }
 
 Cpl::Io::InputOutput& Bsp_Serial( void )
@@ -63,12 +62,15 @@ std::ios_base::Init::~Init()
 {
 }
 
-void *operator new(size_t size, std::nothrow_t const&){
+// NOTE: The FreeRTOS heap is an allocate heap only (heap1.c) -->so no need to overload the delete the methods
+void *operator new(size_t size, std::nothrow_t const&)
+{
   return pvPortMalloc( size );
 }
 
-void *operator new[]( size_t size, std::nothrow_t const& ) {
-    return vPortFree( size );
+void *operator new[]( size_t size, std::nothrow_t const& ) 
+{
+    return pvPortMalloc( size );
 }
 
 const std::nothrow_t std::nothrow;
