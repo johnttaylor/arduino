@@ -22,13 +22,12 @@ void OnProjectLoad (void) {
   //
   // Dialog-generated settings
   //
-  Project.AddPathSubstitute ("E:/_workspaces/zoe/arduino/projects/blink/adafruit-grand-central-m4/windows/gcc", "$(ProjectDir)");
-  Project.AddPathSubstitute ("e:/_workspaces/zoe/arduino/projects/blink/adafruit-grand-central-m4/windows/gcc", "$(ProjectDir)");
+  //Project.AddPathSubstitute ("./", "$(ProjectDir)");
   Project.SetDevice ("ATSAMD51P20");
   Project.SetHostIF ("USB", "");
   Project.SetTargetIF ("SWD");
   Project.SetTIFSpeed ("4 MHz");
-  Project.AddSvdFile ("E:/Program Files/SEGGER/Ozone V3.10a/Config/CPU/Cortex-M4F.svd");
+  Project.AddSvdFile ("Cortex-M4F.svd");
   Project.SetOSPlugin("FreeRTOSPlugin_CM4");
 
   //
