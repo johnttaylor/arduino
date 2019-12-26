@@ -11,7 +11,6 @@
 
 #include "Bsp/Api.h"
 #include "Cpl/Io/Serial/Arduino/InputOutput.h"
-#include <ios>
 
 #define SECT_   "bsp"
 
@@ -42,35 +41,4 @@ Cpl::Io::InputOutput& Bsp_Serial( void )
 
 
 
-////////////////////////////////////////////////////
-/*
-** Method stubs to satisfy the linker -->NOTE: C++ Streams are NOT supported by this BSP
-*/
-//void std::ios_base::Init::_S_ios_destroy()
-//{
-//}
-//
-//void std::ios_base::Init::_S_ios_create( bool  )
-//{
-//}
 
-std::ios_base::Init::Init()
-{
-}
-
-std::ios_base::Init::~Init()
-{
-}
-
-// NOTE: The FreeRTOS heap is an allocate heap only (heap1.c) -->so no need to overload the delete the methods
-void *operator new(size_t size, std::nothrow_t const&)
-{
-  return pvPortMalloc( size );
-}
-
-void *operator new[]( size_t size, std::nothrow_t const& ) 
-{
-    return pvPortMalloc( size );
-}
-
-const std::nothrow_t std::nothrow;

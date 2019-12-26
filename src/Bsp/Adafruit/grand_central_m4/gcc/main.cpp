@@ -20,6 +20,8 @@
 #include "Arduino.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include <ios>
+#include <new>
 
 // Weak empty variant initialization function.
 // May be redefined by variant files.
@@ -59,8 +61,6 @@ int main( void )
     USBDevice.init();
     USBDevice.attach();
 
-    setup();
-
     // Create main thread
     if ( xTaskCreate( main_task, "MAIN", OPTION_MAIN_THREAD_STACK_SIZE, NULL, OPTION_MAIN_THREAD_PRIORITY, 0 ) != pdPASS )
     {
@@ -73,9 +73,43 @@ int main( void )
 
 static void main_task( void *p )
 {
+    setup();
+
     for ( ;;)
     {
         loop();
     }
 }
 
+////////////////////////////////////////////////////
+/*
+** Method stubs to satisfy the linker -->NOTE: C++ Streams are NOT supported by this BSP
+*/
+//void std::ios_base::Init::_S_ios_destroy()
+//{
+//}
+//
+//void std::ios_base::Init::_S_ios_create( bool  )
+//{
+//}
+
+std::ios_base::Init::Init()
+{
+}
+
+std::ios_base::Init::~Init()
+{
+}
+
+// NOTE: The FreeRTOS heap is an allocate heap only (heap1.c) -->so no need to overload the delete the methods
+void *operator new( size_t size, std::nothrow_t const& )
+{
+    return pvPortMalloc( size );
+}
+
+void *operator new[]( size_t size, std::nothrow_t const& )
+{
+    return pvPortMalloc( size );
+}
+
+const std::nothrow_t std::nothrow;
