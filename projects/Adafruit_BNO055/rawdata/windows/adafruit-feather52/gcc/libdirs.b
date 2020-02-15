@@ -1,6 +1,6 @@
 # Sensor libraries
-$ARDUINO_LIBRARIES$/Adafruit_BNO055
-$ARDUINO_LIBRARIES$/Adafruit_Unified_Sensor
+$ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_BNO055
+$ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_Unified_Sensor
 
 # Ardunio Core library for the Nordic nrf52 Feather52
 $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/variants/feather52

@@ -1,5 +1,6 @@
 # NeoPixe library
-$ARDUINO_LIBRARIES$/Adafruit_NeoPixel
+$ARDUINO_SKETCH_FOLDER$/libraries/Adafruit_NeoPixel
+
 
 # Ardunio Core library for the Nordic nrf52 Feather52
 $ARDUINO_TOOLS$/hardware/nrf52/$ARDUINO_BSP_VER$/variants/feather52
