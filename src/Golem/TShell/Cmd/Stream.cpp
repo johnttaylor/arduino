@@ -14,6 +14,7 @@
 #include "Cpl/Text/atob.h"
 #include "Golem/StreamAddress.h"
 #include "Cpl/System/Trace.h"
+#include "Cpl/Text/Tokenizer/TextBlock.h"
 
 #define SECT_   "cmd::stream"
 
@@ -23,27 +24,22 @@ using namespace Golem::TShell;
 
 
 ///////////////////////////
-Cmd::Stream::Stream( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "stream" )
-    , m_golem( application )
-{
-}
-
-Cmd::Stream::Stream( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "stream", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
+Cmd::Stream::Stream( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Command>& commandList ) noexcept
+    : Cpl::TShell::Cmd::Command( commandList, "stream" )
     , m_golem( application )
 {
 }
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Cmd::Stream::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
+Cpl::TShell::Command::Result_T Cmd::Stream::execute( Cpl::TShell::Context_& context, char* rawCmdString, Cpl::Io::Output& outfd ) noexcept
 {
-    Cpl::Text::String&          newName    = context.getTokenBuffer();
-    Cpl::Text::String&          outtext    = context.getOutputBuffer();
-    bool                        io         = true;
-    unsigned                    numParms   = tokens.numParameters();
-    Golem::DataStream*          newPolicyP = 0;
+    Cpl::Text::Tokenizer::TextBlock tokens( rawCmdString, context.getDelimiterChar(), context.getTerminatorChar(), context.getQuoteChar(), context.getEscapeChar() );
+    Cpl::Text::String&              newName    = context.getTokenBuffer();
+    Cpl::Text::String&              outtext    = context.getOutputBuffer();
+    bool                            io         = true;
+    unsigned                        numParms   = tokens.numParameters();
+    Golem::DataStream*              newPolicyP = 0;
 
     // Print current Policy
     if ( numParms == 1 )

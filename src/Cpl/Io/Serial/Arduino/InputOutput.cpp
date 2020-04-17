@@ -4,7 +4,7 @@
 * agreement (license.txt) in the top/ directory or on the Internet at
 * http://integerfox.com/colony.core/license.txt
 *
-* Copyright (c) 2017  John T. Taylor
+* Copyright (c) 2014-2020  John T. Taylor
 *
 * Redistributions of the source code must retain the above copyright notice.
 *----------------------------------------------------------------------------*/
@@ -13,14 +13,13 @@
 #include <stdint.h>
 
 ///
-using namespace Cpl::Io::Serial::Adafruit::Nrf5::BLE;
+using namespace Cpl::Io::Serial::Arduino;
 
 
 
 ////////////////////////////////////
-InputOutput::InputOutput( BLEUart& serialPort )
-    : m_commPort( serialPort )
-    , m_started( false )
+InputOutput::InputOutput()
+    : m_started( false )
 {
 }
 
@@ -31,15 +30,25 @@ InputOutput::~InputOutput( void )
 }
 
 
-void InputOutput::start( void )noexcept
+void InputOutput::start( unsigned long baudrate, uint16_t config ) noexcept
 {
     if ( !m_started )
     {
-        m_commPort.begin();
+        ::Serial.begin( baudrate, config );
         m_started = true;
     }
 }
 
+bool InputOutput::isReady( void )
+{
+    // Fail if I have not been started
+    if ( !m_started )
+    {
+        return false;
+    }
+
+    return ::Serial;
+}
 
 ////////////////////////////////////
 bool InputOutput::read( void* buffer, int numBytes, int& bytesRead )
@@ -53,7 +62,7 @@ bool InputOutput::read( void* buffer, int numBytes, int& bytesRead )
     uint8_t* ptr = (uint8_t*) buffer;
     for ( bytesRead = 0; bytesRead < numBytes; bytesRead++ )
     {
-        int inbyte = m_commPort.read();
+        int inbyte = ::Serial.read();
         if ( inbyte < 0 )
         {
             // No more data left in the RX queue -->return
@@ -64,7 +73,7 @@ bool InputOutput::read( void* buffer, int numBytes, int& bytesRead )
         *ptr++ = (uint8_t) inbyte;
     }
 
-    // The Adafruit Uart class NEVER has an 'error' on the read() call
+    // The Serial class NEVER has an 'error' on the read() call
     return true;
 }
 
@@ -76,7 +85,7 @@ bool InputOutput::available()
         return false;
     }
 
-    return m_commPort.available();
+    return ::Serial.available();
 }
 
 
@@ -94,7 +103,7 @@ bool InputOutput::write( const void* buffer, int maxBytes, int& bytesWritten )
 
     for ( bytesWritten=0; bytesWritten < maxBytes; bytesWritten++ )
     {
-        if ( m_commPort.write( *ptr++ ) != 1 )
+        if ( ::Serial.write( *ptr++ ) != 1 )
         {
             return false;
         }
@@ -109,22 +118,21 @@ void InputOutput::flush()
     // Do nothing if I have not been started
     if ( m_started )
     {
-        m_commPort.flush();
-    }
-}
-
-
-void InputOutput::close()
-{
-    // Do nothing if I have not been started
-    if ( m_started )
-    {
-        // The BLE Uart class has no stop/end method!  And this class does not have access to 'enable/disable BLE Services' methods/objects.
-        m_started = false;
+        ::Serial.flush();
     }
 }
 
 bool InputOutput::isEos()
 {
     return !m_started;
+}
+
+void InputOutput::close()
+{
+    // Do nothing if I have not been started
+    if ( m_started )
+    {
+        ::Serial.end();
+        m_started = false;
+    }
 }

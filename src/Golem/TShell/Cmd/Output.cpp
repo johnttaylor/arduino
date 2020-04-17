@@ -13,7 +13,7 @@
 #include "Cpl/Text/String.h"
 #include "Golem/OutputDebug.h"
 #include "Golem/OutputNeoPixel.h"
-
+#include "Cpl/Text/Tokenizer/TextBlock.h"
 
 ///
 using namespace Golem::TShell::Cmd;
@@ -21,29 +21,24 @@ using namespace Golem::TShell::Cmd;
 
 
 ///////////////////////////
-Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "output" )
+Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Container::Map<Cpl::TShell::Command>& commandList ) noexcept
+    : Cpl::TShell::Cmd::Command( commandList, "output" )
     , m_golem( application )
     , m_ledDriver( ledDriver )
 {
 }
 
-Output::Output( Golem::Main& application, Adafruit_NeoPixel&  ledDriver, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "output", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
-    , m_golem( application )
-    , m_ledDriver( ledDriver )
-{
-}
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Output::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
+Cpl::TShell::Command::Result_T Output::execute( Cpl::TShell::Context_& context, char* rawCmdString, Cpl::Io::Output& outfd ) noexcept
 {
-    Cpl::Text::String&  policyName = context.getTokenBuffer();
-    Cpl::Text::String&  outtext    = context.getOutputBuffer();
-    bool                io         = true;
-    unsigned            numParms   = tokens.numParameters();
-    Golem::Output*      newPolicyP = 0;
+    Cpl::Text::Tokenizer::TextBlock tokens( rawCmdString, context.getDelimiterChar(), context.getTerminatorChar(), context.getQuoteChar(), context.getEscapeChar() );
+    Cpl::Text::String&              policyName = context.getTokenBuffer();
+    Cpl::Text::String&              outtext    = context.getOutputBuffer();
+    bool                            io         = true;
+    unsigned                        numParms   = tokens.numParameters();
+    Golem::Output*                  newPolicyP = 0;
 
     // Print current Policy
     if ( numParms == 1 )

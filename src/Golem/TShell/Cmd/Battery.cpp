@@ -13,7 +13,7 @@
 #include "Battery.h"
 #include "Cpl/System/Trace.h"
 #include "Bsp/Api.h"
-
+#include "Cpl/Text/Tokenizer/TextBlock.h"
 
 #define SECT_   "cmd::battery"
 
@@ -27,24 +27,19 @@ using namespace Golem::TShell::Cmd;
 
 
 ///////////////////////////
-Battery::Battery( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "battery" )
-{
-}
-
-Battery::Battery( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "battery", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
+Battery::Battery( Cpl::Container::Map<Cpl::TShell::Command>& commandList ) noexcept
+    : Cpl::TShell::Cmd::Command( commandList, "battery" )
 {
 }
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Battery::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
+Cpl::TShell::Command::Result_T Battery::execute( Cpl::TShell::Context_& context, char* rawCmdString, Cpl::Io::Output& outfd ) noexcept
 {
-    //Cpl::Text::String&          newName    = context.getTokenBuffer();
-    Cpl::Text::String&          outtext    = context.getOutputBuffer();
-    bool                        io         = true;
-    unsigned                    numParms   = tokens.numParameters();
+    Cpl::Text::Tokenizer::TextBlock tokens( rawCmdString, context.getDelimiterChar(), context.getTerminatorChar(), context.getQuoteChar(), context.getEscapeChar() );
+    Cpl::Text::String&              outtext    = context.getOutputBuffer();
+    bool                            io         = true;
+    unsigned                        numParms   = tokens.numParameters();
 
     // Read/Get battery status
     if ( numParms == 1 )

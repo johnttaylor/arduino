@@ -14,6 +14,7 @@
 #include "Cpl/Text/atob.h"
 #include "Golem/FrameSimple.h"
 #include "Cpl/System/Trace.h"
+#include "Cpl/Text/Tokenizer/TextBlock.h"
 
 #define SECT_   "cmd::frame"
 
@@ -23,28 +24,23 @@ using namespace Golem::TShell::Cmd;
 
 
 ///////////////////////////
-Frame::Frame( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "frame" )
-    , m_golem( application )
-{
-}
-
-Frame::Frame( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "frame", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
+Frame::Frame( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Command>& commandList ) noexcept
+    : Cpl::TShell::Cmd::Command( commandList, "frame" )
     , m_golem( application )
 {
 }
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Frame::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
+Cpl::TShell::Command::Result_T Frame::execute( Cpl::TShell::Context_& context, char* rawCmdString, Cpl::Io::Output& outfd ) noexcept
 {
-    Cpl::Text::String&          newName    = context.getTokenBuffer();
-    Cpl::Text::String&          outtext    = context.getOutputBuffer();
-    bool                        io         = true;
-    unsigned                    numParms   = tokens.numParameters();
-    Golem::Frame::FrameConfig_T config     = m_golem.getFrameConfig();
-    bool                        changed    = false;
+    Cpl::Text::Tokenizer::TextBlock tokens( rawCmdString, context.getDelimiterChar(), context.getTerminatorChar(), context.getQuoteChar(), context.getEscapeChar() );
+    Cpl::Text::String&              newName    = context.getTokenBuffer();
+    Cpl::Text::String&              outtext    = context.getOutputBuffer();
+    bool                            io         = true;
+    unsigned                        numParms   = tokens.numParameters();
+    Golem::Frame::FrameConfig_T     config     = m_golem.getFrameConfig();
+    bool                            changed    = false;
 
     // Print current Policy
     if ( numParms == 1 )

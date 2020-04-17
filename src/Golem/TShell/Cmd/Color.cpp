@@ -16,6 +16,7 @@
 #include "Golem/ColorRainbow.h"
 #include "Golem/ColorStream.h"
 #include "Cpl/System/Trace.h"
+#include "Cpl/Text/Tokenizer/TextBlock.h"
 
 #define SECT_   "cmd::ramp"
 
@@ -26,27 +27,22 @@ static Golem::FrameBitColor::Color_T convertToEnum_( const char* string );
 static Golem::ColorStream::Sequence_T convertOptionToEnum_( const char* string );
 
 ///////////////////////////
-Color::Color( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "color" )
-    , m_golem( application )
-{
-}
-
-Color::Color( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
-    : Cpl::TShell::Dac::Cmd::Command( commandList, "color", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance )
+Color::Color( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Command>& commandList ) noexcept
+    : Cpl::TShell::Cmd::Command( commandList, "color" )
     , m_golem( application )
 {
 }
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Color::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
+Cpl::TShell::Command::Result_T Color::execute( Cpl::TShell::Context_& context, char* rawCmdString, Cpl::Io::Output& outfd ) noexcept
 {
-    Cpl::Text::String&          newName    = context.getTokenBuffer();
-    Cpl::Text::String&          outtext    = context.getOutputBuffer();
-    bool                        io         = true;
-    unsigned                    numParms   = tokens.numParameters();
-    Golem::FrameBitColor*       newPolicyP = 0;
+    Cpl::Text::Tokenizer::TextBlock tokens( rawCmdString, context.getDelimiterChar(), context.getTerminatorChar(), context.getQuoteChar(), context.getEscapeChar() );
+    Cpl::Text::String&              newName    = context.getTokenBuffer();
+    Cpl::Text::String&              outtext    = context.getOutputBuffer();
+    bool                            io         = true;
+    unsigned                        numParms   = tokens.numParameters();
+    Golem::FrameBitColor*           newPolicyP = 0;
 
     // Print current Policy
     if ( numParms == 1 )

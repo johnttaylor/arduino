@@ -7,7 +7,7 @@ src/Golem/TShell/Cmd
 src/Bsp/Adafruit/feather52/gcc
 src/Driver/Imu/Bno055
 src/Imu/Motion/Cube
-src/Cpl/TShell/Dac/Cmd/Arduino
+src/Cpl/TShell/Cmd/Arduino
 src/Cpl/Io/Serial/Adafruit/Nrf5/BLE
 
 # Colony::Core libraries (note: the Feather52/Arduino boards uses FreeRTOS)
@@ -21,18 +21,13 @@ src/Cpl/Io/Serial/Adafruit/Nrf5/BLE
 //colony.core/src/Cpl/Text
 //colony.core/src/Cpl/Io/Serial/Adafruit/Nrf5
 
-# DAC Shell (and infrastructure)
+# TShell (and infrastructure)
 //colony.core/src/Cpl/TShell
-//colony.core/src/Cpl/TShell/Dac
-//colony.core/src/Cpl/TShell/Dac/Cmd
-//colony.core/src/Cpl/TShell/Dac/Cmd/_basic
-#//colony.core/src/Cpl/TShell/Dac/Cmd/_scripting
-//colony.core/src/Cpl/TShell/Dac/Cmd/FreeRTOS
+//colony.core/src/Cpl/TShell/Cmd
+//colony.core/src/Cpl/TShell/Cmd/FreeRTOS
 //colony.core/src/Cpl/Text/Frame
 //colony.core/src/Cpl/Text/Tokenizer
 //colony.core/src/Cpl/Memory
-//colony.core/src/Cpl/Log
-//colony.core/src/Cpl/Log/_default
 
 
 # Sensor and LED libraries

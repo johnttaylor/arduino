@@ -7,12 +7,12 @@
 #include "Cpl/System/Mutex.h"
 #include "Cpl/System/FreeRTOS/Thread.h"
 #include "Cpl/TShell/Stdio.h"
-#include "Cpl/TShell/Dac/Maker.h"
-#include "Cpl/TShell/Dac/Cmd/Help.h"
-#include "Cpl/TShell/Dac/Cmd/Bye.h"
-#include "Cpl/TShell/Dac/Cmd/Trace.h"
-#include "Cpl/TShell/Dac/Cmd/Arduino/Dbg.h"
-#include "Cpl/TShell/Dac/Cmd/FreeRTOS/Threads.h"
+#include "Cpl/TShell/Maker.h"
+#include "Cpl/TShell/Cmd/Help.h"
+#include "Cpl/TShell/Cmd/Bye.h"
+#include "Cpl/TShell/Cmd/Trace.h"
+#include "Cpl/TShell/Cmd/Arduino/Dbg.h"
+#include "Cpl/TShell/Cmd/FreeRTOS/Threads.h"
 #include "Golem/Main.h"
 #include "Golem/StreamAddress.h"
 #include "Golem/OutputNeoPixel.h"
@@ -77,18 +77,18 @@ static Golem::Main golem_( policyLock_, ledDriver_ );
 extern uint32_t __etext[];
 
 // Shell Processor and Shell commands
-static Cpl::Container::Map<Cpl::TShell::Dac::Command>   cmdlist_;
-static Cpl::TShell::Dac::Maker                          cmdProcessor_( cmdlist_ );
-static Cpl::TShell::Dac::Cmd::Help                      helpCmd_( cmdlist_, "invoke_special_static_constructor" );
-static Cpl::TShell::Dac::Cmd::Trace                     traceCmd_( cmdlist_, "invoke_special_static_constructor" );
-static Cpl::TShell::Dac::Cmd::Arduino::Dbg              debugCmd_( cmdlist_, "invoke_special_static_constructor" );
-static Cpl::TShell::Dac::Cmd::FreeRTOS::Threads         threads_( cmdlist_, "invoke_special_static_constructor" );
-static Golem::TShell::Cmd::Output                       outputPolicy( golem_, ledDriver_, cmdlist_, "invoke_special_static_constructor" );
-static Golem::TShell::Cmd::Frame                        framePolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
-static Golem::TShell::Cmd::Ramp                         rampPolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
-static Golem::TShell::Cmd::Color                        colorPolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
-static Golem::TShell::Cmd::Stream                       streamPolicy( golem_, cmdlist_, "invoke_special_static_constructor" );
-static Golem::TShell::Cmd::Battery                      batteryStatus( cmdlist_, "invoke_special_static_constructor" );
+static Cpl::Container::Map<Cpl::TShell::Command>        cmdlist_;
+static Cpl::TShell::Maker                               cmdProcessor_( cmdlist_ );
+static Cpl::TShell::Cmd::Help                           helpCmd_( cmdlist_ );
+static Cpl::TShell::Cmd::Trace                          traceCmd_( cmdlist_ );
+static Cpl::TShell::Cmd::Arduino::Dbg                   debugCmd_( cmdlist_ );
+static Cpl::TShell::Cmd::FreeRTOS::Threads              threads_( cmdlist_ );
+static Golem::TShell::Cmd::Output                       outputPolicy( golem_, ledDriver_, cmdlist_ );
+static Golem::TShell::Cmd::Frame                        framePolicy( golem_, cmdlist_ );
+static Golem::TShell::Cmd::Ramp                         rampPolicy( golem_, cmdlist_ );
+static Golem::TShell::Cmd::Color                        colorPolicy( golem_, cmdlist_ );
+static Golem::TShell::Cmd::Stream                       streamPolicy( golem_, cmdlist_ );
+static Golem::TShell::Cmd::Battery                      batteryStatus( cmdlist_ );
 static Cpl::TShell::Stdio                               shell_( cmdProcessor_, "DAC-Shell", OPTION_DAC_SHELL_THREAD_PRIORITY );
 
 

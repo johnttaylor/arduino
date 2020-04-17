@@ -14,7 +14,7 @@
 
 
 #include "colony_config.h"
-#include "Cpl/TShell/Dac/Cmd/Command.h"
+#include "Cpl/TShell/Cmd/Command.h"
 
 /** Usage
                                     "         1         2         3         4         5         6         7         8"
@@ -33,7 +33,6 @@
 ///
 namespace Cpl {
 namespace TShell {
-namespace Dac {
 namespace Cmd {
 namespace Arduino {
 
@@ -41,32 +40,27 @@ namespace Arduino {
 
 /** This class implements a DAC Shell command
  */
-class Dbg : public Cpl::TShell::Dac::Cmd::Command
+class Dbg : public Cpl::TShell::Cmd::Command
 {
 public:
-    /// See Cpl::TShell::Dac::Command
+    /// See Cpl::TShell::Command
     const char* getUsage() const noexcept { return CPLTSHELLDACMD_USAGE_DBG_; }
 
-    /// See Cpl::TShell::Dac::Command
+    /// See Cpl::TShell::Command
     const char* getHelp() const noexcept { return CPLTSHELLDACMD_DETAIL_DBG_; }
-
 
 public:
     /// Constructor
-    Dbg( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept;
-
-    /// Constructor.  Used to create a static instance of the command
-    Dbg( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept;
+    Dbg( Cpl::Container::Map<Cpl::TShell::Command>& commandList ) noexcept;
 
 
 public:
-    /// See Cpl::TShell::Dac::Command
-    Cpl::TShell::Dac::Command::Result_T execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept;
+    /// See Cpl::TShell::Command
+    Cpl::TShell::Command::Result_T execute( Context_& context, char* rawCmdString, Cpl::Io::Output& outfd ) noexcept;
 
 };
 
 };      // end namespaces
-};
 };
 };
 };

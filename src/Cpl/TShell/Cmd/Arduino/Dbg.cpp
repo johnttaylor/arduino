@@ -12,31 +12,27 @@
 #include "Dbg.h"
 #include "debug.h"
 #include "Cpl/Text/String.h"
-
+#include "Cpl/Text/Tokenizer/TextBlock.h"
 
 ///
-using namespace Cpl::TShell::Dac::Cmd::Arduino;
+using namespace Cpl::TShell::Cmd::Arduino;
 
 
 
 ///////////////////////////
-Dbg::Dbg( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept
-:Cpl::TShell::Dac::Cmd::Command(commandList, "dbg")
-    {
-    }
-
-Dbg::Dbg( Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept
-:Cpl::TShell::Dac::Cmd::Command(commandList, "dbg", ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance)
+Dbg::Dbg( Cpl::Container::Map<Cpl::TShell::Command>& commandList ) noexcept
+:Cpl::TShell::Cmd::Command(commandList, "dbg")
     {
     }
 
 
 /////////////////////////////////////////////////////////
-Cpl::TShell::Dac::Command::Result_T Dbg::execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept
+Cpl::TShell::Command::Result_T Dbg::execute( Context_& context, char* rawCmdString, Cpl::Io::Output& outfd ) noexcept
     {
-    //Cpl::Text::String&  token    = context.getTokenBuffer();
-    //Cpl::Text::String&  outtext  = context.getOutputBuffer();
-    unsigned            numParms = tokens.numParameters();
+    Cpl::Text::Tokenizer::TextBlock tokens( rawCmdString, context.getDelimiterChar(), context.getTerminatorChar(), context.getQuoteChar(), context.getEscapeChar() );
+    //Cpl::Text::String&            token    = context.getTokenBuffer();
+    //Cpl::Text::String&            outtext  = context.getOutputBuffer();
+    unsigned                        numParms = tokens.numParameters();
 
     // Error checking
     if ( numParms > 2 )

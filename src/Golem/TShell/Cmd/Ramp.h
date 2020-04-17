@@ -14,15 +14,15 @@
 
 #include "colony_config.h"
 #include "Golem/Main.h"
-#include "Cpl/TShell/Dac/Cmd/Command.h"
+#include "Cpl/TShell/Cmd/Command.h"
 
 /** Usage
                                        "         1         2         3         4         5         6         7         8"
                                        "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
 */
-#define GOLEMSHELLCMD_USAGE_RAMP_        "ramp\n" \
-                                         "ramp <perctange>\n"
-
+#define GOLEMSHELLCMD_USAGE_RAMP_      "ramp\n" \
+                                       "ramp <perctange>\n"
+                                       
 /// Detailed Help text
 #ifndef GOLEMSHELLCMD_DETAIL_RAMP_
 #define GOLEMSHELLCMD_DETAIL_RAMP_     "  Shell command sets the Golem SetIntensity policy.  The <perctange> argument is\n"\
@@ -40,7 +40,7 @@ namespace Cmd {
 
 /** This class implements a DAC Shell command
  */
-class Ramp: public Cpl::TShell::Dac::Cmd::Command
+class Ramp: public Cpl::TShell::Cmd::Command
 {
 protected:
     /// Reference to my application
@@ -48,24 +48,21 @@ protected:
 
 
 public:
-    /// See Cpl::TShell::Dac::Command
+    /// See Cpl::TShell::Command
     const char* getUsage() const noexcept { return GOLEMSHELLCMD_USAGE_RAMP_; }
 
-    /// See Cpl::TShell::Dac::Command
+    /// See Cpl::TShell::Command
     const char* getHelp() const noexcept { return GOLEMSHELLCMD_DETAIL_RAMP_; }
 
 
 public:
     /// Constructor
-    Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList ) noexcept;
-
-    /// Constructor.  Used to create a static instance of the command
-    Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Dac::Command>& commandList, const char* ignoreThisParameter_onlyUsedWhenCreatingAStaticInstance ) noexcept;
+    Ramp( Golem::Main& application, Cpl::Container::Map<Cpl::TShell::Command>& commandList ) noexcept;
 
 
 public:
-    /// See Cpl::TShell::Dac::Command
-    Cpl::TShell::Dac::Command::Result_T execute( Cpl::TShell::Dac::Context_& context, Cpl::Text::Tokenizer::TextBlock& tokens, const char* rawInputString, Cpl::Io::Output& outfd ) noexcept;
+    /// See Cpl::TShell::Command
+    Cpl::TShell::Command::Result_T execute( Cpl::TShell::Context_& context, char* rawCmdString, Cpl::Io::Output& outfd ) noexcept;
 
 
 };
