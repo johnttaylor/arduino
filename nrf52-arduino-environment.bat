@@ -6,6 +6,6 @@ set ARDUINO_BSP_VER=0.6.0
 set ARDUINO_NRF_UTIL_VER=nrfutil-0.5.2
 
 :: Additional/extras
-set ARDUINO_SKETCH_FOLDER=e:\Users\User\Documents\Arduino
+set ARDUINO_SUPPORT=colony.arduino
 
 echo:GCC ARM-Cortex M4 Environment setup
